@@ -21,13 +21,10 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] Agent loop: context in, event stream out; request, stream, execute
       tool calls, repeat until the model stops. Knows nothing about runs or
       sessions
-- [ ] Structured output: a loop can be asked for a typed `Codable` value
-      instead of text
-- [ ] Extension protocol with hook points: run start, before each request
-      (rewrite messages, system prompt and tool set), before tool call
-      (allow, rewrite, defer, refuse), after tool result, on every event,
-      run end
-- [ ] Run budgets on by default: max turns, max tokens, max duration
+- [ ] Extension protocol whose hooks are exactly the moments of the loop:
+      before a request, after a response, before a tool call, after a tool
+      call, end of turn, end of loop. Extensions apply in registration
+      order; rewrites chain, any refusal wins
 - [ ] Cancellation at any point with no inconsistent state; distinguishes
       stop-by-person (partial reply kept and marked) from
       interrupt-by-system (partial reply discarded and marked)
@@ -76,6 +73,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
       not granted
 - [ ] Progressive tool disclosure: expose few tools plus a discovery tool
 - [ ] Retry with backoff for transient network errors
+- [ ] Budget: stop a loop after a chosen number of turns, tokens or seconds
 - [ ] Context compaction (later)
 
 ## Toolsets (shipped, optional)

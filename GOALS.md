@@ -22,15 +22,13 @@ separately in the [feature list](FEATURES.md).
    simultaneously, and it should stay in control of them.
 7. **Make everything observable and reproducible.** Whatever happened, the app
    can see it, store it, and rebuild any view of it later.
-8. **Never let an agent run away with the device.** Every run is bounded by
-   default.
-9. **Bring the platform's own capabilities to the agent.** What the system
+8. **Bring the platform's own capabilities to the agent.** What the system
    already knows how to do should be easy to hand to the agent, in pieces the
    app chooses.
-10. **Assume nothing about the shape of the app.** A set of one-shot prompts,
+9. **Assume nothing about the shape of the app.** A set of one-shot prompts,
     a single timeline served by many agents, a chat with long histories, or
     something not yet imagined: all are equally natural.
-11. **Ask nothing of the app's own choices.** No dependencies, no imposed
+10. **Ask nothing of the app's own choices.** No dependencies, no imposed
     storage, interface or architecture.
 
 ## Boundary
@@ -42,9 +40,9 @@ Within swaco there are two circles:
 
 - **The core** holds only mechanics: the context sent to a model, the events
   that come back, the loop that continues while the model asks for tools,
-  tools and the sets they come in, the points where behaviour can be shaped,
-  and the limits that keep a run bounded. It groups nothing, stores nothing
-  and knows no platform.
+  tools and the sets they come in, and the points where behaviour can be
+  shaped. It groups nothing, stores nothing, limits nothing and knows no
+  platform.
 - **Swaco as a whole** adds everything an agent needs to work correctly in a
   real app and that every app would otherwise rebuild: standard ways of
   grouping work and keeping its history, state and recovery, concurrency
@@ -82,7 +80,7 @@ Written down so they are not eroded one convenience at a time.
 - We do not target platforms other than Apple's.
 - We do not support system versions before the current one.
 - We do not build a command-line product.
-- We do not build privacy machinery beyond making data flows visible.
+- We do not build privacy machinery.
 
 ## Trade-offs
 
