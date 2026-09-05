@@ -134,7 +134,25 @@ retrieve media on the agent's behalf pass their results through it.
 - [ ] Store originals as references in the app or App Group container;
       never hold more than needed in memory
 
+## Provider machinery (`SwacoAI`)
+
+Everything providers share, done once. Depends on the core only; knows no
+vendor. Our providers are built on it; a third party may use it or ignore it.
+
+- [ ] HTTP and server-sent events over `URLSession`, with cancellation
+- [ ] Assembly of streamed tool-call arguments from partial fragments
+- [ ] Lossless conversion of messages, tool definitions and tool results
+      between swaco's vocabulary and vendor shapes, ids preserved
+- [ ] Normalisation of stop reasons, usage and errors into swaco's types
+- [ ] Generic implementation of the OpenAI-compatible protocol, configured
+      per vendor rather than re-implemented
+- [ ] Model catalogue: identifier, provider, declared capabilities
+- [ ] Recorded request and response fixtures, and the provider conformance
+      suite that runs against them
+
 ## Providers
+
+Each is a thin module over `SwacoAI`.
 
 - [ ] Anthropic (streaming, tool use, provider-executed web search)
 - [ ] OpenAI, including OpenAI-compatible endpoints
