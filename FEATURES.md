@@ -65,10 +65,24 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] Gemini (later)
 - [ ] Replayable mock provider for tests
 
+## Interaction toolset (shipped, optional)
+
+Tools through which the agent reaches the person. Swaco owns the mechanics
+(the model sees the tool, a typed request appears in the event stream, the
+loop suspends, the app answers, the loop continues, the suspension survives
+relaunch). The app owns the presentation.
+
+- [ ] `ask`: put a question to the person, free-form or with options
+- [ ] `confirm`: have the person approve or refuse an action; also the shape
+      used for requesting system authorisation
+- [ ] `report`: tell the person about progress or an intermediate result
+      without waiting and without ending the reply; payload may include
+      media
+
 ## Extensions (shipped, optional)
 
 - [ ] Environment context: time, time zone, locale, device
-- [ ] Tool approval: defer side-effecting tools until the app confirms
+- [ ] Tool approval: route side-effecting tool calls through `confirm`
 - [ ] Authorisation gating: hide or defer tools whose system permission is
       not granted
 - [ ] Progressive tool disclosure: expose few tools plus a discovery tool

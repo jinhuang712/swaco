@@ -25,10 +25,13 @@ separately in the [feature list](FEATURES.md).
 8. **Bring the platform's own capabilities to the agent.** What the system
    already knows how to do should be easy to hand to the agent, in pieces the
    app chooses.
-9. **Assume nothing about the shape of the app.** A set of one-shot prompts,
+9. **Let the agent reach the person, on the person's terms.** On a phone the
+   agent must be able to ask, confirm and report. Swaco makes those exchanges
+   work correctly; the app decides how they look.
+10. **Assume nothing about the shape of the app.** A set of one-shot prompts,
     a single timeline served by many agents, a chat with long histories, or
     something not yet imagined: all are equally natural.
-10. **Ask nothing of the app's own choices.** No dependencies, no imposed
+11. **Ask nothing of the app's own choices.** No dependencies, no imposed
     storage, interface or architecture.
 
 ## Boundary
