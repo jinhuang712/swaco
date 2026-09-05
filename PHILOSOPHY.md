@@ -52,6 +52,17 @@ bringing anyone else's judgement.
 In one line: swaco is responsible for making an agent work correctly inside
 an app; the app is responsible for deciding what that agent is as a product.
 
+## Everything is an event
+
+An agent's life is a sequence of things that happen: something arrives, the
+agent thinks, the agent acts, something comes back. Swaco treats every one of
+these as an event of the same standing, recorded as it happens, and builds
+everything else on that record.
+
+A person speaking to the agent is one kind of event among many. A shortcut, a
+notification, another app, a place, a time: each is as natural a beginning as
+a typed message, and none is assumed.
+
 ## Native to its home
 
 Swaco belongs to the platform it runs on. It uses what the platform and the
