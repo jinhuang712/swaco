@@ -26,7 +26,17 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] `Tool` protocol with JSON Schema parameters and typed results
 - [ ] `ToolSet` protocol: name, description, expansion into tools; a single
       tool is a toolset of one
+- [ ] Tool execution is a pair of events, call issued and result arrived,
+      never an awaited function. A tool either delivers its result at once
+      or registers that the result will arrive later; the loop advances only
+      on the result event. This is what lets a wait survive relaunch
 - [ ] Tools may run on the main actor; the loop performs the hop
+- [ ] Safety floor: in a turn triggered by an event whose source is not a
+      person, every tool call is held for the app's release. The app may
+      lift this per source or per tool; it is the one rule that is on
+      unless switched off
+- [ ] Rendering of inbound events into model-readable content is a
+      protocol with one default implementation the app may replace whole
 - [ ] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
 - [ ] Model described as data (provider, identifier, capabilities)
@@ -161,6 +171,21 @@ swaco.
 - [ ] Notifications (UserNotifications)
 - [ ] Web: fetch a page locally; search via an app-supplied backend (later)
 - [ ] Shell and file system, macOS only (longer term)
+
+## Acceptance
+
+- [ ] The canonical first program: one provider, one tool, one run, one
+      `for await` over events, in twenty lines or fewer including the tool.
+      Protocols bend to keep it so; the example does not grow
+
+## Spikes before design
+
+- [ ] Can Apple Foundation Models accept tools defined at run time from a
+      schema? The answer sets that provider's capability declaration and
+      may narrow the offline goal
+- [ ] Can the event-pair loop, with a main-actor tool, a deferred result
+      and external cancellation, compile under Swift 6 strict concurrency
+      with no unchecked escapes?
 
 ## Project
 

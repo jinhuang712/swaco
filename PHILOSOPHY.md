@@ -51,7 +51,9 @@ bringing anyone else's judgement.
 
 Swaco makes no decision on behalf of any product. Where the right answer
 depends on the product, swaco asks for it explicitly rather than assuming one;
-where it does not, swaco does not ask.
+where it does not, swaco does not ask. A safety floor is not a product
+decision: where an agent could act on something no person asked for, swaco
+holds back until the app says otherwise.
 
 In one line: swaco is responsible for making an agent work correctly inside
 an app; the app is responsible for deciding what that agent is as a product.
