@@ -29,13 +29,18 @@ These are outcomes we commit to. Each can be checked.
    at once, with concurrency and budgets governed in one place.
 7. **A complete, serialisable, replayable event stream.** Any interface and
    any debugging view can be rebuilt from the events alone.
-8. **Bounded by default.** Every run has limits on turns, tokens and time, so
+8. **Provider-executed capabilities speak the same vocabulary.** Abilities a
+   model vendor runs on its own side, such as web search, are declared,
+   streamed and replayed through the same canonical types as ordinary tools.
+   Providers state which they support; the agent never sees vendor-specific
+   shapes.
+9. **Bounded by default.** Every run has limits on turns, tokens and time, so
    a misbehaving loop cannot drain a device.
-9. **Platform capabilities arrive as toolsets.** System frameworks such as
+10. **Platform capabilities arrive as toolsets.** System frameworks such as
    calendar, reminders, contacts, location, weather, health and photos are
    offered as coarse-grained, individually selectable toolsets that declare
    the authorisation they need.
-10. **Zero third-party dependencies and zero intrusion.** Swaco imposes no
+11. **Zero third-party dependencies and zero intrusion.** Swaco imposes no
     storage, no UI framework and no architecture on the app that adopts it.
 
 ### Longer term
@@ -44,6 +49,9 @@ These are outcomes we commit to. Each can be checked.
   should prevent it, and nothing in the schedule should be spent on it.
 - **Sub-agents.** A sub-agent is a tool that runs another agent. The core
   needs nothing to support it, so it comes after the core is solid.
+- **A web toolset.** Fetching and extracting a page is local and needs no
+  key; searching needs a backend the app supplies. Vendor-side search covers
+  most needs before then.
 - **System toolsets that only make sense on macOS**, such as shell and file
   system access.
 
