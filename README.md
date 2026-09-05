@@ -12,4 +12,5 @@ dependencies.
 
 - [Philosophy](PHILOSOPHY.md): what we believe and never violate.
 - [Goals](GOALS.md): what we are trying to achieve, and what we are not.
+- [Architecture](ARCHITECTURE.md): how swaco is divided, and the rules between the parts.
 - [Features](FEATURES.md): what we are building to get there, and its status.
