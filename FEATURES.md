@@ -8,9 +8,18 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 
 ## Core
 
+- [ ] One event vocabulary for everything that enters or leaves the agent.
+      Inbound events carry a source (person, shortcut, notification, URL,
+      share, system, schedule, sensor), a payload of content parts or
+      structured data, and the execution context they arrived in. A
+      message from a person is one kind of inbound event
+- [ ] Source travels with the content into the model's context, so the
+      model and extensions can tell what a person said from what the system
+      delivered
 - [ ] Canonical message and content types: text, image, tool call, tool
       result, reasoning, provider-executed tool use and result, citations
 - [ ] Canonical streaming event set shared by all providers
+- [ ] Messages are a projection of the event log, not a separate store
 - [ ] `Tool` protocol with JSON Schema parameters and typed results
 - [ ] `ToolSet` protocol: name, description, expansion into tools; a single
       tool is a toolset of one
@@ -42,6 +51,13 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
       serve many sessions
 - [ ] Session state machine: idle, running, awaiting tool approval, awaiting
       person, interrupted, failed
+- [ ] Event intake policy when a run is in progress: start a new run, inject
+      into the next turn, or queue. Swaco supplies the default, the app
+      chooses
+- [ ] Execution context exposed to extensions: foreground, background,
+      app extension process, remaining time, whether a person is present
+- [ ] A loop can stop after one turn and hand the rest to a later process;
+      the handover survives the process boundary
 - [ ] Session registry and lookup
 - [ ] Concurrency limit across all runs, with or without
       sessions
@@ -54,6 +70,8 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] `SessionStore` protocol
 - [ ] File-based store: per-session metadata plus append-only event log,
       written as events happen
+- [ ] Store can live in an App Group container so an app extension and the
+      main app share it
 - [ ] Keychain helper for credentials
 
 ## Providers
@@ -78,6 +96,10 @@ relaunch). The app owns the presentation.
 - [ ] `report`: tell the person about progress or an intermediate result
       without waiting and without ending the reply; payload may include
       media
+- [ ] `ask` and `confirm` suspend the same way whether or not a person is
+      present; the app decides how to bring the person back
+- [ ] `schedule`: let the agent arrange a future wake-up that returns as an
+      inbound event; the app supplies the mechanism (longer term)
 
 ## Extensions (shipped, optional)
 

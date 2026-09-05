@@ -28,9 +28,11 @@ separately in the [feature list](FEATURES.md).
 9. **Let the agent reach the person, on the person's terms.** On a phone the
    agent must be able to ask, confirm and report. Swaco makes those exchanges
    work correctly; the app decides how they look.
-10. **Assume nothing about the shape of the app.** A set of one-shot prompts,
-    a single timeline served by many agents, a chat with long histories, or
-    something not yet imagined: all are equally natural.
+10. **Assume nothing about the shape of the app, or about who wakes the
+    agent.** A set of one-shot prompts, a single timeline served by many
+    agents, a chat with long histories, or something not yet imagined: all
+    are equally natural. So is an agent woken by a shortcut, a notification,
+    another app, a place, a time or a sensor, with no person watching.
 11. **Ask nothing of the app's own choices.** No dependencies, no imposed
     storage, interface or architecture.
 
