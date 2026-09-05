@@ -11,29 +11,27 @@ separately in the [feature list](FEATURES.md).
    adding a capability, not starting a project.
 2. **Be indifferent to the model.** An app should be able to change which
    model it talks to, hosted or on-device, without changing anything else.
-3. **Work offline and without accounts.** An app should be able to be agentic
-   using only what the device already has.
-4. **Let apps shape behaviour without touching swaco.** Whatever an app needs
+3. **Let apps shape behaviour without touching swaco.** Whatever an app needs
    the agent to do differently, it should be able to arrange from the outside.
-5. **Be correct in the life an app actually has.** Being interrupted,
+4. **Be correct in the life an app actually has.** Being interrupted,
    suspended, killed and relaunched is normal, and nothing should be lost or
    left unexplained because of it.
-6. **Let many agents work at once, safely.** An app may run several agents
+5. **Let many agents work at once, safely.** An app may run several agents
    simultaneously, and it should stay in control of them.
-7. **Make everything observable and reproducible.** Whatever happened, the app
+6. **Make everything observable and reproducible.** Whatever happened, the app
    can see it, store it, and rebuild any view of it later.
-8. **Bring the platform's own capabilities to the agent.** What the system
+7. **Bring the platform's own capabilities to the agent.** What the system
    already knows how to do should be easy to hand to the agent, in pieces the
    app chooses.
-9. **Let the agent reach the person, on the person's terms.** On a phone the
+8. **Let the agent reach the person, on the person's terms.** On a phone the
    agent must be able to ask, confirm and report. Swaco makes those exchanges
    work correctly; the app decides how they look.
-10. **Assume nothing about the shape of the app, or about who wakes the
+9. **Assume nothing about the shape of the app, or about who wakes the
     agent.** A set of one-shot prompts, a single timeline served by many
     agents, a chat with long histories, or something not yet imagined: all
     are equally natural. So is an agent woken by a shortcut, a notification,
     another app, a place, a time or a sensor, with no person watching.
-11. **Ask nothing of the app's own choices.** No dependencies, no imposed
+10. **Ask nothing of the app's own choices.** No dependencies, no imposed
     storage, interface or architecture.
 
 ## Boundary
@@ -88,6 +86,8 @@ Written down so they are not eroded one convenience at a time.
 
 - We do not build user interface, pickers and import screens included.
 - We do not assume the app is a chat.
+- We do not favour any model or provider. On-device models are one provider
+  among others.
 - We do not ship capabilities inside the core.
 - We do not build memory, retrieval, or knowledge management.
 - We do not build orchestration of many agents.

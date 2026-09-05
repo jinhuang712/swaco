@@ -118,8 +118,7 @@ through the same module.
 
 - [ ] Anthropic (streaming, tool use, provider-executed web search)
 - [ ] OpenAI, including OpenAI-compatible endpoints
-- [ ] Apple Foundation Models (on-device), with graceful degradation where
-      capabilities are missing
+- [ ] Apple Foundation Models (on-device)
 - [ ] Gemini (later)
 - [ ] Replayable mock provider for tests
 
@@ -178,11 +177,8 @@ swaco.
       `for await` over events, in twenty lines or fewer including the tool.
       Protocols bend to keep it so; the example does not grow
 
-## Spikes before design
+## Spike before design
 
-- [ ] Can Apple Foundation Models accept tools defined at run time from a
-      schema? The answer sets that provider's capability declaration and
-      may narrow the offline goal
 - [ ] Can the event-pair loop, with a main-actor tool, a deferred result
       and external cancellation, compile under Swift 6 strict concurrency
       with no unchecked escapes?
