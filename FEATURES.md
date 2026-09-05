@@ -132,11 +132,13 @@ relaunch). The app owns the presentation.
 - [ ] Budget: stop a loop after a chosen number of turns, tokens or seconds
 - [ ] Context compaction (later)
 
-## Toolsets (shipped, optional)
+## Platform toolsets (satellites)
 
-Each toolset is coarse-grained, individually selectable at tool granularity,
-and declares the system authorisation it needs. Order follows the needs of the
-first app built on swaco.
+Separate packages under our name, outside swaco, depending on it through the
+same protocols any third party uses. Each toolset is coarse-grained,
+individually selectable at tool granularity, and declares the system
+authorisation it needs. Order follows the needs of the first app built on
+swaco.
 
 - [ ] Calendar (EventKit)
 - [ ] Reminders (EventKit)

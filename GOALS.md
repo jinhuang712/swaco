@@ -55,6 +55,12 @@ Within swaco there are two circles:
   capabilities. These are optional modules, but they are ours to design and
   keep coherent.
 
+Around swaco sit **satellites**: packages we write under our own name that
+depend on swaco but do not live in it. Wrappers around the platform's
+frameworks are the first of these. A satellite uses exactly the same doors as
+any third party, so it doubles as proof that the doors are enough; it has its
+own version and its own pace; and it never widens what swaco itself promises.
+
 The app owns the rest: the interface, which capabilities to expose, what to
 allow, what to say to the model, and what to call things.
 
@@ -81,8 +87,9 @@ Written down so they are not eroded one convenience at a time.
 - We do not build orchestration of many agents.
 - We do not manage prompts.
 - We do not curate a library, catalogue or marketplace of capabilities.
-  What we ship stays deliberately few; the rest belongs to independent
-  packages, which we make easy to write.
+  What ships inside swaco stays deliberately few; our own satellites are few
+  and named; everything else belongs to independent packages, which we make
+  easy to write.
 - We do not account for cost or measure quality.
 - We do not run servers or hold credentials on anyone's behalf.
 - We do not target platforms other than Apple's.
