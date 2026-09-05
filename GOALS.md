@@ -1,137 +1,69 @@
 # Goals
 
-This document turns the [philosophy](PHILOSOPHY.md) into commitments: what
-swaco sets out to achieve, what it deliberately will not do, which way it leans
-when forced to choose, and the constraints it imposes on itself. Unlike the
-philosophy, this document is expected to evolve. Unlike code, it should evolve
-slowly and on purpose.
+The [philosophy](PHILOSOPHY.md) says what we believe. This document says what
+we are trying to achieve, what we are choosing not to achieve, and which way we
+lean when goals collide. What we will actually build to get there is tracked
+separately in the [feature list](FEATURES.md).
 
 ## Goals
 
-These are outcomes we commit to. Each can be checked.
+1. **Make any iOS app agentic in one step.** Adopting swaco should feel like
+   adding a capability, not starting a project.
+2. **Be indifferent to the model.** An app should be able to change which
+   model it talks to, hosted or on-device, without changing anything else.
+3. **Work offline and without accounts.** An app should be able to be agentic
+   using only what the device already has.
+4. **Let apps shape behaviour without touching swaco.** Whatever an app needs
+   the agent to do differently, it should be able to arrange from the outside.
+5. **Be correct in the life an app actually has.** Being interrupted,
+   suspended, killed and relaunched is normal, and nothing should be lost or
+   left unexplained because of it.
+6. **Let many conversations coexist safely.** An app may run several agents at
+   once, and it should stay in control of them.
+7. **Make everything observable and reproducible.** Whatever happened, the app
+   can see it, store it, and rebuild any view of it later.
+8. **Never let an agent run away with the device.** Every run is bounded by
+   default.
+9. **Bring the platform's own capabilities to the agent.** What the system
+   already knows how to do should be easy to hand to the agent, in pieces the
+   app chooses.
+10. **Ask nothing of the app's own choices.** No dependencies, no imposed
+    storage, interface or architecture.
 
-1. **An iOS app becomes agentic in a single step.** From adding the package to
-   the first conversation that calls a tool is one screen of code. Sensible
-   defaults cover everything not explicitly configured.
-2. **Any model, without changing the app.** Switching between hosted models
-   and Apple's on-device models is a configuration change. Tools, sessions and
-   extensions are untouched.
-3. **On-device models are first class.** An app can be agentic with no API
-   key and no network, using the model that ships with the system.
-4. **Behaviour is shaped without modifying swaco.** Permission prompts,
-   context compaction, memory, tracing, environment injection, tool discovery
-   and tool gating can all be implemented outside swaco.
-5. **Correct under the real app lifecycle.** A session survives suspension,
-   termination and relaunch. Its state is always explainable and, where
-   possible, resumable. A tool may wait on a person indefinitely and that
-   wait survives a relaunch.
-6. **Multiple sessions coexist under control.** An app can hold many sessions
-   at once, with concurrency and budgets governed in one place.
-7. **A complete, serialisable, replayable event stream.** Any interface and
-   any debugging view can be rebuilt from the events alone.
-8. **Provider-executed capabilities speak the same vocabulary.** Abilities a
-   model vendor runs on its own side, such as web search, are declared,
-   streamed and replayed through the same canonical types as ordinary tools.
-   Providers state which they support; the agent never sees vendor-specific
-   shapes.
-9. **Bounded by default.** Every run has limits on turns, tokens and time, so
-   a misbehaving loop cannot drain a device.
-10. **Platform capabilities arrive as toolsets.** System frameworks such as
-   calendar, reminders, contacts, location, weather, health and photos are
-   offered as coarse-grained, individually selectable toolsets that declare
-   the authorisation they need.
-11. **Zero third-party dependencies and zero intrusion.** Swaco imposes no
-    storage, no UI framework and no architecture on the app that adopts it.
+## Longer term
 
-### Longer term
-
-- **iPadOS and macOS.** Supported eventually, not now. Nothing in the design
-  should prevent it, and nothing in the schedule should be spent on it.
-- **Sub-agents.** A sub-agent is a tool that runs another agent. The core
-  needs nothing to support it, so it comes after the core is solid.
-- **A web toolset.** Fetching and extracting a page is local and needs no
-  key; searching needs a backend the app supplies. Vendor-side search covers
-  most needs before then.
-- **System toolsets that only make sense on macOS**, such as shell and file
-  system access.
+- Support for iPadOS and macOS.
+- Agents that delegate to other agents.
+- Capabilities that only make sense on a desktop.
+- Reaching the web from the agent.
 
 ## Non-goals
 
-These are the concrete edges of "less is more". They are written down so they
-are not eroded one convenience at a time.
+Written down so they are not eroded one convenience at a time.
 
-- **No UI.** Not even a small one.
-- **No built-in tools in the core.** Toolsets are separate, optional modules.
-- **No MCP client or server.** It can be built outside; the core does not
-  know it exists.
-- **No memory, retrieval or knowledge base.** Same.
-- **No multi-agent orchestration.** No workflows, graphs or planners. A
-  sub-agent is a tool.
-- **No prompt templating or prompt management.**
-- **No cost accounting, evaluation or usage dashboards.** Usage reported by
-  the model is passed through faithfully in the event stream; what to do with
-  it is the app's decision.
-- **No server, proxy or key hosting.** Providers support custom endpoints and
-  authentication so an app can route through its own backend.
-- **No platforms other than Apple's.** No Linux, no server-side Swift, no
-  Windows.
-- **No support for system versions below iOS 26.**
-- **No command-line product.** Swaco is a capability layer for apps, not a
-  port of a terminal agent.
-- **No privacy machinery beyond visibility.** Data flows are explicit and
-  observable; redaction and policy are external.
+- We do not build user interface.
+- We do not ship capabilities inside the core.
+- We do not build memory, retrieval, or knowledge management.
+- We do not build orchestration of many agents.
+- We do not manage prompts.
+- We do not account for cost or measure quality.
+- We do not run servers or hold credentials on anyone's behalf.
+- We do not target platforms other than Apple's.
+- We do not support system versions before the current one.
+- We do not build a command-line product.
+- We do not build privacy machinery beyond making data flows visible.
 
 ## Trade-offs
 
-When two goods conflict, this is the way we lean.
+- **Simple over complete.**
+- **Explicit over magic.**
+- **Stable over novel.**
+- **Predictable over perfect.**
+- **The adopter's convenience over ours.**
+- **Refusal over compromise.**
+- **Fewer, broader capabilities over many narrow ones.**
 
-- **Simple over complete.** An API that serves most cases cleanly beats one
-  that serves all cases awkwardly. The rest is handled by extensions or by
-  stepping around swaco.
-- **Explicit over magic.** We would rather the adopter write two more lines
-  than have swaco infer or act on its own.
-- **Stable over novel.** Public surface is hard to take back, so we expose
-  less.
-- **Predictable recovery over perfect recovery.** A reply interrupted by the
-  system is discarded and marked, not resumed. A reply stopped by the person
-  is kept and marked as stopped.
-- **The adopter's convenience over ours.** Internals may be complex; the
-  public surface must be simple.
-- **Refusal over compromise.** When it is unclear whether a feature belongs,
-  it does not.
-- **Coarse toolsets over many tools.** One tool per domain with an action
-  parameter beats one tool per action; it costs less context and is misused
-  less.
+## How we get there
 
-## Constraints
-
-Rules we impose on ourselves. Breaking one is a bug.
-
-- The core depends on nothing but the standard library and Foundation, and
-  knows nothing about any provider, toolset, storage or UI framework.
-- The core's understanding of a toolset is limited to its name, its
-  description and its expansion into tools. A single tool is a toolset of
-  one.
-- The set of tools shown to the model on each turn can be rewritten from the
-  outside before the request is made.
-- Every tool call can be intercepted, rewritten, deferred or refused before it
-  runs.
-- Tools may require the main actor; the loop handles the hop.
-- Every run can be cancelled at any moment and leaves no inconsistent state.
-- Every event is persisted as it happens, append-only.
-- All public types are `Sendable` and serialisable. All public symbols are
-  documented and follow Swift naming conventions.
-- Anything that touches the network can be replaced by a mock; the test suite
-  never needs a network.
-- Text shown to the model, such as tool names and descriptions, is stable and
-  in one language. Text shown to people is the app's to localise.
-- Every module beyond the core can be linked independently, and the core
-  works when it is absent.
-- Before 1.0, breaking changes are allowed and recorded. After 1.0, semantic
-  versioning applies.
-
-## Immediate focus
-
-Swaco is developed by building a real app on it first. The first toolsets,
-the first provider integrations and the first extensions are chosen by what
-that app needs, not by what would look complete.
+Swaco is developed by building a real app on it first. What gets built, and in
+what order, is decided by what that app needs, not by what would look complete.

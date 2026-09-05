@@ -7,5 +7,6 @@ agent core, one voice for any model, and a way to shape behaviour from the
 outside without growing the core. No UI, no bundled tools, no third-party
 dependencies.
 
-- [Philosophy](PHILOSOPHY.md) sits above every other decision in this project.
-- [Goals](GOALS.md) turns it into goals, non-goals, trade-offs and constraints.
+- [Philosophy](PHILOSOPHY.md): what we believe and never violate.
+- [Goals](GOALS.md): what we are trying to achieve, and what we are not.
+- [Features](FEATURES.md): what we are building to get there, and its status.
