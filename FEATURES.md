@@ -35,8 +35,9 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
       sessions
 - [ ] Extension protocol whose hooks are exactly the moments of the loop:
       before a request, after a response, before a tool call, after a tool
-      call, end of turn, end of loop. Extensions apply in registration
-      order; rewrites chain, any refusal wins
+      call, end of turn, end of loop. The app declares extensions as an
+      ordered list; swaco applies them strictly in that order and imposes no
+      ordering of its own. Rewrites chain, any refusal wins
 - [ ] Cancellation at any point with no inconsistent state; distinguishes
       stop-by-person (partial reply kept and marked) from
       interrupt-by-system (partial reply discarded and marked)
@@ -55,8 +56,8 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] Session state machine: idle, running, awaiting tool approval, awaiting
       person, interrupted, failed
 - [ ] Event intake policy when a run is in progress: start a new run, inject
-      into the next turn, or queue. Swaco supplies the default, the app
-      chooses
+      into the next turn, or queue. Declared by the app when it uses
+      sessions; there is no default
 - [ ] Execution context exposed to extensions: foreground, background,
       app extension process, remaining time, whether a person is present
 - [ ] A loop can stop after one turn and hand the rest to a later process;

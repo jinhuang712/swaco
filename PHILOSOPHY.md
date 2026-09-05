@@ -49,6 +49,10 @@ or feel. What an agent means for a given app is decided by that app alone.
 This is what makes swaco worth adopting: it brings agentic ability without
 bringing anyone else's judgement.
 
+Swaco makes no decision on behalf of any product. Where the right answer
+depends on the product, swaco asks for it explicitly rather than assuming one;
+where it does not, swaco does not ask.
+
 In one line: swaco is responsible for making an agent work correctly inside
 an app; the app is responsible for deciding what that agent is as a product.
 
