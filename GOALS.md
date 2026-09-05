@@ -55,6 +55,12 @@ Within swaco there are two circles:
   capabilities. These are optional modules, but they are ours to design and
   keep coherent.
 
+Some things are necessary for correctness yet their medium depends on the
+product: where events are recorded, where content is kept, where credentials
+live. For these swaco fixes the contract and leaves the medium to the app: a
+strict protocol, a conformance test suite any implementation must pass, one or
+two reference implementations, and no default. The app names what it uses.
+
 Around swaco sit **satellites**: packages we write under our own name that
 depend on swaco but do not live in it. Wrappers around the platform's
 frameworks are the first of these. A satellite uses exactly the same doors as

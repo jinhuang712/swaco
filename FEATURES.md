@@ -71,12 +71,21 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 
 ## Storage
 
-- [ ] `SessionStore` protocol
-- [ ] File-based store: per-session metadata plus append-only event log,
-      written as events happen
-- [ ] Store can live in an App Group container so an app extension and the
-      main app share it
-- [ ] Keychain helper for credentials
+Swaco fixes what must be stored and with what guarantees; the app decides
+where. No store is chosen by default: an app that uses sessions names one.
+
+- [ ] `EventStore` protocol with a strict contract: ordered append, durable
+      on return, read by group in write order, replay from a position
+- [ ] Conformance test suite that any `EventStore` implementation runs
+- [ ] Reference implementations: in-memory, and a plain file store that can
+      live in an App Group container so an app extension and the main app
+      share it
+- [ ] `ContentStore` protocol for bytes referenced from content parts, with
+      the same contract-plus-conformance approach
+- [ ] `CredentialProvider` protocol; Keychain-backed reference
+      implementation
+- [ ] SQLite, SwiftData and CloudKit stores as satellites or third-party
+      packages, not in swaco
 
 ## Media (shipped, optional)
 
