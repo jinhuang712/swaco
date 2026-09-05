@@ -226,6 +226,31 @@ swaco.
 - [ ] Web: fetch a page locally; search via an app-supplied backend (later)
 - [ ] Shell and file system, macOS only (longer term)
 
+## Development and release
+
+What swaco does for the life of an app around it: debugging, shipping,
+upgrading. Build tooling, signing, distribution and onboarding are the app's.
+
+- [ ] Event log export in a stable, documented format; a run is reproduced
+      by replaying its log through the mock provider. A bug report is a log
+- [ ] Recording: run once against a real provider, keep the exchange as a
+      fixture, replay it thereafter. Development, previews and tests need no
+      key and no network
+- [ ] `os.Logger` by subsystem and signposts per turn and tool call, so a
+      run is visible in Instruments. Structure is logged, content is not
+- [ ] Privacy manifest shipped with the package: no tracking, no collection,
+      no required-reason APIs
+- [ ] Each module states its deployment requirements: entitlements, App
+      Group, Info.plist usage strings. A debug-build check fails at launch,
+      with a clear message, when a linked module's requirements are missing
+- [ ] Event log format is versioned. A newer swaco replays logs written by
+      an older one; unknown event types are preserved, never dropped
+- [ ] Providers expose availability: not on this device, model downloading,
+      ready. Apps decide before the first request, not after the first
+      failure
+- [ ] No initialisation step, no account, no configuration file. The core
+      works the moment it is linked
+
 ## Declared by the app, no default
 
 Every item here is one whose answer depends on the product. Adding an item

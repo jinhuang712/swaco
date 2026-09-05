@@ -101,6 +101,8 @@ Written down so they are not eroded one convenience at a time.
 - We do not target platforms other than Apple's.
 - We do not support system versions before the current one.
 - We do not build a command-line product.
+- We do not build tooling for building, signing, distributing or onboarding
+  an app.
 - We do not build privacy machinery.
 
 ## Trade-offs
