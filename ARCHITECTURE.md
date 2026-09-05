@@ -139,8 +139,8 @@ and pace. None widens what swaco promises.
 
 ## File tree
 
-One Swift Package, one target per module, one file per public type where the
-type is more than a few lines. Subdirectories follow the vocabulary.
+One Swift Package, one target per module. Inside a module, directories follow
+the vocabulary; file names are left to the code and will change.
 
 ```
 swaco/
@@ -148,125 +148,43 @@ swaco/
 ├── README.md · PHILOSOPHY.md · GOALS.md · ARCHITECTURE.md · FEATURES.md
 │
 ├── Sources/
-│   ├── Swaco/                          core
-│   │   ├── Events/
-│   │   │   ├── Event.swift             the one event type and its subtypes
-│   │   │   ├── Source.swift            where an inbound event came from
-│   │   │   ├── ExecutionContext.swift  foreground, background, extension, person present
-│   │   │   └── EventRendering.swift    protocol + default rendering into model input
-│   │   ├── Content/
-│   │   │   ├── Content.swift           content parts: text, image, tool call, tool result, …
-│   │   │   ├── ContentReference.swift  reference to stored bytes, loaded on demand
-│   │   │   └── Message.swift           projection of events into messages
-│   │   ├── Tools/
-│   │   │   ├── Tool.swift              protocol; result at once or deferred
-│   │   │   ├── ToolSet.swift           protocol; a tool is a toolset of one
-│   │   │   ├── ToolCall.swift          call issued / result arrived
-│   │   │   └── JSONSchema.swift        parameter schema as a value type
-│   │   ├── Providers/
-│   │   │   ├── Provider.swift          protocol: one streaming call
-│   │   │   ├── Model.swift             identifier, provider, capabilities
-│   │   │   ├── Capabilities.swift      what a model declares it can do
-│   │   │   └── StreamEvent.swift       canonical streaming events
-│   │   ├── Extensions/
-│   │   │   ├── Extension.swift         protocol, one hook per loop moment
-│   │   │   └── Decision.swift          allow · rewrite · defer · refuse
-│   │   ├── Loop/
-│   │   │   ├── Agent.swift             configured executor: model, tools, extensions
-│   │   │   ├── Loop.swift              turn, continue, stop
-│   │   │   ├── SafetyFloor.swift       hold tool calls from non-person sources
-│   │   │   └── Cancellation.swift      stopped by person vs by system
-│   │   └── Support/
-│   │       └── JSONValue.swift         typed JSON, no [String: Any]
+│   ├── Swaco/                   core
+│   │   ├── Events/              event, source, execution context, rendering
+│   │   ├── Content/             content parts, references, message projection
+│   │   ├── Tools/               tool, toolset, tool call, schema
+│   │   ├── Providers/           provider protocol, model, capabilities, stream events
+│   │   ├── Extensions/          extension protocol, decisions
+│   │   └── Loop/                agent, loop, safety floor, cancellation
 │   │
-│   ├── SwacoAI/                        shared provider machinery
-│   │   ├── HTTP/
-│   │   │   ├── HTTPClient.swift        URLSession, cancellation
-│   │   │   ├── Connection.swift        endpoint + authenticator, per provider
-│   │   │   └── ServerSentEvents.swift  SSE parsing as an AsyncSequence
-│   │   ├── Authentication/
-│   │   │   ├── Authenticator.swift     protocol: attach, refresh
-│   │   │   ├── APIKey.swift
-│   │   │   ├── BearerToken.swift
-│   │   │   ├── OAuth.swift             token pair, expiry, refresh; no UI
-│   │   │   ├── TokenStore.swift        protocol
-│   │   │   └── KeychainTokenStore.swift reference
-│   │   ├── Streaming/
-│   │   │   └── ToolCallAssembler.swift partial argument fragments → complete call
-│   │   ├── Conversion/
-│   │   │   ├── MessageConversion.swift lossless to and from vendor shapes
-│   │   │   └── Normalisation.swift     stop reasons, usage, errors
-│   │   ├── OpenAICompatible/
-│   │   │   └── OpenAICompatibleProvider.swift   generic, configured per vendor
-│   │   └── Catalogue/
-│   │       └── ModelCatalogue.swift
+│   ├── SwacoAI/                 shared provider machinery
+│   │   ├── HTTP/                client, connection, server-sent events
+│   │   ├── Authentication/      authenticator and implementations, token store
+│   │   ├── Streaming/           tool-call assembly
+│   │   ├── Conversion/          vendor shapes ↔ swaco vocabulary, normalisation
+│   │   ├── OpenAICompatible/    the generic protocol implementation
+│   │   └── Catalogue/           models
 │   │
 │   ├── SwacoAnthropic/
-│   │   ├── AnthropicProvider.swift
-│   │   ├── AnthropicModels.swift
-│   │   └── Wire/                       request and response types
 │   ├── SwacoOpenAI/
-│   │   ├── OpenAIProvider.swift
-│   │   └── OpenAIModels.swift
 │   ├── SwacoFoundationModels/
-│   │   ├── FoundationModelsProvider.swift
-│   │   └── FoundationModelsBridge.swift
 │   │
-│   ├── SwacoInteraction/
-│   │   ├── InteractionToolSet.swift
-│   │   ├── AskTool.swift
-│   │   ├── ConfirmTool.swift
-│   │   └── ReportTool.swift
-│   │
-│   ├── SwacoExtensions/
-│   │   ├── EnvironmentContext.swift
-│   │   ├── ToolApproval.swift
-│   │   └── Retry.swift
+│   ├── SwacoInteraction/        ask, confirm, report
+│   ├── SwacoExtensions/         environment, approval, retry
 │   │
 │   ├── SwacoRuntime/
-│   │   ├── Run.swift
-│   │   ├── Session.swift
-│   │   ├── SessionState.swift          the state machine
-│   │   ├── IntakePolicy.swift          declared by the app; no default
-│   │   ├── Scheduler.swift             concurrency across runs
-│   │   ├── Recovery.swift              replay from the last persisted event
-│   │   ├── Handover.swift              one turn here, the rest in a later process
-│   │   └── Stores/
-│   │       ├── EventStore.swift        protocol and contract
-│   │       ├── ContentStore.swift      protocol and contract
-│   │       ├── MemoryEventStore.swift  reference
-│   │       └── FileEventStore.swift    reference; App Group capable
+│   │   ├── Runs/                run, session, state, intake policy
+│   │   ├── Scheduling/          concurrency, execution context, handover
+│   │   ├── Recovery/            replay from the last persisted event
+│   │   └── Stores/              protocols, contracts, reference implementations
 │   │
-│   └── SwacoTesting/
-│       ├── MockProvider.swift          replays a recorded event sequence
-│       ├── EventStoreConformance.swift
-│       ├── ContentStoreConformance.swift
-│       ├── ProviderConformance.swift
-│       └── CrashReplayHarness.swift    terminate after event n, recover, for every n
+│   └── SwacoTesting/            mock provider, conformance suites, crash replay
 │
-├── Tests/
-│   ├── SwacoTests/
-│   ├── SwacoAITests/
-│   ├── SwacoAnthropicTests/            against recorded fixtures, never the network
-│   ├── SwacoOpenAITests/
-│   ├── SwacoInteractionTests/
-│   ├── SwacoExtensionsTests/
-│   ├── SwacoRuntimeTests/
-│   └── Fixtures/                       recorded vendor requests and responses
-│
-├── Examples/
-│   ├── FirstProgram/                   the twenty-line acceptance program
-│   ├── Templates/
-│   │   ├── AppTool.swift
-│   │   ├── ToolSet.swift
-│   │   └── Extension.swift
-│   └── SampleApp/                      three shapes on one core
-│
-└── .github/workflows/ci.yml            build, test, build examples
+├── Tests/                       one directory per module, plus recorded fixtures
+├── Examples/                    first program, templates, sample app
+└── .github/                     CI
 ```
 
-Satellites live in their own repositories with the same conventions:
-`swaco-kits`, `swaco-media`, `swaco-stores`, `swaco-extras`.
+Satellites live in their own repositories with the same conventions.
 
 ## Why this shape
 
