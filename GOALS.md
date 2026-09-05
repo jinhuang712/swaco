@@ -80,6 +80,9 @@ Written down so they are not eroded one convenience at a time.
 - We do not build memory, retrieval, or knowledge management.
 - We do not build orchestration of many agents.
 - We do not manage prompts.
+- We do not curate a library, catalogue or marketplace of capabilities.
+  What we ship stays deliberately few; the rest belongs to independent
+  packages, which we make easy to write.
 - We do not account for cost or measure quality.
 - We do not run servers or hold credentials on anyone's behalf.
 - We do not target platforms other than Apple's.

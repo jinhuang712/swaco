@@ -163,3 +163,6 @@ first app built on swaco.
 - [ ] Breaking changes allowed and recorded before 1.0; semantic versioning
       after
 - [ ] A sample app demonstrating one-step adoption
+- [ ] Templates: a minimal, complete, compiling example each of an app tool,
+      a toolset and an extension, built in CI so they never drift from the
+      API
