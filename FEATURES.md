@@ -18,15 +18,11 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
 - [ ] Model described as data (provider, identifier, capabilities)
-- [ ] `Run` as the smallest unit of work: instructions, input, tools and
-      model in; an event stream and a final result out. Needs no session
-      and no history
-- [ ] Structured output: a run can return a typed `Codable` value instead
-      of text
-- [ ] Agent configuration decoupled from history: one history can be
-      continued by differently configured agents, one configuration can
-      serve many histories
-- [ ] Agent loop: request, stream, execute tool calls, repeat until stop
+- [ ] Agent loop: context in, event stream out; request, stream, execute
+      tool calls, repeat until the model stops. Knows nothing about runs or
+      sessions
+- [ ] Structured output: a loop can be asked for a typed `Codable` value
+      instead of text
 - [ ] Extension protocol with hook points: run start, before each request
       (rewrite messages, system prompt and tool set), before tool call
       (allow, rewrite, defer, refuse), after tool result, on every event,
@@ -40,9 +36,13 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 
 ## Runtime
 
-- [ ] Session as an optional, persistent accumulation of runs; apps with no
-      history never touch it
-- [ ] Agent as a disposable executor of a run
+- [ ] `Run`: swaco's standard unit of work. Instructions, input, tools and
+      model in; events and a final result out. Needs no session
+- [ ] `Session`: swaco's standard grouping of runs into a persistent
+      history. Optional; apps with no history never touch it
+- [ ] Agent configuration decoupled from history: one session can be
+      continued by differently configured agents, one configuration can
+      serve many sessions
 - [ ] Session state machine: idle, running, awaiting tool approval, awaiting
       person, interrupted, failed
 - [ ] Session registry and lookup

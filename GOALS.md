@@ -33,6 +33,33 @@ separately in the [feature list](FEATURES.md).
 11. **Ask nothing of the app's own choices.** No dependencies, no imposed
     storage, interface or architecture.
 
+## Boundary
+
+Swaco is responsible for making an agent work correctly inside an iOS app.
+The app is responsible for deciding what that agent is as a product.
+
+Within swaco there are two circles:
+
+- **The core** holds only mechanics: the context sent to a model, the events
+  that come back, the loop that continues while the model asks for tools,
+  tools and the sets they come in, the points where behaviour can be shaped,
+  and the limits that keep a run bounded. It groups nothing, stores nothing
+  and knows no platform.
+- **Swaco as a whole** adds everything an agent needs to work correctly in a
+  real app and that every app would otherwise rebuild: standard ways of
+  grouping work and keeping its history, state and recovery, concurrency
+  control, access to models, persistence, shipped extensions and platform
+  capabilities. These are optional modules, but they are ours to design and
+  keep coherent.
+
+The app owns the rest: the interface, which capabilities to expose, what to
+allow, what to say to the model, and what to call things.
+
+To place something, ask: without it, does the loop fail? Then it is core.
+Without it, would agents misbehave in real apps or would every app rebuild
+it? Then it is swaco. Does the answer depend on the product? Then it is the
+app's.
+
 ## Longer term
 
 - Support for iPadOS and macOS.
