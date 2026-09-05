@@ -43,7 +43,7 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] Session state machine: idle, running, awaiting tool approval, awaiting
       person, interrupted, failed
 - [ ] Session registry and lookup
-- [ ] Concurrency limit and budgets across all runs, with or without
+- [ ] Concurrency limit across all runs, with or without
       sessions
 - [ ] Recovery on relaunch according to last persisted state
 - [ ] A tool may wait on a person indefinitely; the wait survives relaunch
