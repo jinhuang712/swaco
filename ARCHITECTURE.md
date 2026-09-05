@@ -18,13 +18,12 @@ contain.
 │                       stores: protocols and references           │  correctly
 │                       recovery · concurrency · execution context │  in an app
 ├───────────────────────────────┬──────────────────────────────────┤
-│ SwacoAnthropic                │ SwacoInteraction                 │  optional,
-│ SwacoOpenAI                   │   ask · confirm · report         │  peers
-│ SwacoFoundationModels         │ SwacoExtensions                  │
-│   (built on SwacoAI)          │   environment · approval · retry │
-├───────────────────────────────┤                                  │
-│ SwacoAI                       │                                  │
-│   shared provider machinery   │                                  │
+│ SwacoAI  (the AI layer)       │ SwacoInteraction                 │  optional,
+│   SwacoAnthropic              │   ask · confirm · report         │  peers
+│   SwacoOpenAI                 │ SwacoExtensions                  │
+│   SwacoFoundationModels       │   environment · approval · retry │
+│   ── built on ──              │                                  │
+│   SwacoAI shared machinery    │                                  │
 ├───────────────────────────────┴──────────────────────────────────┤
 │ Swaco                 vocabulary · Provider protocol · loop      │  mechanics
 │                       default event rendering                    │
@@ -52,8 +51,12 @@ run an agent.
 
 ### SwacoAI
 
-Machinery shared by providers, done once. Depends on Swaco only and knows no
-vendor.
+The AI layer: one target of shared machinery and one target per vendor, all
+under one directory. Providers are separate targets only so that an app links
+the vendors it uses and nothing else; a provider that imports an Apple
+framework must not be carried by an app that never calls it.
+
+The shared machinery depends on Swaco only and knows no vendor.
 
 HTTP and server-sent events over `URLSession`; connection configuration per
 provider, an endpoint and an `Authenticator` (API key, bearer token, OAuth
@@ -68,8 +71,9 @@ protocol directly. Our own providers always build on it.
 
 ### Providers
 
-`SwacoAnthropic`, `SwacoOpenAI`, `SwacoFoundationModels`. Each a thin module
-over SwacoAI translating one vendor's API. Each declares what its models can
+`SwacoAnthropic`, `SwacoOpenAI`, `SwacoFoundationModels`, part of the AI
+layer. Each a thin target over the shared machinery translating one vendor's
+API. Each declares what its models can
 do; the loop's response to a missing capability is fixed in the core, not in
 the provider. No provider is favoured; on-device models are one among others.
 
@@ -156,17 +160,17 @@ swaco/
 │   │   ├── Extensions/          extension protocol, decisions
 │   │   └── Loop/                agent, loop, safety floor, cancellation
 │   │
-│   ├── SwacoAI/                 shared provider machinery
-│   │   ├── HTTP/                client, connection, server-sent events
-│   │   ├── Authentication/      authenticator and implementations, token store
-│   │   ├── Streaming/           tool-call assembly
-│   │   ├── Conversion/          vendor shapes ↔ swaco vocabulary, normalisation
-│   │   ├── OpenAICompatible/    the generic protocol implementation
-│   │   └── Catalogue/           models
-│   │
-│   ├── SwacoAnthropic/
-│   ├── SwacoOpenAI/
-│   ├── SwacoFoundationModels/
+│   ├── SwacoAI/                 the AI layer: shared machinery plus one target per vendor
+│   │   ├── Core/                target SwacoAI
+│   │   │   ├── HTTP/            client, connection, server-sent events
+│   │   │   ├── Authentication/  authenticator and implementations, token store
+│   │   │   ├── Streaming/       tool-call assembly
+│   │   │   ├── Conversion/      vendor shapes ↔ swaco vocabulary, normalisation
+│   │   │   ├── OpenAICompatible/ the generic protocol implementation
+│   │   │   └── Catalogue/       models
+│   │   ├── Anthropic/           target SwacoAnthropic
+│   │   ├── OpenAI/              target SwacoOpenAI
+│   │   └── FoundationModels/    target SwacoFoundationModels
 │   │
 │   ├── SwacoInteraction/        ask, confirm, report
 │   ├── SwacoExtensions/         environment, approval, retry
