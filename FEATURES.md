@@ -59,6 +59,11 @@ Fixed now, before code. Each word means one thing.
 - [ ] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
 - [ ] Model described as data (provider, identifier, capabilities)
+- [ ] A provider may declare that it drives its own tool loop, as Apple's
+      Foundation Models does. Such a provider receives swaco's tools as
+      callbacks; every step it takes still passes through the extension
+      hooks, the safety floor and the event log. No provider bypasses the
+      loop's guarantees, including a loop the system itself supplies
 - [ ] Agent loop: context in, event stream out; request, stream, execute
       tool calls, repeat until the model stops. Knows nothing about runs or
       sessions
@@ -243,8 +248,10 @@ upgrading. Build tooling, signing, distribution and onboarding are the app's.
 - [ ] Each module states its deployment requirements: entitlements, App
       Group, Info.plist usage strings. A debug-build check fails at launch,
       with a clear message, when a linked module's requirements are missing
-- [ ] Event log format is versioned. A newer swaco replays logs written by
-      an older one; unknown event types are preserved, never dropped
+- [ ] The event log format is a documented public API under semantic
+      versioning, versioned from the first release. It will outlive every
+      line of code: a newer swaco replays logs written by any older one, and
+      unknown event types are preserved, never dropped
 - [ ] Providers expose availability: not on this device, model downloading,
       ready. Apps decide before the first request, not after the first
       failure

@@ -119,3 +119,10 @@ Written down so they are not eroded one convenience at a time.
 
 Swaco is developed by building a real app on it first. What gets built, and in
 what order, is decided by what that app needs, not by what would look complete.
+The first satellite matters as much as the core: swaco's worth lies mostly
+around the core, so the core alone proves nothing.
+
+The lasting cost of swaco is keeping up with model vendors. That work is
+designed to be mechanical: a vendor change is met by recording a new fixture,
+running the conformance suite, and fixing until it is green, never by
+understanding the vendor afresh.
