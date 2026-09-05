@@ -54,8 +54,8 @@ Within swaco there are two circles:
   keep coherent.
 
 Some things are necessary for correctness yet their medium depends on the
-product: where events are recorded, where content is kept, where credentials
-live. For these swaco fixes the contract and leaves the medium to the app: a
+product: where events are recorded, where content is kept, how requests are
+authenticated and where tokens live. For these swaco fixes the contract and leaves the medium to the app: a
 strict protocol, a conformance test suite any implementation must pass, one or
 two reference implementations, and no default. The app names what it uses.
 

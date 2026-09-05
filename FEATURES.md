@@ -71,7 +71,6 @@ Fixed now, before code. Each word means one thing.
       is ever discarded: a partial reply is recorded as received and marked
       with why it stopped, by a person or by the system. Whether it is shown
       or sent back to the model is the app's decision
-- [ ] Custom endpoint and authentication on every hosted provider
 - [ ] Zero dependencies beyond the standard library and Foundation
 
 ## Runtime
@@ -112,8 +111,6 @@ where. No store is chosen by default: an app that uses sessions names one.
       share it
 - [ ] `ContentStore` protocol for bytes referenced from content parts, with
       the same contract-plus-conformance approach
-- [ ] `CredentialProvider` protocol; Keychain-backed reference
-      implementation
 - [ ] SQLite, SwiftData and CloudKit stores as satellites or third-party
       packages, not in swaco
 
@@ -140,6 +137,18 @@ Everything providers share, done once. Depends on the core only; knows no
 vendor. Our providers are built on it; a third party may use it or ignore it.
 
 - [ ] HTTP and server-sent events over `URLSession`, with cancellation
+- [ ] Connection configuration per provider: endpoint (vendor default,
+      overridable) and an `Authenticator`
+- [ ] `Authenticator` protocol: attach authentication to a request; refresh
+      when the vendor signals it has expired. Implementations: static API
+      key in the vendor's header, static bearer token, OAuth token pair with
+      refresh, app-defined closure for an app's own backend. None is the
+      default; the app names one
+- [ ] `TokenStore` protocol for OAuth tokens; Keychain-backed reference
+      implementation. Vendor-specific authorisation flows, which need a web
+      view and vendor client ids, are satellites
+- [ ] All configuration is passed explicitly in code. No configuration
+      files, no environment variables
 - [ ] Assembly of streamed tool-call arguments from partial fragments
 - [ ] Lossless conversion of messages, tool definitions and tool results
       between swaco's vocabulary and vendor shapes, ids preserved
@@ -225,7 +234,7 @@ requires showing that it does. The list is kept short on purpose.
 - Ordered list of extensions
 - Event intake policy, when sessions are used
 - Event store and content store, when sessions or referenced content are used
-- Credential provider, when a hosted provider is used
+- Authenticator, when a hosted provider is used
 - Lifting the safety floor, per source or per tool
 - Concurrency limit across runs, when more than one may run
 

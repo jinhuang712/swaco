@@ -55,8 +55,10 @@ run an agent.
 Machinery shared by providers, done once. Depends on Swaco only and knows no
 vendor.
 
-HTTP and server-sent events over `URLSession`; assembly of streamed tool-call
-arguments; lossless conversion between swaco's vocabulary and vendor shapes;
+HTTP and server-sent events over `URLSession`; connection configuration per
+provider, an endpoint and an `Authenticator` (API key, bearer token, OAuth
+with refresh, or the app's own scheme for its backend), with token storage
+behind a protocol; assembly of streamed tool-call arguments; lossless conversion between swaco's vocabulary and vendor shapes;
 normalisation of stop reasons, usage and errors; a generic implementation of
 the OpenAI-compatible protocol; the model catalogue; recorded fixtures and the
 provider conformance suite.
@@ -90,9 +92,9 @@ What an agent needs to work correctly inside a real app. Depends on Swaco
 only; never on a provider, an extension or a toolset.
 
 `Run` as the unit of work and `Session` as the optional grouping of runs into
-history. The event intake policy the app declares. The `EventStore`,
-`ContentStore` and `CredentialProvider` protocols with their contracts, and
-the in-memory and plain-file reference implementations. Recovery from the
+history. The event intake policy the app declares. The `EventStore` and
+`ContentStore` protocols with their contracts, and the in-memory and
+plain-file reference implementations. Recovery from the
 last persisted event. Concurrency across runs. The execution context exposed
 to extensions: foreground, background, app extension process, remaining time,
 whether a person is present.
@@ -179,8 +181,16 @@ swaco/
 │   │
 │   ├── SwacoAI/                        shared provider machinery
 │   │   ├── HTTP/
-│   │   │   ├── HTTPClient.swift        URLSession, custom endpoint and auth
+│   │   │   ├── HTTPClient.swift        URLSession, cancellation
+│   │   │   ├── Connection.swift        endpoint + authenticator, per provider
 │   │   │   └── ServerSentEvents.swift  SSE parsing as an AsyncSequence
+│   │   ├── Authentication/
+│   │   │   ├── Authenticator.swift     protocol: attach, refresh
+│   │   │   ├── APIKey.swift
+│   │   │   ├── BearerToken.swift
+│   │   │   ├── OAuth.swift             token pair, expiry, refresh; no UI
+│   │   │   ├── TokenStore.swift        protocol
+│   │   │   └── KeychainTokenStore.swift reference
 │   │   ├── Streaming/
 │   │   │   └── ToolCallAssembler.swift partial argument fragments → complete call
 │   │   ├── Conversion/
@@ -224,10 +234,8 @@ swaco/
 │   │   └── Stores/
 │   │       ├── EventStore.swift        protocol and contract
 │   │       ├── ContentStore.swift      protocol and contract
-│   │       ├── CredentialProvider.swift
 │   │       ├── MemoryEventStore.swift  reference
-│   │       ├── FileEventStore.swift    reference; App Group capable
-│   │       └── KeychainCredentials.swift
+│   │       └── FileEventStore.swift    reference; App Group capable
 │   │
 │   └── SwacoTesting/
 │       ├── MockProvider.swift          replays a recorded event sequence
