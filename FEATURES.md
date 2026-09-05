@@ -6,6 +6,25 @@ split, or get dropped. Status is one of *planned*, *in progress*, *done*.
 
 Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 
+## Vocabulary
+
+Fixed now, before code. Each word means one thing.
+
+- **Event**: anything that enters or leaves the agent, recorded as it happens.
+  One word for inbound events and loop events, distinguished by subtype
+- **Source**: where an inbound event came from: a person, a shortcut, a
+  notification, a URL, a share, the system, a schedule, a sensor
+- **Turn**: one request to the model and everything until the model stops
+- **Loop**: continuing with another turn while the model asks for tools
+- **Run**: swaco's unit of work; a loop from a starting event to a final
+  result. Lives in the runtime, not the core
+- **Session**: swaco's grouping of runs into a persistent history. Optional
+- **Agent**: the configured executor of a run: model, tools, extensions
+- **Tool**: something the model can ask to have done
+- **Toolset**: a named group of tools; a single tool is a toolset of one
+- **Extension**: a value that acts at one or more moments of the loop
+- **Provider**: the translation between swaco's vocabulary and one model API
+
 ## Core
 
 - [ ] One event vocabulary for everything that enters or leaves the agent.
@@ -48,9 +67,10 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
       call, end of turn, end of loop. The app declares extensions as an
       ordered list; swaco applies them strictly in that order and imposes no
       ordering of its own. Rewrites chain, any refusal wins
-- [ ] Cancellation at any point with no inconsistent state; distinguishes
-      stop-by-person (partial reply kept and marked) from
-      interrupt-by-system (partial reply discarded and marked)
+- [ ] Cancellation at any point with no inconsistent state. Nothing received
+      is ever discarded: a partial reply is recorded as received and marked
+      with why it stopped, by a person or by the system. Whether it is shown
+      or sent back to the model is the app's decision
 - [ ] Custom endpoint and authentication on every hosted provider
 - [ ] Zero dependencies beyond the standard library and Foundation
 
@@ -97,12 +117,12 @@ where. No store is chosen by default: an app that uses sessions names one.
 - [ ] SQLite, SwiftData and CloudKit stores as satellites or third-party
       packages, not in swaco
 
-## Media (shipped, optional)
+## Media (satellite)
 
-Turns media as it exists on a phone into content the chosen model accepts.
-Presenting a picker is the app's; everything after the person has chosen is
-swaco's. Toolsets that retrieve media on the agent's behalf pass their results
-through the same module.
+A package under our name, outside swaco. Turns media as it exists on a phone
+into content the chosen model accepts. Presenting a picker is the app's;
+everything after the person has chosen is this package's. Toolsets that
+retrieve media on the agent's behalf pass their results through it.
 
 - [ ] Read from the forms iOS hands over: picker results, item providers
       from the share sheet, security-scoped URLs, camera output, raw data
@@ -142,14 +162,22 @@ relaunch). The app owns the presentation.
 
 ## Extensions (shipped, optional)
 
+Only what nearly every app needs and no product would answer differently.
+
 - [ ] Environment context: time, time zone, locale, device
-- [ ] Tool approval: route side-effecting tool calls through `confirm`
-- [ ] Authorisation gating: hide or defer tools whose system permission is
-      not granted
-- [ ] Progressive tool disclosure: expose few tools plus a discovery tool
+- [ ] Tool approval: route tool calls through `confirm`; the carrier of the
+      safety floor
 - [ ] Retry with backoff for transient network errors
+
+## Extensions (satellites or templates)
+
+Product strategy, or tied to platform frameworks. Not in swaco.
+
+- [ ] Authorisation gating: hide or defer tools whose system permission is
+      not granted (ships with the platform toolsets)
+- [ ] Progressive tool disclosure: expose few tools plus a discovery tool
 - [ ] Budget: stop a loop after a chosen number of turns, tokens or seconds
-- [ ] Context compaction (later)
+- [ ] Context compaction
 
 ## Platform toolsets (satellites)
 
@@ -170,6 +198,18 @@ swaco.
 - [ ] Notifications (UserNotifications)
 - [ ] Web: fetch a page locally; search via an app-supplied backend (later)
 - [ ] Shell and file system, macOS only (longer term)
+
+## Declared by the app, no default
+
+Every item here is one whose answer depends on the product. Adding an item
+requires showing that it does. The list is kept short on purpose.
+
+- Ordered list of extensions
+- Event intake policy, when sessions are used
+- Event store and content store, when sessions or referenced content are used
+- Credential provider, when a hosted provider is used
+- Lifting the safety floor, per source or per tool
+- Concurrency limit across runs, when more than one may run
 
 ## Acceptance
 

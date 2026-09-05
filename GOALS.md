@@ -61,7 +61,7 @@ two reference implementations, and no default. The app names what it uses.
 
 Around swaco sit **satellites**: packages we write under our own name that
 depend on swaco but do not live in it. Wrappers around the platform's
-frameworks are the first of these. A satellite uses exactly the same doors as
+frameworks and the handling of media are the first of these. A satellite uses exactly the same doors as
 any third party, so it doubles as proof that the doors are enough; it has its
 own version and its own pace; and it never widens what swaco itself promises.
 
