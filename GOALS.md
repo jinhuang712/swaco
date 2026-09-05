@@ -18,8 +18,8 @@ separately in the [feature list](FEATURES.md).
 5. **Be correct in the life an app actually has.** Being interrupted,
    suspended, killed and relaunched is normal, and nothing should be lost or
    left unexplained because of it.
-6. **Let many conversations coexist safely.** An app may run several agents at
-   once, and it should stay in control of them.
+6. **Let many agents work at once, safely.** An app may run several agents
+   simultaneously, and it should stay in control of them.
 7. **Make everything observable and reproducible.** Whatever happened, the app
    can see it, store it, and rebuild any view of it later.
 8. **Never let an agent run away with the device.** Every run is bounded by
@@ -27,7 +27,10 @@ separately in the [feature list](FEATURES.md).
 9. **Bring the platform's own capabilities to the agent.** What the system
    already knows how to do should be easy to hand to the agent, in pieces the
    app chooses.
-10. **Ask nothing of the app's own choices.** No dependencies, no imposed
+10. **Assume nothing about the shape of the app.** A set of one-shot prompts,
+    a single timeline served by many agents, a chat with long histories, or
+    something not yet imagined: all are equally natural.
+11. **Ask nothing of the app's own choices.** No dependencies, no imposed
     storage, interface or architecture.
 
 ## Longer term
@@ -42,6 +45,7 @@ separately in the [feature list](FEATURES.md).
 Written down so they are not eroded one convenience at a time.
 
 - We do not build user interface.
+- We do not assume the app is a chat.
 - We do not ship capabilities inside the core.
 - We do not build memory, retrieval, or knowledge management.
 - We do not build orchestration of many agents.

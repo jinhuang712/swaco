@@ -18,6 +18,14 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
 - [ ] Model described as data (provider, identifier, capabilities)
+- [ ] `Run` as the smallest unit of work: instructions, input, tools and
+      model in; an event stream and a final result out. Needs no session
+      and no history
+- [ ] Structured output: a run can return a typed `Codable` value instead
+      of text
+- [ ] Agent configuration decoupled from history: one history can be
+      continued by differently configured agents, one configuration can
+      serve many histories
 - [ ] Agent loop: request, stream, execute tool calls, repeat until stop
 - [ ] Extension protocol with hook points: run start, before each request
       (rewrite messages, system prompt and tool set), before tool call
@@ -32,11 +40,14 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 
 ## Runtime
 
-- [ ] Session as the persistent entity; agent as a disposable executor
+- [ ] Session as an optional, persistent accumulation of runs; apps with no
+      history never touch it
+- [ ] Agent as a disposable executor of a run
 - [ ] Session state machine: idle, running, awaiting tool approval, awaiting
       person, interrupted, failed
 - [ ] Session registry and lookup
-- [ ] Concurrency limit across sessions
+- [ ] Concurrency limit and budgets across all runs, with or without
+      sessions
 - [ ] Recovery on relaunch according to last persisted state
 - [ ] A tool may wait on a person indefinitely; the wait survives relaunch
 - [ ] Sub-agent as a tool (longer term)
