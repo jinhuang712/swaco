@@ -20,6 +20,9 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
       result, reasoning, provider-executed tool use and result, citations
 - [ ] Canonical streaming event set shared by all providers
 - [ ] Messages are a projection of the event log, not a separate store
+- [ ] Content parts can hold a reference to stored bytes instead of the bytes
+      themselves, loaded on demand, so a long history with media stays cheap
+      in memory
 - [ ] `Tool` protocol with JSON Schema parameters and typed results
 - [ ] `ToolSet` protocol: name, description, expansion into tools; a single
       tool is a toolset of one
@@ -73,6 +76,23 @@ Legend: `[ ]` planned · `[~]` in progress · `[x]` done
 - [ ] Store can live in an App Group container so an app extension and the
       main app share it
 - [ ] Keychain helper for credentials
+
+## Media (shipped, optional)
+
+Turns media as it exists on a phone into content the chosen model accepts.
+Presenting a picker is the app's; everything after the person has chosen is
+swaco's. Toolsets that retrieve media on the agent's behalf pass their results
+through the same module.
+
+- [ ] Read from the forms iOS hands over: picker results, item providers
+      from the share sheet, security-scoped URLs, camera output, raw data
+- [ ] Download iCloud placeholders before use
+- [ ] Images: convert HEIC and other formats, apply EXIF orientation, resize
+      and recompress to the limits the target provider declares
+- [ ] PDF: extract text, or render pages as images when text is absent
+- [ ] Video: sample frames and transcribe audio locally (later)
+- [ ] Store originals as references in the app or App Group container;
+      never hold more than needed in memory
 
 ## Providers
 

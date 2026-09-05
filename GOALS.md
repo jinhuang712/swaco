@@ -74,7 +74,7 @@ app's.
 
 Written down so they are not eroded one convenience at a time.
 
-- We do not build user interface.
+- We do not build user interface, pickers and import screens included.
 - We do not assume the app is a chat.
 - We do not ship capabilities inside the core.
 - We do not build memory, retrieval, or knowledge management.
