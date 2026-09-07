@@ -37,13 +37,13 @@ Fixed now, before code. Each word means one thing.
       rewrite, a refusal, an injected or queued arrival, a capability the
       content asked for and the model had not declared. Replaying the log
       shows why the loop went the way it did, not only where it went
-- [ ] Source travels with the content into the model's context, so the
+- [x] Source travels with the content into the model's context, so the
       model and extensions can tell what a person said from what the system
       delivered
 - [ ] Canonical message and content types: text, image, tool call, tool
       result, reasoning, provider-executed tool use and result, citations
 - [~] Canonical streaming event set shared by all providers
-- [ ] Messages are a projection of the event log, not a separate store
+- [x] Messages are a projection of the event log, not a separate store
 - [ ] Content parts can hold a reference to stored bytes instead of the bytes
       themselves, loaded on demand through the `ContentStore` protocol, so a
       long history with media stays cheap in memory
@@ -66,12 +66,12 @@ Fixed now, before code. Each word means one thing.
       process, it re-arms whatever will deliver the result. This pair,
       register and resume, is what lets a wait survive relaunch
 - [x] Tools may run on the main actor; the loop performs the hop
-- [ ] Rendering of inbound events into model-readable content is a
+- [x] Rendering of inbound events into model-readable content is a
       protocol with one default implementation the app may replace whole
 - [~] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
 - [ ] Model described as data (provider, identifier, capabilities)
-- [~] `Agent`: the loop, callable on its own. Context in, event stream out;
+- [x] `Agent`: the loop, callable on its own. Context in, event stream out;
       request, stream, execute tool calls, repeat until the model stops.
       Knows nothing about runs or sessions; the first program calls it
       directly
@@ -91,17 +91,20 @@ Fixed now, before code. Each word means one thing.
 
 ## Runtime
 
-- [ ] `Run`: swaco's standard unit of work; an `Agent` loop with every event
+- [x] `Run`: swaco's standard unit of work; an `Agent` loop with every event
       recorded to the named store as it happens. Instructions, input, tools
-      and model in; events and a final result out. Needs no session
-- [ ] `Session`: swaco's standard grouping of runs into a persistent
+      and model in; events and a final result out. Needs no session. Each
+      event is recorded before it reaches the app, so the app never acts on
+      an event the log is missing
+- [x] `Session`: swaco's standard grouping of runs into a persistent
       history. Optional; apps with no history never touch it
-- [ ] Agent configuration decoupled from history: one session can be
+- [x] Agent configuration decoupled from history: one session can be
       continued by differently configured agents, one configuration can
       serve many sessions
-- [ ] Session state machine: idle, running, awaiting a result, interrupted,
+- [x] Session state machine: idle, running, awaiting a result, interrupted,
       failed. Awaiting a result covers every tool that registered a later
-      result, a person's answer among them
+      result, a person's answer among them. State is read off the log rather
+      than kept beside it, so the two can never disagree
 - [ ] Intake extension: the runtime's implementation of the arrival hook.
       The app supplies a mapping from source and session state to inject,
       queue or leave; left events start a new run. An app that does not list
@@ -111,12 +114,15 @@ Fixed now, before code. Each word means one thing.
       app extension process, remaining time, whether a person is present
 - [ ] A loop can stop after one turn and hand the rest to a later process;
       the handover survives the process boundary
-- [ ] Session registry and lookup
+- [x] Session registry and lookup, through the store rather than a second
+      list to keep in step
 - [ ] Concurrency limit across all runs, with or without
       sessions
-- [ ] Recovery on relaunch according to last persisted state: the log is
+- [x] Recovery on relaunch according to last persisted state: the log is
       read, every call left without a result is handed back to its tool to
-      resume, and the loop continues from where the events stop
+      resume, and the loop continues from where the events stop. Checked
+      across two stores over one directory, with a tool that remembers
+      nothing
 - [ ] Sub-agent as a tool (longer term)
 
 ## Storage

@@ -59,14 +59,19 @@ actor AskTool: Tool {
             }
         }
 
+        let clock = ToolCall(id: "c1", name: "clock", arguments: "{}")
+        let question = ToolCall(id: "a1", name: "ask", arguments: "{\"q\":\"ok?\"}")
         #expect(events == [
+            .arrived(.person("go")),
             .turnStarted(1),
             .text("Checking."),
+            // A call is recorded as it arrives, before the turn ends, so the
+            // log reads in the order things happened.
+            .toolCallIssued(clock),
+            .toolCallIssued(question),
             .turnEnded(.toolUse),
-            .toolCallIssued(ToolCall(id: "c1", name: "clock", arguments: "{}")),
             .toolResultArrived(ToolResult(callID: "c1", content: "tick 1")),
-            .toolCallIssued(ToolCall(id: "a1", name: "ask", arguments: "{\"q\":\"ok?\"}")),
-            .toolCallDeferred(ToolCall(id: "a1", name: "ask", arguments: "{\"q\":\"ok?\"}")),
+            .toolCallDeferred(question),
             .toolResultArrived(ToolResult(callID: "a1", content: "yes")),
             .turnStarted(2),
             .text("Done."),

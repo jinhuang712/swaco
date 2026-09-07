@@ -10,6 +10,7 @@ import Foundation
 extension Event: Codable {
     /// The names on the wire. They do not change.
     enum Name {
+        static let arrived = "arrived"
         static let turnStarted = "turn_started"
         static let text = "text"
         static let toolCallIssued = "tool_call_issued"
@@ -22,12 +23,17 @@ extension Event: Codable {
     }
 
     private enum Key: String, CodingKey {
-        case type, turn, text, call, result, stop, origin, partial, message
+        case type, turn, text, call, result, stop, origin, partial, message, source
     }
 
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         switch try container.decode(String.self, forKey: .type) {
+        case Name.arrived:
+            self = .arrived(InboundEvent(
+                source: try container.decode(Source.self, forKey: .source),
+                text: try container.decode(String.self, forKey: .text)
+            ))
         case Name.turnStarted:
             self = .turnStarted(try container.decode(Int.self, forKey: .turn))
         case Name.text:
@@ -66,6 +72,10 @@ extension Event: Codable {
         }
         var container = encoder.container(keyedBy: Key.self)
         switch self {
+        case .arrived(let inbound):
+            try container.encode(Name.arrived, forKey: .type)
+            try container.encode(inbound.source, forKey: .source)
+            try container.encode(inbound.text, forKey: .text)
         case .turnStarted(let turn):
             try container.encode(Name.turnStarted, forKey: .type)
             try container.encode(turn, forKey: .turn)
@@ -125,6 +135,14 @@ extension WireNamed {
 extension StopReason: WireNamed {
     static var wireNames: [(StopReason, String)] {
         [(.endTurn, "end_turn"), (.toolUse, "tool_use"), (.maxTokens, "max_tokens")]
+    }
+}
+
+extension Source: WireNamed {
+    static var wireNames: [(Source, String)] {
+        [(.person, "person"), (.shortcut, "shortcut"), (.notification, "notification"),
+         (.url, "url"), (.share, "share"), (.system, "system"),
+         (.schedule, "schedule"), (.sensor, "sensor")]
     }
 }
 
