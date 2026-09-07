@@ -306,7 +306,10 @@ individually selectable at tool granularity, and declares the system
 authorisation it needs. Order follows the needs of the first app built on
 swaco.
 
-- [ ] Calendar (EventKit)
+- [x] Calendar (EventKit), in `swaco-kits`: what is on, when someone is
+      free, and putting something in. Three tools rather than a dozen. It
+      decides nothing: without permission the tools say so as a result, and
+      asking is the app's moment to choose
 - [ ] Reminders (EventKit)
 - [ ] Contacts
 - [ ] Location and places (CoreLocation, MapKit)

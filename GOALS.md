@@ -180,12 +180,14 @@ met it is marked here and the next becomes the current one.
    woken with nobody watching.*
 4. **The doors are proven.** One companion toolset and one template
    extension exist, written through public protocols only, with nothing
-   added to the core to make them possible. *Half met. Six templates exist
-   under `Examples/`: three strategies, and an app's own tool, deferred
-   tool, toolset and extension. Each is written through the same public
-   protocols a third party has, each is built and checked in CI, and the
-   core needed nothing added for any of them. The companion waits on a
-   repository of its own, which is not ours to create.*
+   added to the core to make them possible. *Met. Six templates live under
+   `Examples/`: three strategies, and an app's own tool, deferred tool,
+   toolset and extension. The first companion, `swaco-kits`, is a separate
+   package beside this one, bringing EventKit as a toolset. Both were
+   written through the same public protocols a third party has, and swaco
+   needed nothing added for any of it, which is what they were written to
+   find out. What the companion still wants is a repository of its own
+   under our name, and publishing is a decision rather than a task.*
 
 Nothing after the fourth is planned until the fourth is met.
 
@@ -194,11 +196,14 @@ Nothing after the fourth is planned until the fourth is met.
 Not blocked by design, and not forgotten: these need something no amount of
 work here provides.
 
-- **A device.** The last of the third milestone. A simulator cannot be killed
-  by memory pressure or woken with nobody watching.
-- **A repository for the first companion.** Companions live under our name
-  and outside swaco, so the first one begins with a repository, and that is
-  a decision rather than a task.
+- **A device.** The last of the third milestone, and now the only part of it
+  left. A simulator can be killed and is, in the tests that drive the app;
+  what it cannot do is be killed by memory pressure or woken with nobody
+  watching.
+- **A repository for the first companion.** `swaco-kits` exists as a package
+  beside this one and passes its own checks; what it does not have is a
+  repository under our name, and publishing is a decision rather than a
+  task.
 - **Keys for the vendors we do not have.** Anthropic and Gemini are written
   down and unwritten. The recording tool means each needs one exchange with
   a real key, once, and never again.
