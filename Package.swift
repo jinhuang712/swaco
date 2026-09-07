@@ -23,7 +23,7 @@ let package = Package(
         .target(name: "SwacoRuntime", dependencies: ["Swaco"]),
 
         // Public, so companions and third parties run the same contracts.
-        .target(name: "SwacoTesting", dependencies: ["Swaco"]),
+        .target(name: "SwacoTesting", dependencies: ["Swaco", "SwacoRuntime"]),
 
         .testTarget(name: "SwacoTests", dependencies: ["Swaco", "SwacoTesting"]),
         .testTarget(name: "SwacoRuntimeTests", dependencies: ["SwacoRuntime", "SwacoTesting"]),

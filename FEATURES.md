@@ -116,8 +116,10 @@ Fixed now, before code. Each word means one thing.
       the handover survives the process boundary
 - [x] Session registry and lookup, through the store rather than a second
       list to keep in step
-- [ ] Concurrency limit across all runs, with or without
-      sessions
+- [~] Concurrency limit across all runs, with or without
+      sessions. One run at a time per log is done, which is what keeps two
+      loops from writing a history in an order neither chose; a limit across
+      unrelated runs is not
 - [x] Recovery on relaunch according to last persisted state: the log is
       read, every call left without a result is handed back to its tool to
       resume, and the loop continues from where the events stop. Checked

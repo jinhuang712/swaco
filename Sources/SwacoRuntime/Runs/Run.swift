@@ -24,7 +24,7 @@ public struct Run: Sendable {
     /// Every event is recorded before it is handed on, so an app never sees an
     /// event that is not yet kept, and a log never misses one the app acted on.
     public func start(_ inbound: InboundEvent) -> AsyncThrowingStream<Event, any Error> {
-        record(agent.run(inbound))
+        record { agent.run(inbound) }
     }
 
     /// Starts a loop from what a person typed.
@@ -36,19 +36,11 @@ public struct Run: Sendable {
     /// projects, and every call left without a result is handed back to its
     /// tool to be re-armed in this process.
     public func resume() -> AsyncThrowingStream<Event, any Error> {
-        AsyncThrowingStream { continuation in
-            let task = Task {
-                do {
-                    let events = try await store.read(group).map(\.event)
-                    for try await event in record(agent.run(from: .continuing(events, rendering: agent.rendering))) {
-                        continuation.yield(event)
-                    }
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
-                }
-            }
-            continuation.onTermination = { _ in task.cancel() }
+        record {
+            // Read under the same exclusion as the writing, so the log this
+            // continues from is not one another run is still adding to.
+            let events = try await store.read(group).map(\.event)
+            return agent.run(from: .continuing(events, rendering: agent.rendering))
         }
     }
 
@@ -62,10 +54,19 @@ public struct Run: Sendable {
         RunState(of: try await history())
     }
 
-    private func record(_ run: AgentRun) -> AsyncThrowingStream<Event, any Error> {
+    private func record(
+        _ start: @Sendable @escaping () async throws -> AgentRun
+    ) -> AsyncThrowingStream<Event, any Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
+                // One run at a time per group. Held until this one has stopped
+                // recording, so nothing it writes lands after its successor's.
+                await RunLocks.shared.acquire(group)
+                defer { Task { await RunLocks.shared.release(group) } }
+                var loop: AgentRun?
                 do {
+                    let run = try await start()
+                    loop = run
                     for await event in run.events {
                         try await store.append(event, to: group)
                         continuation.yield(event)
@@ -74,14 +75,11 @@ public struct Run: Sendable {
                 } catch {
                     // The store failed, so the log and the app would disagree
                     // from here on. Stop rather than carry on unrecorded.
-                    run.cancel()
+                    loop?.cancel()
                     continuation.finish(throwing: error)
                 }
             }
-            continuation.onTermination = { reason in
-                if case .cancelled = reason { run.cancel() }
-                task.cancel()
-            }
+            continuation.onTermination = { _ in task.cancel() }
         }
     }
 }

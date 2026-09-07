@@ -10,25 +10,33 @@ private actor Question: Tool {
     nonisolated let name = "ask"
     nonisolated let description = "Ask the person"
     nonisolated let access = ToolAccess.readOnly
-    private var registered: [(ToolCall, ResultDelivery)] = []
+    /// One delivery per call. Re-arming replaces it, so an answer always
+    /// reaches the loop that is waiting now rather than one that is gone.
+    private var deliveries: [String: ResultDelivery] = [:]
+    private var asked = 0
 
     func execute(_ call: ToolCall, delivering delivery: ResultDelivery) async throws -> ToolOutcome {
-        registered.append((call, delivery))
+        deliveries[call.id] = delivery
+        asked += 1
         return .deferred
     }
 
     /// A fresh process, a fresh tool: re-arm whatever will deliver the result.
     func resume(_ call: ToolCall, delivering delivery: ResultDelivery) async throws {
-        registered.append((call, delivery))
+        deliveries[call.id] = delivery
+        asked += 1
     }
 
     /// What the app does when the person answers.
     func answer(_ text: String) async {
-        guard let (call, delivery) = registered.first else { return }
-        await delivery(ToolResult(callID: call.id, content: text))
+        let waiting = deliveries
+        deliveries = [:]
+        for (callID, delivery) in waiting {
+            await delivery(ToolResult(callID: callID, content: text))
+        }
     }
 
-    var wasAsked: Bool { !registered.isEmpty }
+    var wasAsked: Bool { asked > 0 }
 }
 
 private func askingProvider() -> ScriptedProvider {
@@ -167,5 +175,25 @@ private func askingProvider() -> ScriptedProvider {
         let found = try await Session.all(in: store)
         #expect(found.map(\.id) == [first.id])
         #expect(try await found.first?.state() == .finished)
+    }
+}
+
+@Suite struct KilledAfterEveryEvent {
+    /// The guarantee, checked systematically rather than anecdotally: end the
+    /// process after each event in turn, recover, and land in the same place
+    /// every time.
+    @Test func recoveryReachesTheSameEndWhereverTheProcessDies() async throws {
+        let directory = URL.temporaryDirectory.appending(path: "swaco-crash-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        // A tool that answers only when the app answers it, and a desk that
+        // is new in every process, like the app it belongs to.
+        let question = Question()
+        try await CrashReplay(
+            store: { try FileEventStore(directory: directory) },
+            agent: { Agent(provider: askingProvider(), tools: [question]) },
+            input: .person("shall we?"),
+            answering: { _ in await question.answer("yes") }
+        ).verify()
     }
 }
