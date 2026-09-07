@@ -1,4 +1,5 @@
 import Foundation
+import Swaco
 import SwacoAI
 
 /// OpenAI, and any endpoint that speaks its Responses protocol. A thin target
@@ -16,6 +17,24 @@ public enum OpenAI {
             model: model,
             connection: Connection(endpoint: responsesEndpoint, authentication: authentication),
             maxOutputTokens: maxOutputTokens
+        )
+    }
+
+    /// The older of the two shapes, and the one most other vendors copied.
+    /// Reaches far more models than the newer one does.
+    public static func chatCompletions(
+        model: String,
+        endpoint: String = "https://api.openai.com/v1/chat/completions",
+        authentication: Authentication,
+        headers: [String: String] = [:],
+        capabilities: ModelCapabilities = .text,
+        maxTokens: Int = 4096
+    ) -> ChatCompletionsProvider {
+        ChatCompletionsProvider(
+            model: model,
+            connection: Connection(endpoint: endpoint, authentication: authentication, headers: headers),
+            capabilities: capabilities,
+            maxTokens: maxTokens
         )
     }
 

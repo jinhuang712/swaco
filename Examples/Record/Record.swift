@@ -2,6 +2,7 @@ import Foundation
 import Swaco
 import SwacoExtensions
 import SwacoInteraction
+import SwacoAnthropic
 import SwacoOpenAI
 import SwacoTesting
 
@@ -25,17 +26,45 @@ struct Weather: Tool {
     /// try the app, and a test can drive it, with no key and no network.
     static func main() async {
         let asking = CommandLine.arguments.contains("asking")
-        let file = asking
-            ? URL.currentDirectory().appending(
-                path: "Examples/ChatApp/ChatApp/asking.jsonl")
-            : URL.currentDirectory().appending(
-                path: "Tests/SwacoAITests/Fixtures/muse-spark-1.3-weather.jsonl")
-        let real = OpenAI.compatible(
-            model: "muse-spark-1.3-contributor",
-            endpoint: "https://opencode.ai/zen/go/v1/responses",
-            authentication: .bearer(environment: "SWACO_MODEL_KEY"),
-            headers: ["x-opencode-session": "swaco-recording"]
-        )
+        let chat = CommandLine.arguments.contains("chat")
+        let messages = CommandLine.arguments.contains("messages")
+        let fixtures = URL.currentDirectory().appending(path: "Tests/SwacoAITests/Fixtures")
+        let file = if asking {
+            URL.currentDirectory().appending(path: "Examples/ChatApp/ChatApp/asking.jsonl")
+        } else if chat {
+            fixtures.appending(path: "deepseek-v4-flash-weather.jsonl")
+        } else if messages {
+            fixtures.appending(path: "minimax-m3-weather.jsonl")
+        } else {
+            fixtures.appending(path: "muse-spark-1.3-weather.jsonl")
+        }
+        // Whichever protocol the model speaks. One recording each, so every
+        // protocol we ship is replayed from something a vendor really said.
+        let real: any Provider = if chat {
+            OpenAI.chatCompletions(
+                model: "deepseek-v4-flash",
+                endpoint: "https://opencode.ai/zen/go/v1/chat/completions",
+                authentication: .bearer(environment: "SWACO_MODEL_KEY"),
+                headers: ["x-opencode-session": "swaco-recording"]
+            )
+        } else if messages {
+            Anthropic.compatible(
+                model: "minimax-m3",
+                endpoint: "https://opencode.ai/zen/go/v1/messages",
+                authentication: .apiKey(
+                    ProcessInfo.processInfo.environment["SWACO_MODEL_KEY"] ?? "",
+                    header: Anthropic.keyHeader
+                ),
+                headers: ["x-opencode-session": "swaco-recording"]
+            )
+        } else {
+            OpenAI.compatible(
+                model: "muse-spark-1.3-contributor",
+                endpoint: "https://opencode.ai/zen/go/v1/responses",
+                authentication: .bearer(environment: "SWACO_MODEL_KEY"),
+                headers: ["x-opencode-session": "swaco-recording"]
+            )
+        }
         let desk = Interaction()
         let agent = Agent(
             provider: Recording(real, to: file),

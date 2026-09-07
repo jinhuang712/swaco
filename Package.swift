@@ -8,6 +8,7 @@ let package = Package(
         .library(name: "Swaco", targets: ["Swaco"]),
         .library(name: "SwacoAI", targets: ["SwacoAI"]),
         .library(name: "SwacoOpenAI", targets: ["SwacoOpenAI"]),
+        .library(name: "SwacoAnthropic", targets: ["SwacoAnthropic"]),
         .library(name: "SwacoFoundationModels", targets: ["SwacoFoundationModels"]),
         .library(name: "SwacoExtensions", targets: ["SwacoExtensions"]),
         .library(name: "SwacoInteraction", targets: ["SwacoInteraction"]),
@@ -22,6 +23,7 @@ let package = Package(
         .target(name: "SwacoAI", dependencies: ["Swaco"], path: "Sources/SwacoAI/Core",
                 resources: [.copy("PrivacyInfo.xcprivacy")]),
         .target(name: "SwacoOpenAI", dependencies: ["SwacoAI"], path: "Sources/SwacoAI/OpenAI"),
+        .target(name: "SwacoAnthropic", dependencies: ["SwacoAI"], path: "Sources/SwacoAI/Anthropic"),
         .target(name: "SwacoFoundationModels", dependencies: ["Swaco"],
                 path: "Sources/SwacoAI/FoundationModels"),
 
@@ -48,7 +50,8 @@ let package = Package(
         .testTarget(name: "SwacoExtensionsTests",
                     dependencies: ["SwacoExtensions", "SwacoInteraction", "SwacoRuntime",
                                    "SwacoTesting", "SwacoAI"]),
-        .testTarget(name: "SwacoAITests", dependencies: ["SwacoAI", "SwacoOpenAI", "SwacoTesting"],
+        .testTarget(name: "SwacoAITests",
+                    dependencies: ["SwacoAI", "SwacoOpenAI", "SwacoAnthropic", "SwacoTesting"],
                     resources: [.copy("Fixtures")]),
         .testTarget(name: "SwacoFoundationModelsTests",
                     dependencies: ["SwacoFoundationModels", "SwacoRuntime", "SwacoTesting"]),
@@ -60,12 +63,15 @@ let package = Package(
         // Run by hand to refresh a recording against a real model. CI has no
         // key and needs none.
         .executableTarget(name: "Record",
-                          dependencies: ["Swaco", "SwacoOpenAI", "SwacoExtensions", "SwacoInteraction",
-                                         "SwacoTesting"],
+                          dependencies: ["Swaco", "SwacoOpenAI", "SwacoAnthropic", "SwacoExtensions",
+                                         "SwacoInteraction", "SwacoTesting"],
                           path: "Examples/Record"),
 
         // Complete, compiling strategies an app copies and owns from then on.
         // Built here so they cannot drift from the API; shipped to nobody.
+        .executableTarget(name: "Try", dependencies: ["Swaco", "SwacoOpenAI", "SwacoAnthropic", "SwacoExtensions"],
+                          path: "Examples/Try"),
+
         .target(name: "Templates", dependencies: ["Swaco"], path: "Examples/Templates",
                 exclude: ["README.md"]),
         .testTarget(name: "TemplatesTests",

@@ -1,0 +1,30 @@
+{"turn":1,"event":{"type":"reasoning","text":"The"}}
+{"turn":1,"event":{"type":"reasoning","text":" user"}}
+{"turn":1,"event":{"type":"reasoning","text":" wants"}}
+{"turn":1,"event":{"type":"reasoning","text":" weather"}}
+{"turn":1,"event":{"type":"reasoning","text":" in"}}
+{"turn":1,"event":{"type":"reasoning","text":" Paris"}}
+{"turn":1,"event":{"type":"reasoning","text":"."}}
+{"turn":1,"event":{"type":"reasoning","text":" Use"}}
+{"turn":1,"event":{"type":"reasoning","text":" the"}}
+{"turn":1,"event":{"type":"reasoning","text":" tool"}}
+{"turn":1,"event":{"type":"reasoning","text":"."}}
+{"turn":1,"event":{"type":"tool_call","call":{"name":"weather","arguments":"{\"city\": \"Paris\"}","id":"call_00_8Zo4y3vt7ZNybCerWwvt8143"}}}
+{"turn":1,"event":{"type":"usage","usage":{"inputTokens":350,"outputTokens":54,"cachedInputTokens":256,"reasoningTokens":11}}}
+{"turn":1,"event":{"type":"stop","stop":"tool_use"}}
+{"turn":2,"event":{"type":"text","text":"The"}}
+{"turn":2,"event":{"type":"text","text":" weather"}}
+{"turn":2,"event":{"type":"text","text":" in"}}
+{"turn":2,"event":{"type":"text","text":" Paris"}}
+{"turn":2,"event":{"type":"text","text":" is"}}
+{"turn":2,"event":{"type":"text","text":" **"}}
+{"turn":2,"event":{"type":"text","text":"18"}}
+{"turn":2,"event":{"type":"text","text":"°"}}
+{"turn":2,"event":{"type":"text","text":"C"}}
+{"turn":2,"event":{"type":"text","text":" and"}}
+{"turn":2,"event":{"type":"text","text":" sunny"}}
+{"turn":2,"event":{"type":"text","text":"**."}}
+{"turn":2,"event":{"type":"text","text":" ☀"}}
+{"turn":2,"event":{"type":"text","text":"️"}}
+{"turn":2,"event":{"type":"usage","usage":{"reasoningTokens":0,"inputTokens":420,"outputTokens":16,"cachedInputTokens":384}}}
+{"turn":2,"event":{"stop":"end_turn","type":"stop"}}

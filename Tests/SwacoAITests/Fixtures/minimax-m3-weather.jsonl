@@ -1,0 +1,20 @@
+{"event":{"type":"text","text":"I'll"},"turn":1}
+{"event":{"type":"text","text":" check the weather"},"turn":1}
+{"event":{"type":"text","text":" in Paris for you"},"turn":1}
+{"event":{"type":"text","text":"."},"turn":1}
+{"event":{"call":{"name":"weather","id":"call_215b86fe1f364da185736f72","arguments":"{\"city\":\"Paris\"}"},"type":"tool_call"},"turn":1}
+{"event":{"usage":{"cachedInputTokens":128,"reasoningTokens":0,"inputTokens":250,"outputTokens":35},"type":"usage"},"turn":1}
+{"event":{"type":"stop","stop":"tool_use"},"turn":1}
+{"event":{"type":"text","text":"The"},"turn":2}
+{"event":{"type":"text","text":" weather in Paris is"},"turn":2}
+{"event":{"type":"text","text":" currently **18°C"},"turn":2}
+{"event":{"type":"text","text":" and sunny**."},"turn":2}
+{"event":{"type":"text","text":" ☀️ A"},"turn":2}
+{"event":{"type":"text","text":" lovely day to be"},"turn":2}
+{"event":{"type":"text","text":" out and"},"turn":2}
+{"event":{"type":"text","text":" about"},"turn":2}
+{"event":{"type":"text","text":"! Is"},"turn":2}
+{"event":{"type":"text","text":" there anything else you'd"},"turn":2}
+{"event":{"type":"text","text":" like to know?"},"turn":2}
+{"event":{"type":"usage","usage":{"cachedInputTokens":128,"reasoningTokens":0,"inputTokens":305,"outputTokens":33}},"turn":2}
+{"event":{"type":"stop","stop":"end_turn"},"turn":2}

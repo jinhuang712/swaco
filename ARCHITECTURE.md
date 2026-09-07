@@ -85,7 +85,9 @@ connection open.
 ### Providers
 
 `SwacoAnthropic`, `SwacoOpenAI`, `SwacoFoundationModels`, part of the AI
-layer. Each a thin target over the shared machinery, translating one vendor's
+layer. The shared machinery holds three protocols, each configured per vendor
+rather than re-implemented: responses, chat completions, and messages. A
+vendor target is the endpoint, the header it wants, and nothing else. Each a thin target over the shared machinery, translating one vendor's
 API and declaring what its models can take. When content reaches a model that
 has not declared the ability to take it, the mismatch is recorded as an event
 and nothing else happens: the loop does not refuse, the provider does not

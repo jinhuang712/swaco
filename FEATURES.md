@@ -44,7 +44,9 @@ Fixed now, before code. Each word means one thing.
       result, reasoning, provider-executed tool use and result, citations.
       Adjacent runs of words become one part, so two messages that say the
       same thing are the same message
-- [~] Canonical streaming event set shared by all providers
+- [x] Canonical streaming event set shared by all providers, in the same
+      order whoever is speaking: what a turn cost is said before the turn is
+      over, even where the vendor sends it afterwards
 - [x] Messages are a projection of the event log, not a separate store
 - [x] Content parts can hold a reference to stored bytes instead of the bytes
       themselves, loaded on demand through the `ContentStore` protocol, so a
@@ -209,9 +211,10 @@ vendor. Our providers are built on it; a third party may use it or ignore it.
 - [x] All configuration is passed explicitly in code. No configuration
       files; an environment variable is read only where an authenticator
       is asked to
-- [~] Assembly of streamed tool-call arguments from partial fragments.
-      The Responses protocol also delivers them whole when the item is done,
-      which is what we read; assembly matters for the protocols that do not
+- [x] Assembly of streamed tool-call arguments from partial fragments. The
+      chat-completions protocol spells a call out a fragment at a time,
+      sometimes a single brace, and several at once keep their own fragments
+      apart. A call is handed over only when the turn ends and it is whole
 - [~] Lossless conversion of messages, tool definitions and tool results
       between swaco's vocabulary and vendor shapes, ids preserved. Done for
       the Responses protocol, including a tool's JSON Schema reaching the
@@ -219,23 +222,30 @@ vendor. Our providers are built on it; a third party may use it or ignore it.
 - [x] Normalisation of stop reasons, usage and errors into swaco's types.
       Usage is what the vendor counted, carried and not interpreted: swaco
       does not price it, add it up or decide when there has been too much
-- [~] Generic implementation of the OpenAI-compatible protocol, configured
-      per vendor rather than re-implemented. The Responses protocol is
-      implemented; chat completions is not
+- [x] Generic implementation of the OpenAI-compatible protocol, configured
+      per vendor rather than re-implemented. Both shapes: responses, and the
+      older chat completions that most other vendors copied. A third, the
+      Messages protocol, is implemented on the same terms
 - [x] Model catalogue: identifier, provider, declared capabilities. A
       convenience and never an authority: vendors change weekly, and an app
       that describes its own model loses nothing
-- [~] Recorded request and response fixtures for every provider we ship;
-      the conformance suite that runs them lives in `SwacoTesting`. One
-      recorded exchange exists; the suite is still tests in the AI layer
+- [x] Recorded request and response fixtures for every provider we ship;
+      the conformance suite that runs them lives in `SwacoTesting`. Two
+      kinds, because they answer different questions: the bytes a vendor
+      really sent, which test the conversion, and a normalised recording,
+      which replays a conversation with no vendor at all. One of each for
+      all three protocols
 
 ## Providers
 
 Each is a thin module over `SwacoAI`.
 
-- [ ] Anthropic (streaming, tool use, provider-executed web search)
-- [~] OpenAI, including OpenAI-compatible endpoints. Any endpoint that
-      speaks the Responses protocol is reached by naming a connection
+- [~] Anthropic (streaming, tool use, provider-executed web search). The
+      Messages protocol is implemented and verified against a real endpoint
+      that speaks it; Anthropic's own endpoint and its provider-executed
+      tools await a key
+- [x] OpenAI, including OpenAI-compatible endpoints. Any endpoint that
+      speaks either shape is reached by naming a connection
 - [x] Apple Foundation Models (on-device). It runs tools itself rather than
       handing calls back, so it declares no tool support and a request with
       tools is recorded as a mismatch
