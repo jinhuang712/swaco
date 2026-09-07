@@ -146,3 +146,48 @@ private func asking(_ arguments: String, then answer: String, tool: String) -> S
         #expect(try await run.state() == .finished)
     }
 }
+
+@Suite struct TellingSomebodySomethingOnTheWay {
+    /// A report may carry a picture, which rides the way content rides
+    /// everywhere else in swaco: bytes, or a reference to them.
+    @Test func areportMayCarryMoreThanWords() async throws {
+        let desk = Interaction()
+        let reference = ContentReference(identifier: "chart-1", type: "image/png")
+        let watching = Task { await desk.reports.first { _ in true } }
+
+        await desk.tell(Report(message: "here is the chart", content: [.image(.reference(reference))]))
+        let told = try #require(await watching.value)
+
+        #expect(told.message == "here is the chart")
+        #expect(told.content == [.image(.reference(reference))])
+    }
+
+    /// The model writes words. Pictures come from the app, which is the side
+    /// that has them.
+    @Test func themodelSaysWordsAndTheAppShowsWhatItHas() async throws {
+        let desk = Interaction()
+        let agent = Agent(
+            provider: ScriptedProvider(turns: [
+                [.toolCall(ToolCall(id: "r", name: "report",
+                                    arguments: #"{"message":"halfway there"}"#)),
+                 .stop(.toolUse)],
+                [.text("Done."), .stop(.endTurn)],
+            ]),
+            tools: desk.tools
+        )
+        let watching = Task { await desk.reports.first { _ in true } }
+        for try await _ in Run(agent: agent, store: InMemoryEventStore()).start("get on with it") {}
+
+        let told = try #require(await watching.value)
+        #expect(told.message == "halfway there")
+        #expect(told.content.isEmpty, "a model has no picture to give")
+    }
+
+    @Test func areportSurvivesBeingWrittenDown() throws {
+        let report = Report(message: "here it is", content: [.text("and this"), .image(
+            .reference(ContentReference(identifier: "a", type: "image/png"))
+        )])
+        let data = try JSONEncoder().encode(report)
+        #expect(try JSONDecoder().decode(Report.self, from: data) == report)
+    }
+}

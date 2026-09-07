@@ -27,10 +27,20 @@ public struct Confirmation: Codable, Sendable, Hashable {
 
 /// Something the agent wants the person to know on the way, without waiting
 /// and without ending its reply.
+///
+/// It may carry more than words. A report that says "here is the chart" with
+/// no chart is worse than useless, and a picture rides here the same way it
+/// rides anywhere else in swaco: as content, carrying its bytes or pointing
+/// at them.
 public struct Report: Codable, Sendable, Hashable {
     public let message: String
+    /// Anything else worth showing: a picture, or a reference to one.
+    public let content: [ContentPart]
 
-    public init(message: String) { self.message = message }
+    public init(message: String, content: [ContentPart] = []) {
+        self.message = message
+        self.content = content
+    }
 }
 
 /// A request the agent has made and nobody has answered yet. After a
@@ -114,6 +124,13 @@ public actor Interaction {
     fileprivate func register(_ request: PendingRequest, delivering delivery: ResultDelivery) {
         requests[request.callID] = request
         deliveries[request.callID] = delivery
+    }
+
+    /// Tells the person something on the app's own behalf, which is how a
+    /// picture gets into a report: the model asks for words, and the app
+    /// shows what it has.
+    public func tell(_ report: Report) {
+        reported.yield(report)
     }
 
     fileprivate func report(_ report: Report) {
