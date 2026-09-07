@@ -9,6 +9,7 @@ let package = Package(
         .library(name: "SwacoAI", targets: ["SwacoAI"]),
         .library(name: "SwacoOpenAI", targets: ["SwacoOpenAI"]),
         .library(name: "SwacoFoundationModels", targets: ["SwacoFoundationModels"]),
+        .library(name: "SwacoExtensions", targets: ["SwacoExtensions"]),
         .library(name: "SwacoInteraction", targets: ["SwacoInteraction"]),
         .library(name: "SwacoRuntime", targets: ["SwacoRuntime"]),
         .library(name: "SwacoTesting", targets: ["SwacoTesting"]),
@@ -22,6 +23,7 @@ let package = Package(
         .target(name: "SwacoFoundationModels", dependencies: ["Swaco"],
                 path: "Sources/SwacoAI/FoundationModels"),
 
+        .target(name: "SwacoExtensions", dependencies: ["Swaco"]),
         .target(name: "SwacoInteraction", dependencies: ["Swaco"]),
         .target(name: "SwacoRuntime", dependencies: ["Swaco"]),
 
@@ -32,6 +34,8 @@ let package = Package(
         .testTarget(name: "SwacoRuntimeTests", dependencies: ["SwacoRuntime", "SwacoTesting"]),
         .testTarget(name: "SwacoInteractionTests",
                     dependencies: ["SwacoInteraction", "SwacoRuntime", "SwacoTesting"]),
+        .testTarget(name: "SwacoExtensionsTests",
+                    dependencies: ["SwacoExtensions", "SwacoInteraction", "SwacoRuntime", "SwacoTesting"]),
         .testTarget(name: "SwacoAITests", dependencies: ["SwacoAI", "SwacoOpenAI"],
                     resources: [.copy("Fixtures")]),
         .testTarget(name: "SwacoFoundationModelsTests",

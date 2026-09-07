@@ -15,6 +15,8 @@ public enum StreamEvent: Sendable, Hashable {
 /// One message in the context sent to a model. A projection of events, kept
 /// minimal for the spike.
 public enum Message: Sendable, Codable, Hashable {
+    /// Standing instructions, ahead of the conversation.
+    case system(String)
     case user(String)
     case assistant(text: String, toolCalls: [ToolCall])
     case toolResult(ToolResult)

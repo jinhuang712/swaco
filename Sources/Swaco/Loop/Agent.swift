@@ -32,17 +32,32 @@ final class CancellationFlag: Sendable {
 public struct Agent: Sendable {
     public let provider: any Provider
     public let tools: [any Tool]
+    /// Applied strictly in this order, rewrites chained, any refusal winning.
+    public let extensions: [any Extension]
     /// How an inbound event becomes model input. Replaceable whole.
     public let rendering: any EventRendering
+    /// Where the loop is running, as whatever runs it knows.
+    public let execution: ExecutionContext
 
     public init(
         provider: any Provider,
         tools: [any Tool],
-        rendering: any EventRendering = DefaultEventRendering()
+        extensions: [any Extension] = [],
+        rendering: any EventRendering = DefaultEventRendering(),
+        execution: ExecutionContext = .unknown
     ) {
         self.provider = provider
         self.tools = tools
+        self.extensions = extensions
         self.rendering = rendering
+        self.execution = execution
+    }
+
+    /// The same agent with a different sense of where it is running. What
+    /// runs the loop knows this; the agent it was handed did not.
+    public func running(in execution: ExecutionContext) -> Agent {
+        Agent(provider: provider, tools: tools, extensions: extensions,
+              rendering: rendering, execution: execution)
     }
 
     /// Starts a loop from something that arrived.
@@ -112,58 +127,152 @@ public struct Agent: Sendable {
             emit(.capabilityMissing(.tools))
         }
 
+        let extending = Extending(extensions: extensions)
+
         while true {
             turn += 1
+            let moment = ExtensionContext(turn: turn, execution: execution)
             emit(.turnStarted(turn))
+
+            var request = ModelRequest(messages: messages, tools: definitions)
+            switch await extending.decide(request, as: { _ in .request }, in: moment,
+                                          hook: { await $0.beforeRequest($1, in: moment) }) {
+            case .unchanged:
+                break
+            case .rewritten(let rewritten, let events):
+                events.forEach(emit)
+                request = rewritten
+            case .refused(let event, _):
+                emit(event)
+                await extending.loopEnded(in: moment)
+                return
+            }
+
             var text = ""
             var calls: [ToolCall] = []
             var stop: StopReason = .endTurn
+            var attempt = 0
 
-            do {
-                for try await event in provider.stream(ModelRequest(messages: messages, tools: definitions)) {
-                    if Task.isCancelled { break }
-                    switch event {
-                    case .text(let piece):
-                        text += piece
-                        emit(.text(piece))
-                    case .toolCall(let call):
-                        calls.append(call)
-                        emit(.toolCallIssued(call))
-                    case .stop(let reason):
-                        stop = reason
+            streaming: while true {
+                attempt += 1
+                text = ""
+                calls = []
+                do {
+                    for try await event in provider.stream(request) {
+                        if Task.isCancelled { break }
+                        switch event {
+                        case .text(let piece):
+                            text += piece
+                            emit(.text(piece))
+                        case .toolCall(let call):
+                            calls.append(call)
+                            emit(.toolCallIssued(call))
+                        case .stop(let reason):
+                            stop = reason
+                        }
+                    }
+                    break streaming
+                } catch {
+                    // A failed request is the one thing an extension may ask
+                    // to have another go at.
+                    switch await extending.recovery(from: error, attempt: attempt, in: moment) {
+                    case .giveUp:
+                        emit(.failed(String(describing: error)))
+                        await extending.loopEnded(in: moment)
+                        return
+                    case .retry(let delay):
+                        try? await Task.sleep(for: delay)
+                        if Task.isCancelled {
+                            emit(.cancelled(flag.isPerson ? .person : .system, partial: text))
+                            await extending.loopEnded(in: moment)
+                            return
+                        }
+                        continue streaming
                     }
                 }
-            } catch {
-                emit(.failed(String(describing: error)))
-                return
             }
 
             if Task.isCancelled {
                 emit(.cancelled(flag.isPerson ? .person : .system, partial: text))
+                await extending.loopEnded(in: moment)
                 return
             }
 
-            messages.append(.assistant(text: text, toolCalls: calls))
-            emit(.turnEnded(stop))
+            var response = Response(text: text, toolCalls: calls, stop: stop)
+            switch await extending.decide(response, as: { _ in .response }, in: moment,
+                                          hook: { await $0.afterResponse($1, in: moment) }) {
+            case .unchanged:
+                break
+            case .rewritten(let rewritten, let events):
+                events.forEach(emit)
+                response = rewritten
+            case .refused(let event, _):
+                emit(event)
+                await extending.loopEnded(in: moment)
+                return
+            }
 
-            if calls.isEmpty || stop != .toolUse {
+            messages.append(.assistant(text: response.text, toolCalls: response.toolCalls))
+            emit(.turnEnded(response.stop))
+
+            if response.toolCalls.isEmpty || response.stop != .toolUse {
+                if let refusal = await extending.mayContinue(after: turn, in: moment) { emit(refusal) }
                 emit(.finished)
+                await extending.loopEnded(in: moment)
                 return
             }
 
-            for call in calls {
-                let result: ToolResult?
-                do {
-                    result = try await execute(call, delivery: delivery, pending: pending, emit: emit)
-                } catch {
-                    result = ToolResult(callID: call.id, content: String(describing: error), isError: true)
+            for issued in response.toolCalls {
+                var call = issued
+                switch await extending.decide(call, as: { .toolCall($0.id) }, in: moment,
+                                              hook: { await $0.beforeToolCall($1, in: moment) }) {
+                case .unchanged:
+                    break
+                case .rewritten(let rewritten, let events):
+                    events.forEach(emit)
+                    call = rewritten
+                case .refused(let event, let reason):
+                    // The call still gets a result, so the model is told it
+                    // was refused rather than left waiting.
+                    emit(event)
+                    let refused = ToolResult(callID: call.id, content: reason, isError: true)
+                    emit(.toolResultArrived(refused))
+                    messages.append(.toolResult(refused))
+                    continue
                 }
-                guard let result else {
+
+                let produced: ToolResult?
+                do {
+                    produced = try await execute(call, delivery: delivery, pending: pending, emit: emit)
+                } catch {
+                    produced = ToolResult(callID: call.id, content: String(describing: error), isError: true)
+                }
+                guard var result = produced else {
                     emit(.cancelled(flag.isPerson ? .person : .system, partial: text))
+                    await extending.loopEnded(in: moment)
                     return
                 }
+
+                switch await extending.decide(result, as: { .toolResult($0.callID) }, in: moment,
+                                              hook: { await $0.afterToolCall($1, in: moment) }) {
+                case .unchanged:
+                    break
+                case .rewritten(let rewritten, let events):
+                    events.forEach(emit)
+                    result = rewritten
+                case .refused(let event, let reason):
+                    emit(event)
+                    result = ToolResult(callID: result.callID, content: reason, isError: true)
+                }
+
                 emit(.toolResultArrived(result))
                 messages.append(.toolResult(result))
+            }
+
+            if let refusal = await extending.mayContinue(after: turn, in: moment) {
+                emit(refusal)
+                await extending.loopEnded(in: moment)
+                return
             }
         }
     }

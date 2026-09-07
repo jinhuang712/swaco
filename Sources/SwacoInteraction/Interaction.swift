@@ -57,6 +57,8 @@ public struct PendingRequest: Sendable, Hashable {
 public actor Interaction {
     private var deliveries: [String: ResultDelivery] = [:]
     private var requests: [String: PendingRequest] = [:]
+    /// Questions the app asked on its own behalf rather than the model's.
+    private var answers: [String: CheckedContinuation<Bool, Never>] = [:]
     private let reported: AsyncStream<Report>.Continuation
 
     /// Reports as they are made, for the app to show as it sees fit.
@@ -87,7 +89,23 @@ public actor Interaction {
         await finish(callID, content: granted ? "granted" : "refused")
     }
 
+    /// Puts a confirmation to the person on the app's own behalf and waits
+    /// for the answer. What an app needs when something other than the model
+    /// wants approval, such as the approval extension.
+    public func ask(_ confirmation: Confirmation) async -> Bool {
+        let callID = "app-\(UUID().uuidString)"
+        return await withCheckedContinuation { continuation in
+            answers[callID] = continuation
+            requests[callID] = PendingRequest(callID: callID, request: .confirmation(confirmation))
+        }
+    }
+
     private func finish(_ callID: String, content: String) async {
+        if let waiting = answers.removeValue(forKey: callID) {
+            requests[callID] = nil
+            waiting.resume(returning: content == "granted")
+            return
+        }
         guard let delivery = deliveries.removeValue(forKey: callID) else { return }
         requests[callID] = nil
         await delivery(ToolResult(callID: callID, content: content))

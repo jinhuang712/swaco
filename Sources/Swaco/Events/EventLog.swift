@@ -20,12 +20,14 @@ extension Event: Codable {
         static let cancelled = "cancelled"
         static let failed = "failed"
         static let capabilityMissing = "capability_missing"
+        static let rewritten = "rewritten"
+        static let refused = "refused"
         static let finished = "finished"
     }
 
     private enum Key: String, CodingKey {
         case type, turn, text, call, result, stop, origin, partial, message, source
-        case capability
+        case capability, by, subject, reason
     }
 
     public init(from decoder: any Decoder) throws {
@@ -57,6 +59,17 @@ extension Event: Codable {
             self = .failed(try container.decode(String.self, forKey: .message))
         case Name.capabilityMissing:
             self = .capabilityMissing(try container.decode(Capability.self, forKey: .capability))
+        case Name.rewritten:
+            self = .rewritten(
+                by: try container.decode(String.self, forKey: .by),
+                subject: try container.decode(Subject.self, forKey: .subject)
+            )
+        case Name.refused:
+            self = .refused(
+                by: try container.decode(String.self, forKey: .by),
+                subject: try container.decode(Subject.self, forKey: .subject),
+                reason: try container.decode(String.self, forKey: .reason)
+            )
         case Name.finished:
             self = .finished
         case let type:
@@ -108,6 +121,15 @@ extension Event: Codable {
         case .capabilityMissing(let capability):
             try container.encode(Name.capabilityMissing, forKey: .type)
             try container.encode(capability, forKey: .capability)
+        case .rewritten(let by, let subject):
+            try container.encode(Name.rewritten, forKey: .type)
+            try container.encode(by, forKey: .by)
+            try container.encode(subject, forKey: .subject)
+        case .refused(let by, let subject, let reason):
+            try container.encode(Name.refused, forKey: .type)
+            try container.encode(by, forKey: .by)
+            try container.encode(subject, forKey: .subject)
+            try container.encode(reason, forKey: .reason)
         case .finished:
             try container.encode(Name.finished, forKey: .type)
         case .unrecognised:

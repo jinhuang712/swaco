@@ -77,14 +77,18 @@ Fixed now, before code. Each word means one thing.
       request, stream, execute tool calls, repeat until the model stops.
       Knows nothing about runs or sessions; the first program calls it
       directly
-- [ ] Extension protocol whose hooks are exactly the moments of the loop:
+- [~] Extension protocol whose hooks are exactly the moments of the loop:
       an event arrives while the loop is running, before a request, after a
       response, before a tool call, after a tool call, end of turn, end of
       loop. Each hook may pass, rewrite or refuse; the arrival hook may also
       inject the event into the next turn, queue it, or leave it for whatever
       runs the loop. The app declares extensions as an ordered list; swaco
       applies them strictly in that order, chains rewrites, and lets any
-      refusal win
+      refusal win. Done but for the arrival hook, which waits on a run
+      being able to be handed something while it is running. A refusal
+      before a call becomes that call's result so the model is told, and a
+      refusal at the end of a turn ends the loop; a failed request is the
+      one moment an extension may ask for another go
 - [~] Cancellation at any point with no inconsistent state. Nothing received
       is ever discarded: a partial reply is recorded as received and marked
       with why it stopped, by a person or by the system. Whether it is shown
@@ -112,8 +116,10 @@ Fixed now, before code. Each word means one thing.
       queue or leave; left events start a new run. An app that does not list
       the extension starts a new run for every event that arrives during
       another
-- [ ] Execution context exposed to extensions: foreground, background,
-      app extension process, remaining time, whether a person is present
+- [~] Execution context exposed to extensions: foreground, background,
+      app extension process, remaining time, whether a person is present.
+      The type is declared and reaches every hook; what fills it in from the
+      system is the runtime's and is not written yet
 - [ ] A loop can stop after one turn and hand the rest to a later process;
       the handover survives the process boundary
 - [x] Session registry and lookup, through the store rather than a second
@@ -241,11 +247,15 @@ relaunch). The app owns the presentation.
 
 Only what nearly every app needs and no product would answer differently.
 
-- [ ] Environment context: time, time zone, locale, device
-- [ ] Tool approval: route chosen tool calls through `confirm`. Which calls
+- [x] Environment context: time, time zone, locale, device, as instructions
+      ahead of the first turn
+- [x] Tool approval: route chosen tool calls through `confirm`. Which calls
       are chosen is the app's rule over the facts swaco declares, a tool's
-      access and an event's source; with no rule, nothing is held
-- [ ] Retry with backoff for transient network errors
+      access and an event's source; with no rule, nothing is held. The
+      extension holds the call and asks however the app says; it does not
+      import the interaction toolset, so routing through `confirm` is the
+      app's line of code and not swaco's decision
+- [x] Retry with backoff for transient network errors
 
 ## Extensions (templates)
 

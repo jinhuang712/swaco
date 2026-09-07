@@ -48,6 +48,8 @@ struct ResponsesRequest: Encodable {
 
         static func items(for message: Message) -> [InputItem] {
             switch message {
+            case .system(let text):
+                return [.text(role: "system", part: "input_text", text: text)]
             case .user(let text):
                 return [.text(role: "user", part: "input_text", text: text)]
             case .assistant(let text, let calls):

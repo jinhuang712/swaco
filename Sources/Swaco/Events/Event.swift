@@ -53,6 +53,11 @@ public enum Event: Sendable, Hashable {
     case turnEnded(StopReason)
     case cancelled(CancellationOrigin, partial: String)
     case failed(String)
+    /// An extension changed something on its way through the loop.
+    case rewritten(by: String, subject: Subject)
+    /// An extension refused something. What that ends depends on where it
+    /// happened, and the log says where.
+    case refused(by: String, subject: Subject, reason: String)
     /// The request asked for something this model has not declared. Recorded
     /// and nothing else: the loop does not refuse, the provider does not trim,
     /// the app decides.

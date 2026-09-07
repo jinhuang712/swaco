@@ -88,6 +88,11 @@ public struct OnDeviceModel: Provider {
         }
         for message in messages {
             switch message {
+            case .system(let text):
+                entries.append(.instructions(Transcript.Instructions(
+                    segments: [.text(Transcript.TextSegment(content: text))],
+                    toolDefinitions: []
+                )))
             case .user(let text):
                 entries.append(.prompt(Transcript.Prompt(
                     segments: [.text(Transcript.TextSegment(content: text))]
