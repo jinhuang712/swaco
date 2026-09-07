@@ -73,6 +73,14 @@ our providers are tested against.
 A third party writing a provider may build on it or implement the core
 protocol directly. Our own providers always build on it.
 
+Two decisions here are worth naming. The shipped authenticators are static
+members of a single `Authentication` value, so an app names one with a
+leading dot and the first program stays twenty lines; `Authenticator` remains
+the protocol a third party conforms to, and `Authentication.custom` carries
+one through. And a provider can hand out the body it would send without
+sending it, so conversion is tested against recorded exchanges with no
+connection open.
+
 ### Providers
 
 `SwacoAnthropic`, `SwacoOpenAI`, `SwacoFoundationModels`, part of the AI

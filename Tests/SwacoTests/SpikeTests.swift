@@ -1,20 +1,6 @@
 import Testing
 import Swaco
-
-/// Scripted provider: one list of stream events per turn.
-struct ScriptedProvider: Provider {
-    let turns: [[StreamEvent]]
-
-    func stream(_ request: ModelRequest) -> AsyncThrowingStream<StreamEvent, any Error> {
-        // The turn index is the number of assistant messages already in context.
-        let index = request.messages.filter { if case .assistant = $0 { true } else { false } }.count
-        let script = index < turns.count ? turns[index] : [.stop(.endTurn)]
-        return AsyncThrowingStream { continuation in
-            for event in script { continuation.yield(event) }
-            continuation.finish()
-        }
-    }
-}
+import SwacoTesting
 
 /// A tool that must run on the main actor and answers at once.
 @MainActor

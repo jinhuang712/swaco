@@ -57,7 +57,7 @@ public struct Agent: Sendable {
         emit: @Sendable (Event) -> Void
     ) async {
         var messages: [Message] = [.user(input)]
-        let definitions = tools.map { ToolDefinition(name: $0.name, description: $0.description) }
+        let definitions = tools.map { ToolDefinition(name: $0.name, description: $0.description, parameters: $0.parameters) }
         let delivery = ResultDelivery { result in await pending.deliver(result) }
         var turn = 0
 

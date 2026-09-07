@@ -23,11 +23,24 @@ public enum Message: Sendable, Codable, Hashable {
 public struct ToolDefinition: Sendable, Codable, Hashable {
     public let name: String
     public let description: String
+    /// JSON Schema for the arguments, as JSON text.
+    public let parameters: String
+
+    public init(name: String, description: String, parameters: String) {
+        self.name = name
+        self.description = description
+        self.parameters = parameters
+    }
 }
 
 public struct ModelRequest: Sendable {
     public let messages: [Message]
     public let tools: [ToolDefinition]
+
+    public init(messages: [Message], tools: [ToolDefinition]) {
+        self.messages = messages
+        self.tools = tools
+    }
 }
 
 /// The translation between swaco's vocabulary and one model API: one

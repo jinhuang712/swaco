@@ -153,38 +153,53 @@ retrieve media on the agent's behalf pass their results through it.
 Everything providers share, done once. Depends on the core only; knows no
 vendor. Our providers are built on it; a third party may use it or ignore it.
 
-- [ ] HTTP and server-sent events over `URLSession`, with cancellation
-- [ ] Connection configuration per provider: endpoint (vendor default,
-      overridable) and an `Authenticator`
-- [ ] `Authenticator` protocol: attach authentication to a request; refresh
+- [x] HTTP and server-sent events over `URLSession`, with cancellation.
+      Lines are split from the bytes, not through `AsyncLineSequence`, which
+      drops the blank line that separates one event from the next
+- [x] Connection configuration per provider: endpoint (vendor default,
+      overridable), an `Authenticator`, and the headers an endpoint of its
+      own requires
+- [~] `Authenticator` protocol: attach authentication to a request; refresh
       when the vendor signals it has expired. Implementations: static API
       key in the vendor's header, static bearer token, OAuth token pair with
       refresh, app-defined closure for an app's own backend. None is the
-      default; the app names one
+      default; the app names one. Done except OAuth. The shipped ones are
+      static members of one `Authentication` value so a call site names one
+      with a leading dot; the protocol stays the door, and
+      `Authentication.custom` carries a third party's own through it
 - [ ] `TokenStore` protocol for OAuth tokens; Keychain-backed reference
       implementation. Vendor-specific authorisation flows, which need a web
       view and vendor client ids, are companions
-- [ ] All configuration is passed explicitly in code. No configuration
-      files, no environment variables
-- [ ] Assembly of streamed tool-call arguments from partial fragments
-- [ ] Lossless conversion of messages, tool definitions and tool results
-      between swaco's vocabulary and vendor shapes, ids preserved
-- [ ] Normalisation of stop reasons, usage and errors into swaco's types
-- [ ] Generic implementation of the OpenAI-compatible protocol, configured
-      per vendor rather than re-implemented
+- [x] All configuration is passed explicitly in code. No configuration
+      files; an environment variable is read only where an authenticator
+      is asked to
+- [~] Assembly of streamed tool-call arguments from partial fragments.
+      The Responses protocol also delivers them whole when the item is done,
+      which is what we read; assembly matters for the protocols that do not
+- [~] Lossless conversion of messages, tool definitions and tool results
+      between swaco's vocabulary and vendor shapes, ids preserved. Done for
+      the Responses protocol, including a tool's JSON Schema reaching the
+      vendor as JSON rather than as a string
+- [~] Normalisation of stop reasons, usage and errors into swaco's types.
+      Stop reasons and errors done; usage not yet carried
+- [~] Generic implementation of the OpenAI-compatible protocol, configured
+      per vendor rather than re-implemented. The Responses protocol is
+      implemented; chat completions is not
 - [ ] Model catalogue: identifier, provider, declared capabilities
-- [ ] Recorded request and response fixtures for every provider we ship;
-      the conformance suite that runs them lives in `SwacoTesting`
+- [~] Recorded request and response fixtures for every provider we ship;
+      the conformance suite that runs them lives in `SwacoTesting`. One
+      recorded exchange exists; the suite is still tests in the AI layer
 
 ## Providers
 
 Each is a thin module over `SwacoAI`.
 
 - [ ] Anthropic (streaming, tool use, provider-executed web search)
-- [ ] OpenAI, including OpenAI-compatible endpoints
+- [~] OpenAI, including OpenAI-compatible endpoints. Any endpoint that
+      speaks the Responses protocol is reached by naming a connection
 - [ ] Apple Foundation Models (on-device)
 - [ ] Gemini (later)
-- [ ] Replayable mock provider for tests
+- [x] Replayable mock provider for tests
 
 ## Interaction toolset (shipped, optional)
 
@@ -288,10 +303,11 @@ requires showing that it does. The list is kept short on purpose.
 
 ## Acceptance
 
-- [ ] The canonical first program: `import Swaco`, one provider, one tool,
+- [x] The canonical first program: `import Swaco`, one provider, one tool,
       one `Agent`, one `for await` over its events, in twenty lines or fewer
       including the tool. No runtime, no store. Protocols bend to keep it
-      so; the example does not grow
+      so; the example does not grow. Twenty lines, and it talks to a real
+      model, not a mock
 
 ## Spike before design
 
@@ -306,8 +322,9 @@ requires showing that it does. The list is kept short on purpose.
 
 ## Project
 
-- [ ] Swift Package with independently linkable modules; the core works
-      when every other module is absent
+- [~] Swift Package with independently linkable modules; the core works
+      when every other module is absent. Four modules build alone for the
+      simulator
 - [ ] iOS 26 minimum; macOS 26 compiles but is not yet supported
 - [~] Swift 6 strict concurrency; all public types `Sendable` and
       serialisable

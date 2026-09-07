@@ -6,9 +6,25 @@ let package = Package(
     platforms: [.iOS("26.0"), .macOS("26.0")],
     products: [
         .library(name: "Swaco", targets: ["Swaco"]),
+        .library(name: "SwacoAI", targets: ["SwacoAI"]),
+        .library(name: "SwacoOpenAI", targets: ["SwacoOpenAI"]),
+        .library(name: "SwacoTesting", targets: ["SwacoTesting"]),
     ],
     targets: [
         .target(name: "Swaco"),
-        .testTarget(name: "SwacoTests", dependencies: ["Swaco"]),
+
+        // The AI layer: shared machinery, then one thin target per vendor.
+        .target(name: "SwacoAI", dependencies: ["Swaco"], path: "Sources/SwacoAI/Core"),
+        .target(name: "SwacoOpenAI", dependencies: ["SwacoAI"], path: "Sources/SwacoAI/OpenAI"),
+
+        .target(name: "SwacoTesting", dependencies: ["Swaco"]),
+
+        .testTarget(name: "SwacoTests", dependencies: ["Swaco", "SwacoTesting"]),
+        .testTarget(name: "SwacoAITests", dependencies: ["SwacoAI", "SwacoOpenAI"],
+                    resources: [.copy("Fixtures")]),
+
+        // The canonical first program, built in CI so it never drifts.
+        .executableTarget(name: "FirstProgram", dependencies: ["Swaco", "SwacoOpenAI"],
+                          path: "Examples/FirstProgram"),
     ]
 )

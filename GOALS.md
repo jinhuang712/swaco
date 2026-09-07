@@ -157,9 +157,12 @@ met it is marked here and the next becomes the current one.
    in the design". Needs no Xcode and no simulator. *Met: yes; the shape
    is recorded in FEATURES under the spike.*
 2. **The first program runs.** `import Swaco`, one provider, one tool, one
-   `Agent`, one `for await`, in twenty lines or fewer, against the mock
-   provider on an iOS simulator. Protocols bent to fit; the example did not
-   grow. *Current.*
+   `Agent`, one `for await`, in twenty lines or fewer, against a real model
+   rather than a mock. Protocols bent to fit; the example did not grow.
+   *Met on the command line: twenty lines, a hosted model reached through
+   the Responses protocol, a tool called and answered, two turns. What
+   remains is the same code running on a simulator, and on iOS a program is
+   an app, so that is the third milestone.*
 3. **The first app works.** The chatbot described above, on a phone,
    through one hosted provider and one on-device provider, with a session
    that survives relaunch and an `ask` that survives relaunch. Every module

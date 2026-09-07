@@ -1,0 +1,48 @@
+event: response.created
+data: {"type":"response.created","sequence_number":0,"response":{"id":"resp_6a9ee108d44a7815513a4ce9","object":"response","created_at":1788797192,"status":"in_progress","parallel_tool_calls":true,"temperature":1,"top_p":1,"max_output_tokens":2048,"background":false,"truncation":"disabled","top_logprobs":0,"model":"muse-spark-1.3-contributor","error":null,"incomplete_details":null,"output":[],"instructions":null,"tool_choice":"auto","tools":[{"type":"function","name":"weather","description":"Weather for a city","parameters":{"properties":{"city":{"type":"string"}},"type":"object"}}],"reasoning":{"effort":"high"}}}
+
+event: response.in_progress
+data: {"type":"response.in_progress","sequence_number":1,"response":{"id":"resp_6a9ee108d44a7815513a4ce9","object":"response","created_at":1788797192,"status":"in_progress","parallel_tool_calls":true,"temperature":1,"top_p":1,"max_output_tokens":2048,"background":false,"truncation":"disabled","top_logprobs":0,"model":"muse-spark-1.3-contributor","error":null,"incomplete_details":null,"output":[],"instructions":null,"tool_choice":"auto","tools":[{"type":"function","name":"weather","description":"Weather for a city","parameters":{"properties":{"city":{"type":"string"}},"type":"object"}}],"reasoning":{"effort":"high"}}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":2,"output_index":0,"item":{"id":"rs_6a9ee108d44a7815513a4ce9:rs_01a07c9f09e07b90b1900384b2762cc2","type":"reasoning","status":"in_progress","summary":[]}}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","sequence_number":3,"output_index":0,"item":{"id":"rs_6a9ee108d44a7815513a4ce9:rs_01a07c9f09e07b90b1900384b2762cc2","type":"reasoning","status":"completed","encrypted_content":"<recorded, elided>","summary":[]}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":4,"output_index":1,"item":{"id":"rs_01a07c9f160475d180ff07297417efcb","type":"message","status":"in_progress","role":"assistant","phase":"commentary","content":[]}}
+
+event: response.content_part.added
+data: {"type":"response.content_part.added","sequence_number":5,"output_index":1,"content_index":0,"item_id":"rs_01a07c9f160475d180ff07297417efcb","part":{"type":"output_text","text":"","annotations":[],"logprobs":[]}}
+
+event: response.output_text.delta
+data: {"type":"response.output_text.delta","sequence_number":6,"output_index":1,"content_index":0,"item_id":"rs_01a07c9f160475d180ff07297417efcb","delta":"I'll check the current weather in Paris for you.","logprobs":[]}
+
+event: response.output_text.done
+data: {"type":"response.output_text.done","sequence_number":7,"output_index":1,"content_index":0,"item_id":"rs_01a07c9f160475d180ff07297417efcb","text":"I'll check the current weather in Paris for you.","logprobs":[]}
+
+event: response.content_part.done
+data: {"type":"response.content_part.done","sequence_number":8,"output_index":1,"content_index":0,"item_id":"rs_01a07c9f160475d180ff07297417efcb","part":{"type":"output_text","text":"I'll check the current weather in Paris for you.","annotations":[],"logprobs":[]}}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","sequence_number":9,"output_index":1,"item":{"id":"rs_01a07c9f160475d180ff07297417efcb","type":"message","status":"completed","role":"assistant","phase":"commentary","content":[{"type":"output_text","text":"I'll check the current weather in Paris for you.","annotations":[],"logprobs":[]}]}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","sequence_number":10,"output_index":2,"item":{"id":"fc_01a07c9f171778a08894dc31eac5d1d0","type":"function_call","status":"in_progress","name":"weather","call_id":"call_01a07c9f171778a08894dc31eac5d1d0","arguments":""}}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","sequence_number":11,"output_index":2,"item_id":"fc_01a07c9f171778a08894dc31eac5d1d0","delta":"{\"city\":\"Paris\"}"}
+
+event: response.function_call_arguments.done
+data: {"type":"response.function_call_arguments.done","sequence_number":12,"output_index":2,"item_id":"fc_01a07c9f171778a08894dc31eac5d1d0","arguments":"{\"city\":\"Paris\"}","name":"weather"}
+
+event: response.output_item.done
+data: {"type":"response.output_item.done","sequence_number":13,"output_index":2,"item":{"id":"fc_01a07c9f171778a08894dc31eac5d1d0","type":"function_call","status":"completed","name":"weather","call_id":"call_01a07c9f171778a08894dc31eac5d1d0","arguments":"{\"city\":\"Paris\"}"}}
+
+event: response.completed
+data: {"type":"response.completed","sequence_number":14,"response":{"id":"resp_6a9ee108d44a7815513a4ce9","object":"response","created_at":1788797192,"completed_at":1788797196,"status":"completed","parallel_tool_calls":true,"temperature":1,"top_p":1,"max_output_tokens":2048,"background":false,"truncation":"disabled","top_logprobs":0,"model":"muse-spark-1.3-contributor","error":null,"incomplete_details":null,"output":[{"id":"rs_6a9ee108d44a7815513a4ce9:rs_01a07c9f09e07b90b1900384b2762cc2","type":"reasoning","status":"completed","encrypted_content":"<recorded, elided>","summary":[]},{"id":"rs_01a07c9f160475d180ff07297417efcb","type":"message","status":"completed","role":"assistant","phase":"commentary","content":[{"type":"output_text","text":"I'll check the current weather in Paris for you.","annotations":[],"logprobs":[]}]},{"id":"fc_01a07c9f171778a08894dc31eac5d1d0","type":"function_call","status":"completed","name":"weather","call_id":"call_01a07c9f171778a08894dc31eac5d1d0","arguments":"{\"city\":\"Paris\"}"}],"usage":{"input_tokens":533,"output_tokens":210,"total_tokens":743,"input_tokens_details":{"cached_tokens":113},"output_tokens_details":{"reasoning_tokens":143}},"instructions":null,"tool_choice":"auto","tools":[{"type":"function","name":"weather","description":"Weather for a city","parameters":{"properties":{"city":{"type":"string"}},"type":"object"}}],"reasoning":{"effort":"high"}}}
+
+event: ping
+data: {"type":"ping","cost":"0"}
+

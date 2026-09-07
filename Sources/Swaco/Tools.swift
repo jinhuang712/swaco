@@ -62,6 +62,9 @@ public protocol Tool: Sendable {
     var name: String { get }
     var description: String { get }
     var access: ToolAccess { get }
+    /// JSON Schema for the arguments, as JSON text. The core does not model
+    /// schemas; it carries what the app wrote to whatever provider is in use.
+    var parameters: String { get }
 
     func execute(_ call: ToolCall, delivering delivery: ResultDelivery) async throws -> ToolOutcome
     func resume(_ call: ToolCall, delivering delivery: ResultDelivery) async throws
@@ -70,4 +73,7 @@ public protocol Tool: Sendable {
 public extension Tool {
     /// Tools that always answer at once have nothing to resume.
     func resume(_ call: ToolCall, delivering delivery: ResultDelivery) async throws {}
+
+    /// A tool that takes no arguments.
+    var parameters: String { #"{"type":"object","properties":{}}"# }
 }
