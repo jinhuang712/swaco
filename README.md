@@ -16,3 +16,4 @@ dependencies.
 - [Architecture](ARCHITECTURE.md): how swaco is divided, and the rules between the parts.
 - [Features](FEATURES.md): what we are building to get there, and its status.
 - [Git flow](GITFLOW.md): how changes reach `main`.
+- [Examples](Examples/README.md): what each example is for, and how to run it.
