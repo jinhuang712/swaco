@@ -77,9 +77,7 @@ Fixed now, before code. Each word means one thing.
       protocol with one default implementation the app may replace whole
 - [x] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
-- [~] Model described as data (provider, identifier, capabilities).
-      Capabilities are declared by the provider; a catalogue of identifiers
-      is not written yet
+- [x] Model described as data (provider, identifier, capabilities)
 - [x] `Agent`: the loop, callable on its own. Context in, event stream out;
       request, stream, execute tool calls, repeat until the model stops.
       Knows nothing about runs or sessions; the first program calls it
@@ -136,10 +134,13 @@ Fixed now, before code. Each word means one thing.
       of time
 - [x] Session registry and lookup, through the store rather than a second
       list to keep in step
-- [~] Concurrency limit across all runs, with or without
-      sessions. One run at a time per log is done, which is what keeps two
-      loops from writing a history in an order neither chose; a limit across
-      unrelated runs is not
+- [x] Concurrency limit across all runs, with or without
+      sessions. One run at a time per log, always, which is what keeps two
+      loops from writing a history in an order neither chose. Across
+      unrelated runs the app says the number and there is no default. A run
+      waiting on a person holds no place, because waiting is not working and
+      a limit that counted it would deadlock an app that asked two questions
+      at once
 - [x] Recovery on relaunch according to last persisted state: the log is
       read, every call left without a result is handed back to its tool to
       resume, and the loop continues from where the events stop. Checked
@@ -218,7 +219,9 @@ vendor. Our providers are built on it; a third party may use it or ignore it.
 - [~] Generic implementation of the OpenAI-compatible protocol, configured
       per vendor rather than re-implemented. The Responses protocol is
       implemented; chat completions is not
-- [ ] Model catalogue: identifier, provider, declared capabilities
+- [x] Model catalogue: identifier, provider, declared capabilities. A
+      convenience and never an authority: vendors change weekly, and an app
+      that describes its own model loses nothing
 - [~] Recorded request and response fixtures for every provider we ship;
       the conformance suite that runs them lives in `SwacoTesting`. One
       recorded exchange exists; the suite is still tests in the AI layer
@@ -268,7 +271,11 @@ Only what nearly every app needs and no product would answer differently.
       extension holds the call and asks however the app says; it does not
       import the interaction toolset, so routing through `confirm` is the
       app's line of code and not swaco's decision
-- [x] Retry with backoff for transient network errors
+- [x] Retry with backoff for transient network errors, and for the commonest
+      transient failure of all: a vendor asking us to wait. Whether a failure
+      may pass is a fact the failing side declares through `TransientFailure`
+      in the core, so the extension reads it without knowing any vendor, and
+      a vendor's own number beats our guess
 
 ## Extensions (templates)
 
@@ -320,9 +327,12 @@ upgrading. Build tooling, signing, distribution and onboarding are the app's.
       through the mock provider; a bug report is a log. The format has
       stable names and keeps the event types it does not know, checked by
       the store contract; replaying a log through the mock provider is next
-- [ ] Recording: run once against a real provider, keep the exchange as a
+- [x] Recording: run once against a real provider, keep the exchange as a
       fixture, replay it thereafter. Development, previews and tests need no
-      key and no network
+      key and no network. One JSON object per line, plain enough to trim by
+      hand, and an attempt a vendor turned away leaves no empty turn. The
+      mock and the recording are their own module, without the test
+      framework, so a preview and an app can use them
 - [x] `os.Logger` by subsystem and signposts per turn and tool call, so a
       run is visible in Instruments. Structure is logged, content is not:
       an event can say its kind, and a kind never carries what was said.

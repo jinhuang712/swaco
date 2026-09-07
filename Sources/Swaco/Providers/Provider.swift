@@ -44,6 +44,10 @@ public struct Usage: Sendable, Hashable, Codable {
 }
 
 /// The canonical streaming event set every provider produces.
+///
+/// Written down as well as passed around: a recorded exchange is how
+/// development, previews and tests do without a key and a network, so its
+/// names are stable on the same terms as the event log's.
 public enum StreamEvent: Sendable, Hashable {
     case text(String)
     case toolCall(ToolCall)
@@ -163,6 +167,24 @@ public enum ModelAvailability: Sendable, Hashable {
     /// says which, in the vendor's terms.
     case unavailable(String)
     case downloading
+}
+
+/// A model as data: who serves it, what it is called there, and what it has
+/// declared. Enough to choose one, pass one around, or write one down; not a
+/// provider, and not a connection.
+public struct Model: Sendable, Hashable, Codable {
+    /// Who serves it, in swaco's terms rather than a vendor's branding:
+    /// "openai", "anthropic", "apple", or an app's own name for its backend.
+    public let provider: String
+    /// What the provider calls it.
+    public let identifier: String
+    public let capabilities: ModelCapabilities
+
+    public init(provider: String, identifier: String, capabilities: ModelCapabilities) {
+        self.provider = provider
+        self.identifier = identifier
+        self.capabilities = capabilities
+    }
 }
 
 /// The translation between swaco's vocabulary and one model API: one

@@ -21,8 +21,8 @@ public struct Session: Sendable {
     public static func newID() -> GroupID { GroupID(UUID().uuidString) }
 
     /// A run in this session, served by the agent given now.
-    public func run(with agent: Agent) -> Run {
-        Run(group: id, agent: agent, store: store)
+    public func run(with agent: Agent, limit: RunLimit? = nil) -> Run {
+        Run(group: id, agent: agent, store: store, limit: limit)
     }
 
     /// Everything this session has recorded.

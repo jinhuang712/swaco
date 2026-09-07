@@ -10,11 +10,20 @@ public struct Run: Sendable {
     public let group: GroupID
     private let agent: Agent
     private let store: any EventStore
+    private let limit: RunLimit?
 
-    public init(group: GroupID = Run.newGroup(), agent: Agent, store: any EventStore) {
+    /// - Parameter limit: how many runs the app will have going at once.
+    ///   Nil is unlimited, which is what an app that never says gets.
+    public init(
+        group: GroupID = Run.newGroup(),
+        agent: Agent,
+        store: any EventStore,
+        limit: RunLimit? = nil
+    ) {
         self.group = group
         self.agent = agent
         self.store = store
+        self.limit = limit
     }
 
     public static func newGroup() -> GroupID { GroupID(UUID().uuidString) }
@@ -69,6 +78,11 @@ public struct Run: Sendable {
                 // recording, so nothing it writes lands after its successor's.
                 await RunLocks.shared.acquire(group)
                 defer { Task { await RunLocks.shared.release(group) } }
+                // And no more than the app said it would have going at once.
+                if let limit {
+                    await limit.take()
+                }
+                defer { if let limit { Task { await limit.give() } } }
                 var loop: AgentRun?
                 do {
                     let run = try await start()

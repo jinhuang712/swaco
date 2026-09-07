@@ -3,6 +3,7 @@ import Testing
 import Swaco
 import SwacoAI
 import SwacoOpenAI
+import SwacoTesting
 
 /// The recorded exchange every test here replays. Run once against the real
 /// model, kept as a fixture, replayed thereafter: no key, no network.
@@ -273,5 +274,40 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
         // Counted once per turn, and before the stop.
         #expect(usage.count == 1)
         #expect(events.last == .stop(.toolUse))
+    }
+}
+
+@Suite struct ReplayingARealExchange {
+    /// The workflow the feature list promises, end to end: this exchange
+    /// happened once against a hosted model, and every run of it since has
+    /// been a file. No key, no network, and the same events.
+    @Test func arealExchangeReplaysWithoutAKeyOrANetwork() async throws {
+        let file = try #require(Bundle.module.url(
+            forResource: "Fixtures/muse-spark-1.3-weather", withExtension: "jsonl"
+        ))
+        let model = try ScriptedProvider.replaying(file)
+
+        var events: [StreamEvent] = []
+        // Turn one: the model says something and asks for the tool.
+        for try await event in model.stream(ModelRequest(messages: [.user("Weather in Paris?")], tools: [])) {
+            events.append(event)
+        }
+        #expect(events.contains { if case .toolCall(let call) = $0 { call.name == "weather" } else { false } })
+        #expect(events.contains { if case .usage(let usage) = $0 { usage.totalTokens > 0 } else { false } })
+        #expect(events.last == .stop(.toolUse))
+
+        // Turn two: with the result in the context, it answers.
+        var second: [StreamEvent] = []
+        for try await event in model.stream(ModelRequest(
+            messages: [
+                .user("Weather in Paris?"),
+                .assistant(text: "Checking.", toolCalls: [ToolCall(id: "c", name: "weather", arguments: "{}")]),
+                .toolResult(ToolResult(callID: "c", content: "18C and sunny")),
+            ],
+            tools: []
+        )) { second.append(event) }
+        let said = second.compactMap { if case .text(let piece) = $0 { piece } else { nil } }.joined()
+        #expect(said.contains("18"), "the recorded reply used what the tool returned")
+        #expect(second.last == .stop(.endTurn))
     }
 }

@@ -2,6 +2,7 @@ import Foundation
 import Testing
 import Swaco
 import SwacoRuntime
+import SwacoConformance
 import SwacoTesting
 
 /// A tool whose answer comes from outside, later. In a fresh process it knows

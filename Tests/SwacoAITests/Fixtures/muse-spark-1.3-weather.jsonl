@@ -1,0 +1,8 @@
+{"turn":1,"event":{"text":"I'll check the weather in Paris for you now.","type":"text"}}
+{"turn":1,"event":{"call":{"id":"call_01a07d03cbae7ab3b56fdf42a4274d95","name":"weather","arguments":"{\"city\":\"Paris\"}"},"type":"tool_call"}}
+{"turn":1,"event":{"usage":{"inputTokens":533,"cachedInputTokens":497,"reasoningTokens":135,"outputTokens":202},"type":"usage"}}
+{"turn":1,"event":{"type":"stop","stop":"tool_use"}}
+{"turn":2,"event":{"text":"It's","type":"text"}}
+{"turn":2,"event":{"text":" 18C and sunny in Paris!","type":"text"}}
+{"turn":2,"event":{"type":"usage","usage":{"inputTokens":617,"cachedInputTokens":497,"reasoningTokens":617,"outputTokens":636}}}
+{"turn":2,"event":{"stop":"end_turn","type":"stop"}}

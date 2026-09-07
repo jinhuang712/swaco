@@ -31,3 +31,22 @@ public enum ProviderError: Error, Sendable, Equatable {
     /// from. The app names the store; swaco does not choose one.
     case noContentStore(ContentReference)
 }
+
+/// Which of these may pass, said by the side that knows.
+///
+/// A vendor asking us to wait is the commonest transient failure there is, and
+/// far commoner than a network that came and went. Whether to wait is still
+/// not ours to decide.
+extension ProviderError: TransientFailure {
+    public var isTransient: Bool {
+        switch self {
+        case .http(let status, _):
+            // Too many requests, a timeout, or the vendor having a bad minute.
+            return status == 429 || status == 408 || (500..<600).contains(status)
+        case .vendor(let type, _):
+            return type.contains("rate_limit") || type.contains("overloaded")
+        case .malformed, .noContentStore:
+            return false
+        }
+    }
+}

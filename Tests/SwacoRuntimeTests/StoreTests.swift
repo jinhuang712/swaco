@@ -2,7 +2,7 @@ import Foundation
 import Testing
 import Swaco
 import SwacoRuntime
-import SwacoTesting
+import SwacoConformance
 
 /// Our own stores run the contract every third-party store runs. If the
 /// contract is wrong, it is wrong for everyone at once.

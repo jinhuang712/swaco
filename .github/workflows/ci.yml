@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: [Swaco, SwacoAI, SwacoOpenAI, SwacoFoundationModels, SwacoExtensions, SwacoInteraction, SwacoRuntime, SwacoTesting]
+        module: [Swaco, SwacoAI, SwacoOpenAI, SwacoFoundationModels, SwacoExtensions, SwacoInteraction, SwacoRuntime, SwacoTesting, SwacoConformance]
     steps:
       - uses: actions/checkout@v4
       - uses: maxim-lobanov/setup-xcode@v1
@@ -78,6 +78,9 @@ jobs:
         run: swift build --product FirstProgram
       - name: Build the templates
         run: swift build --target Templates
+      # The recorder is run by hand against a real model, never here.
+      - name: Build the recorder
+        run: swift build --product Record
       - name: Build the sample app
         run: |
           xcodebuild -project Examples/ChatApp/ChatApp.xcodeproj \

@@ -28,7 +28,8 @@ contain.
 │ Swaco                 vocabulary · Agent loop · protocols for    │  mechanics
 │                       provider, tool, store · default rendering  │
 ├──────────────────────────────────────────────────────────────────┤
-│ SwacoTesting          mock provider · conformance suites         │  cross-cutting
+│ SwacoTesting          mock provider · recording and replay       │  cross-cutting
+│ SwacoConformance      store contracts · crash-at-every-event     │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -120,11 +121,21 @@ to its tool to resume. Concurrency across runs. The execution context exposed
 to extensions: foreground, background, app extension process, remaining time,
 whether a person is present.
 
-### SwacoTesting
+### SwacoTesting and SwacoConformance
 
-Public, so companions and third parties use it. The replayable mock provider.
-The conformance suites for `EventStore`, `ContentStore` and providers. The
-crash-at-every-event replay harness.
+Two targets, because they are for two different moments.
+
+`SwacoTesting` holds the replayable mock provider and the recording that feeds
+it: ask a vendor once, keep what it said, replay it from then on. It depends on
+Swaco alone and on no test framework, so a preview, a debug build and an app
+can link it. That matters: development and previews needing no key is a promise
+to the app, not only to our own tests.
+
+`SwacoConformance` holds the contracts any implementation runs, for
+`EventStore` and `ContentStore`, and the harness that ends the process after
+every event in turn and checks that recovery lands where an uninterrupted run
+would. It depends on Swift Testing, which is why it is not the same target as
+the mock.
 
 ### Companions
 
@@ -140,8 +151,9 @@ bridge are templates under `Examples/`, not companions.
 
 1. **Dependencies point down.** Swaco depends on nothing. SwacoAI,
    SwacoInteraction, SwacoExtensions and SwacoRuntime depend on Swaco only.
-   Providers depend on SwacoAI. SwacoTesting depends on Swaco and
-   SwacoRuntime. Nothing depends on a provider, an extension or a toolset.
+   Providers depend on SwacoAI. SwacoTesting depends on Swaco alone, so an
+   app may link it; SwacoConformance depends on Swaco and SwacoRuntime.
+   Nothing depends on a provider, an extension or a toolset.
 2. **Peers do not know each other.** A provider does not import an
    extension; an extension does not import the runtime; the runtime does not
    import a provider. Composition happens in the app.
@@ -201,7 +213,8 @@ swaco/
 │   │   ├── Recovery/            replay from the last persisted event
 │   │   └── Stores/              reference implementations
 │   │
-│   └── SwacoTesting/            mock provider, conformance suites, crash replay
+│   ├── SwacoTesting/            mock provider, recording, replay
+│   └── SwacoConformance/        store contracts, crash-at-every-event harness
 │
 ├── Tests/                       one directory per module, plus recorded fixtures
 ├── Examples/                    first program, templates, sample app

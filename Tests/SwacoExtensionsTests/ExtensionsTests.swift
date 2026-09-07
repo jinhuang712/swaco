@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 import Swaco
+import SwacoAI
 import SwacoExtensions
 import SwacoInteraction
 import SwacoRuntime
@@ -237,4 +238,39 @@ private struct FailingOnce: Provider {
             return count == 1
         }
     }
+}
+
+@Suite struct WhatIsWorthAnotherGo {
+    /// A vendor asking us to wait is the commonest transient failure there
+    /// is, and the side that knows says so.
+    @Test func aVendorAskingUsToWaitIsTransient() {
+        #expect(ProviderError.http(status: 429, body: "slow down").isTransient)
+        #expect(ProviderError.http(status: 503, body: "").isTransient)
+        #expect(ProviderError.http(status: 408, body: "").isTransient)
+        #expect(ProviderError.vendor(type: "rate_limit_error", message: "").isTransient)
+        // And what is not: a request that was simply wrong.
+        #expect(!ProviderError.http(status: 400, body: "").isTransient)
+        #expect(!ProviderError.http(status: 401, body: "").isTransient)
+        #expect(!ProviderError.malformed("{").isTransient)
+        // A failure that says nothing about itself is not assumed to be.
+        #expect(!AnyFailure().isTransient)
+    }
+
+    /// Retry reads the fact rather than knowing about vendors, which is why
+    /// the extension can depend on the core alone.
+    @Test func retryTriesAgainAfterARateLimit() async throws {
+        let flaky = FailingOnce(then: ScriptedProvider.saying("Thanks for waiting."),
+                                error: ProviderError.http(status: 429, body: "slow down"))
+        let run = Run(
+            agent: Agent(provider: flaky, tools: [],
+                         extensions: [Retry(limit: 3, first: .milliseconds(1))]),
+            store: InMemoryEventStore()
+        )
+        var events: [Event] = []
+        for try await event in run.start("hello") { events.append(event) }
+        #expect(events.contains(.text("Thanks for waiting.")))
+        #expect(events.last == .finished)
+    }
+
+    private struct AnyFailure: Error {}
 }
