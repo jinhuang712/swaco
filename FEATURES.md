@@ -59,15 +59,16 @@ Fixed now, before code. Each word means one thing.
       position; bytes by reference. The core defines both and holds neither.
       Each contract is written where its protocol is, and the suite that
       checks it is the one every third-party store runs
-- [~] `Tool` protocol: JSON Schema parameters, typed results, and a
-      declared access of read-only or writing. Access has no default and is
+- [x] `Tool` protocol: JSON Schema parameters, typed results, and a
+      declared access of read-only or writing. A result carries words for
+      the model and, where the tool produced one, a shape for the app. Access has no default and is
       a fact for extensions and the app to read; the loop acts on it in no
       way
 - [x] `ToolSet` protocol: name, description, expansion into tools; a single
       tool is a toolset of one, so `Tool` is a `ToolSet` and nothing needs
       wrapping to be handed over. An app takes part of a set at the
       granularity of a tool, by name or by a rule over what a tool declared
-- [~] Tool execution is a pair of events, call issued and result arrived,
+- [x] Tool execution is a pair of events, call issued and result arrived,
       never an awaited function. A tool either delivers its result at once
       or registers that the result will arrive later; the loop advances only
       on the result event. A tool that registers a later result also states
@@ -263,9 +264,10 @@ relaunch). The app owns the presentation.
 - [x] `ask`: put a question to the person, free-form or with options
 - [x] `confirm`: have the person approve or refuse an action; also the shape
       used for requesting system authorisation
-- [~] `report`: tell the person about progress or an intermediate result
+- [x] `report`: tell the person about progress or an intermediate result
       without waiting and without ending the reply; payload may include
-      media. Text now; media when content parts carry references
+      media. The model writes the words; the app, which is the side holding
+      pictures, adds them
 - [x] `ask` and `confirm` suspend the same way whether or not a person is
       present; the app decides how to bring the person back. Both are
       re-armed against the desk the relaunched app holds, so a question put
