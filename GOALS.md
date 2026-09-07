@@ -154,11 +154,12 @@ met it is marked here and the next becomes the current one.
    compiles under Swift 6 strict concurrency with the event-pair loop, a
    main-actor tool, a deferred result and external cancellation, and no
    unchecked escape. The answer is "yes" or "no, and this is what changes
-   in the design". Needs no Xcode and no simulator. *Current.*
+   in the design". Needs no Xcode and no simulator. *Met: yes; the shape
+   is recorded in FEATURES under the spike.*
 2. **The first program runs.** `import Swaco`, one provider, one tool, one
    `Agent`, one `for await`, in twenty lines or fewer, against the mock
    provider on an iOS simulator. Protocols bent to fit; the example did not
-   grow.
+   grow. *Current.*
 3. **The first app works.** The chatbot described above, on a phone,
    through one hosted provider and one on-device provider, with a session
    that survives relaunch and an `ask` that survives relaunch. Every module

@@ -42,7 +42,7 @@ Fixed now, before code. Each word means one thing.
       delivered
 - [ ] Canonical message and content types: text, image, tool call, tool
       result, reasoning, provider-executed tool use and result, citations
-- [ ] Canonical streaming event set shared by all providers
+- [~] Canonical streaming event set shared by all providers
 - [ ] Messages are a projection of the event log, not a separate store
 - [ ] Content parts can hold a reference to stored bytes instead of the bytes
       themselves, loaded on demand through the `ContentStore` protocol, so a
@@ -50,26 +50,26 @@ Fixed now, before code. Each word means one thing.
 - [ ] `EventStore` and `ContentStore` protocols with their contracts: ordered
       append, durable on return, read by group in write order, replay from a
       position; bytes by reference. The core defines both and holds neither
-- [ ] `Tool` protocol: JSON Schema parameters, typed results, and a
+- [~] `Tool` protocol: JSON Schema parameters, typed results, and a
       declared access of read-only or writing. Access has no default and is
       a fact for extensions and the app to read; the loop acts on it in no
       way
 - [ ] `ToolSet` protocol: name, description, expansion into tools; a single
       tool is a toolset of one
-- [ ] Tool execution is a pair of events, call issued and result arrived,
+- [~] Tool execution is a pair of events, call issued and result arrived,
       never an awaited function. A tool either delivers its result at once
       or registers that the result will arrive later; the loop advances only
       on the result event. A tool that registers a later result also states
       how to resume it: given the call it once registered, in a fresh
       process, it re-arms whatever will deliver the result. This pair,
       register and resume, is what lets a wait survive relaunch
-- [ ] Tools may run on the main actor; the loop performs the hop
+- [x] Tools may run on the main actor; the loop performs the hop
 - [ ] Rendering of inbound events into model-readable content is a
       protocol with one default implementation the app may replace whole
-- [ ] `Provider` protocol: one streaming call, declared capabilities
+- [~] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
 - [ ] Model described as data (provider, identifier, capabilities)
-- [ ] `Agent`: the loop, callable on its own. Context in, event stream out;
+- [~] `Agent`: the loop, callable on its own. Context in, event stream out;
       request, stream, execute tool calls, repeat until the model stops.
       Knows nothing about runs or sessions; the first program calls it
       directly
@@ -81,11 +81,11 @@ Fixed now, before code. Each word means one thing.
       runs the loop. The app declares extensions as an ordered list; swaco
       applies them strictly in that order, chains rewrites, and lets any
       refusal win
-- [ ] Cancellation at any point with no inconsistent state. Nothing received
+- [~] Cancellation at any point with no inconsistent state. Nothing received
       is ever discarded: a partial reply is recorded as received and marked
       with why it stopped, by a person or by the system. Whether it is shown
       or sent back to the model is the app's decision
-- [ ] Zero dependencies beyond the standard library and Foundation
+- [x] Zero dependencies beyond the standard library and Foundation
 
 ## Runtime
 
@@ -295,19 +295,24 @@ requires showing that it does. The list is kept short on purpose.
 
 ## Spike before design
 
-- [ ] Can the event-pair loop, with a main-actor tool, a deferred result
+- [x] Can the event-pair loop, with a main-actor tool, a deferred result
       and external cancellation, compile under Swift 6 strict concurrency
-      with no unchecked escapes?
+      with no unchecked escapes? Yes. `Tool.execute` returns a result or
+      `.deferred`; a deferred tool later calls the `ResultDelivery` it was
+      handed; an actor holds the waits so delivery, awaiting and
+      cancellation cannot race. A `@MainActor` class satisfies the async
+      requirements and the loop hops implicitly. Cancelling the consuming
+      task is recorded as the system; `AgentRun.cancel()` as a person
 
 ## Project
 
 - [ ] Swift Package with independently linkable modules; the core works
       when every other module is absent
 - [ ] iOS 26 minimum; macOS 26 compiles but is not yet supported
-- [ ] Swift 6 strict concurrency; all public types `Sendable` and
+- [~] Swift 6 strict concurrency; all public types `Sendable` and
       serialisable
 - [ ] Every public symbol documented, Swift naming conventions
-- [ ] Swift Testing suite that never touches the network
+- [~] Swift Testing suite that never touches the network
 - [ ] CI on GitHub Actions
 - [ ] Breaking changes allowed and recorded before 1.0; semantic versioning
       after
