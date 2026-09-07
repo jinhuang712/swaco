@@ -28,6 +28,13 @@ public struct InboundEvent: Sendable, Hashable {
     }
 }
 
+/// Something the content asked for that the model had not declared.
+public enum Capability: Sendable, Hashable {
+    case tools
+    case vision
+    case reasoning
+}
+
 /// Why a loop stopped before the model did.
 public enum CancellationOrigin: Sendable, Hashable {
     case person
@@ -46,6 +53,10 @@ public enum Event: Sendable, Hashable {
     case turnEnded(StopReason)
     case cancelled(CancellationOrigin, partial: String)
     case failed(String)
+    /// The request asked for something this model has not declared. Recorded
+    /// and nothing else: the loop does not refuse, the provider does not trim,
+    /// the app decides.
+    case capabilityMissing(Capability)
     case finished
     /// An event written by a swaco that knew a type this one does not. Kept
     /// exactly as it was written, and written back unchanged.

@@ -8,6 +8,7 @@ let package = Package(
         .library(name: "Swaco", targets: ["Swaco"]),
         .library(name: "SwacoAI", targets: ["SwacoAI"]),
         .library(name: "SwacoOpenAI", targets: ["SwacoOpenAI"]),
+        .library(name: "SwacoFoundationModels", targets: ["SwacoFoundationModels"]),
         .library(name: "SwacoInteraction", targets: ["SwacoInteraction"]),
         .library(name: "SwacoRuntime", targets: ["SwacoRuntime"]),
         .library(name: "SwacoTesting", targets: ["SwacoTesting"]),
@@ -18,6 +19,8 @@ let package = Package(
         // The AI layer: shared machinery, then one thin target per vendor.
         .target(name: "SwacoAI", dependencies: ["Swaco"], path: "Sources/SwacoAI/Core"),
         .target(name: "SwacoOpenAI", dependencies: ["SwacoAI"], path: "Sources/SwacoAI/OpenAI"),
+        .target(name: "SwacoFoundationModels", dependencies: ["Swaco"],
+                path: "Sources/SwacoAI/FoundationModels"),
 
         .target(name: "SwacoInteraction", dependencies: ["Swaco"]),
         .target(name: "SwacoRuntime", dependencies: ["Swaco"]),
@@ -31,6 +34,8 @@ let package = Package(
                     dependencies: ["SwacoInteraction", "SwacoRuntime", "SwacoTesting"]),
         .testTarget(name: "SwacoAITests", dependencies: ["SwacoAI", "SwacoOpenAI"],
                     resources: [.copy("Fixtures")]),
+        .testTarget(name: "SwacoFoundationModelsTests",
+                    dependencies: ["SwacoFoundationModels", "SwacoRuntime", "SwacoTesting"]),
 
         // The canonical first program, built in CI so it never drifts.
         .executableTarget(name: "FirstProgram", dependencies: ["Swaco", "SwacoOpenAI"],

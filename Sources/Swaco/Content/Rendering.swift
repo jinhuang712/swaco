@@ -60,7 +60,8 @@ public extension Message {
             case .toolResultArrived(let result):
                 closeTurn()
                 messages.append(.toolResult(result))
-            case .turnStarted, .toolCallDeferred, .cancelled, .failed, .finished, .unrecognised:
+            case .turnStarted, .toolCallDeferred, .cancelled, .failed, .capabilityMissing,
+                 .finished, .unrecognised:
                 // A turn interrupted before it ended is closed by whatever
                 // comes next; nothing received is discarded.
                 continue

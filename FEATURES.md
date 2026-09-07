@@ -68,9 +68,11 @@ Fixed now, before code. Each word means one thing.
 - [x] Tools may run on the main actor; the loop performs the hop
 - [x] Rendering of inbound events into model-readable content is a
       protocol with one default implementation the app may replace whole
-- [~] `Provider` protocol: one streaming call, declared capabilities
+- [x] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
-- [ ] Model described as data (provider, identifier, capabilities)
+- [~] Model described as data (provider, identifier, capabilities).
+      Capabilities are declared by the provider; a catalogue of identifiers
+      is not written yet
 - [x] `Agent`: the loop, callable on its own. Context in, event stream out;
       request, stream, execute tool calls, repeat until the model stops.
       Knows nothing about runs or sessions; the first program calls it
@@ -209,7 +211,9 @@ Each is a thin module over `SwacoAI`.
 - [ ] Anthropic (streaming, tool use, provider-executed web search)
 - [~] OpenAI, including OpenAI-compatible endpoints. Any endpoint that
       speaks the Responses protocol is reached by naming a connection
-- [ ] Apple Foundation Models (on-device)
+- [x] Apple Foundation Models (on-device). It runs tools itself rather than
+      handing calls back, so it declares no tool support and a request with
+      tools is recorded as a mismatch
 - [ ] Gemini (later)
 - [x] Replayable mock provider for tests
 
@@ -299,7 +303,7 @@ upgrading. Build tooling, signing, distribution and onboarding are the app's.
 - [ ] Each module states its deployment requirements: entitlements, App
       Group, Info.plist usage strings. A debug-build check fails at launch,
       with a clear message, when a linked module's requirements are missing
-- [ ] Providers expose availability: not on this device, model downloading,
+- [x] Providers expose availability: not on this device, model downloading,
       ready. Apps decide before the first request, not after the first
       failure
 - [ ] No initialisation step, no account, no configuration file. The core

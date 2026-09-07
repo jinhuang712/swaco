@@ -24,3 +24,26 @@ public struct ScriptedProvider: Provider {
         }
     }
 }
+
+/// A provider that declares what a model can take, wrapping another. The way
+/// to exercise a mismatch without needing the model that has it.
+public struct DeclaringProvider: Provider {
+    public let wrapped: any Provider
+    public let capabilities: ModelCapabilities
+
+    public init(_ wrapped: any Provider, capabilities: ModelCapabilities) {
+        self.wrapped = wrapped
+        self.capabilities = capabilities
+    }
+
+    public func stream(_ request: ModelRequest) -> AsyncThrowingStream<StreamEvent, any Error> {
+        wrapped.stream(request)
+    }
+}
+
+public extension Provider {
+    /// The same provider, declaring that it takes no tools.
+    func withoutTools() -> DeclaringProvider {
+        DeclaringProvider(self, capabilities: ModelCapabilities(tools: false))
+    }
+}

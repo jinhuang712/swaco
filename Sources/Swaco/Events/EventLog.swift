@@ -19,11 +19,13 @@ extension Event: Codable {
         static let turnEnded = "turn_ended"
         static let cancelled = "cancelled"
         static let failed = "failed"
+        static let capabilityMissing = "capability_missing"
         static let finished = "finished"
     }
 
     private enum Key: String, CodingKey {
         case type, turn, text, call, result, stop, origin, partial, message, source
+        case capability
     }
 
     public init(from decoder: any Decoder) throws {
@@ -53,6 +55,8 @@ extension Event: Codable {
             )
         case Name.failed:
             self = .failed(try container.decode(String.self, forKey: .message))
+        case Name.capabilityMissing:
+            self = .capabilityMissing(try container.decode(Capability.self, forKey: .capability))
         case Name.finished:
             self = .finished
         case let type:
@@ -101,6 +105,9 @@ extension Event: Codable {
         case .failed(let message):
             try container.encode(Name.failed, forKey: .type)
             try container.encode(message, forKey: .message)
+        case .capabilityMissing(let capability):
+            try container.encode(Name.capabilityMissing, forKey: .type)
+            try container.encode(capability, forKey: .capability)
         case .finished:
             try container.encode(Name.finished, forKey: .type)
         case .unrecognised:
@@ -143,6 +150,12 @@ extension Source: WireNamed {
         [(.person, "person"), (.shortcut, "shortcut"), (.notification, "notification"),
          (.url, "url"), (.share, "share"), (.system, "system"),
          (.schedule, "schedule"), (.sensor, "sensor")]
+    }
+}
+
+extension Capability: WireNamed {
+    static var wireNames: [(Capability, String)] {
+        [(.tools, "tools"), (.vision, "vision"), (.reasoning, "reasoning")]
     }
 }
 

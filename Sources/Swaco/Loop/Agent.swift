@@ -108,6 +108,10 @@ public struct Agent: Sendable {
             messages.append(.toolResult(result))
         }
 
+        if !definitions.isEmpty, !provider.capabilities.tools {
+            emit(.capabilityMissing(.tools))
+        }
+
         while true {
             turn += 1
             emit(.turnStarted(turn))
