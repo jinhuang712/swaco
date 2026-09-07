@@ -218,14 +218,16 @@ Tools through which the agent reaches the person. Swaco owns the mechanics
 loop suspends, the app answers, the loop continues, the suspension survives
 relaunch). The app owns the presentation.
 
-- [ ] `ask`: put a question to the person, free-form or with options
-- [ ] `confirm`: have the person approve or refuse an action; also the shape
+- [x] `ask`: put a question to the person, free-form or with options
+- [x] `confirm`: have the person approve or refuse an action; also the shape
       used for requesting system authorisation
-- [ ] `report`: tell the person about progress or an intermediate result
+- [~] `report`: tell the person about progress or an intermediate result
       without waiting and without ending the reply; payload may include
-      media
-- [ ] `ask` and `confirm` suspend the same way whether or not a person is
-      present; the app decides how to bring the person back
+      media. Text now; media when content parts carry references
+- [x] `ask` and `confirm` suspend the same way whether or not a person is
+      present; the app decides how to bring the person back. Both are
+      re-armed against the desk the relaunched app holds, so a question put
+      before the process died is waiting when it comes back
 - [ ] `schedule`: let the agent arrange a future wake-up that returns as an
       inbound event; the app supplies the mechanism (longer term)
 
