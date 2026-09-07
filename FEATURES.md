@@ -77,18 +77,19 @@ Fixed now, before code. Each word means one thing.
       request, stream, execute tool calls, repeat until the model stops.
       Knows nothing about runs or sessions; the first program calls it
       directly
-- [~] Extension protocol whose hooks are exactly the moments of the loop:
+- [x] Extension protocol whose hooks are exactly the moments of the loop:
       an event arrives while the loop is running, before a request, after a
       response, before a tool call, after a tool call, end of turn, end of
       loop. Each hook may pass, rewrite or refuse; the arrival hook may also
       inject the event into the next turn, queue it, or leave it for whatever
       runs the loop. The app declares extensions as an ordered list; swaco
       applies them strictly in that order, chains rewrites, and lets any
-      refusal win. Done but for the arrival hook, which waits on a run
-      being able to be handed something while it is running. A refusal
-      before a call becomes that call's result so the model is told, and a
-      refusal at the end of a turn ends the loop; a failed request is the
-      one moment an extension may ask for another go
+      refusal win. A refusal before a call becomes that call's result so
+      the model is told, and a refusal at the end of a turn ends the loop;
+      a failed request is the one moment an extension may ask for another
+      go. Things that arrive mid-loop are handed to an `Inbox` the app
+      holds, drained at the start of each turn and again before the loop
+      would end
 - [~] Cancellation at any point with no inconsistent state. Nothing received
       is ever discarded: a partial reply is recorded as received and marked
       with why it stopped, by a person or by the system. Whether it is shown
@@ -111,7 +112,7 @@ Fixed now, before code. Each word means one thing.
       failed. Awaiting a result covers every tool that registered a later
       result, a person's answer among them. State is read off the log rather
       than kept beside it, so the two can never disagree
-- [ ] Intake extension: the runtime's implementation of the arrival hook.
+- [x] Intake extension: the runtime's implementation of the arrival hook.
       The app supplies a mapping from source and session state to inject,
       queue or leave; left events start a new run. An app that does not list
       the extension starts a new run for every event that arrives during

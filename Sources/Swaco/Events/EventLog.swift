@@ -22,12 +22,13 @@ extension Event: Codable {
         static let capabilityMissing = "capability_missing"
         static let rewritten = "rewritten"
         static let refused = "refused"
+        static let arrivalHandled = "arrival_handled"
         static let finished = "finished"
     }
 
     private enum Key: String, CodingKey {
         case type, turn, text, call, result, stop, origin, partial, message, source
-        case capability, by, subject, reason
+        case capability, by, subject, reason, handling
     }
 
     public init(from decoder: any Decoder) throws {
@@ -59,6 +60,11 @@ extension Event: Codable {
             self = .failed(try container.decode(String.self, forKey: .message))
         case Name.capabilityMissing:
             self = .capabilityMissing(try container.decode(Capability.self, forKey: .capability))
+        case Name.arrivalHandled:
+            self = .arrivalHandled(
+                try container.decode(Arrival.self, forKey: .handling),
+                by: try container.decode(String.self, forKey: .by)
+            )
         case Name.rewritten:
             self = .rewritten(
                 by: try container.decode(String.self, forKey: .by),
@@ -121,6 +127,10 @@ extension Event: Codable {
         case .capabilityMissing(let capability):
             try container.encode(Name.capabilityMissing, forKey: .type)
             try container.encode(capability, forKey: .capability)
+        case .arrivalHandled(let handling, let by):
+            try container.encode(Name.arrivalHandled, forKey: .type)
+            try container.encode(handling, forKey: .handling)
+            try container.encode(by, forKey: .by)
         case .rewritten(let by, let subject):
             try container.encode(Name.rewritten, forKey: .type)
             try container.encode(by, forKey: .by)
@@ -172,6 +182,12 @@ extension Source: WireNamed {
         [(.person, "person"), (.shortcut, "shortcut"), (.notification, "notification"),
          (.url, "url"), (.share, "share"), (.system, "system"),
          (.schedule, "schedule"), (.sensor, "sensor")]
+    }
+}
+
+extension Arrival: WireNamed {
+    static var wireNames: [(Arrival, String)] {
+        [(.inject, "inject"), (.queue, "queue"), (.leave, "leave")]
     }
 }
 

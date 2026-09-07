@@ -40,6 +40,20 @@ struct Extending: Sendable {
         return changed ? .rewritten(current, events) : .unchanged
     }
 
+    /// What to do with something that arrived. The first extension with an
+    /// opinion decides; with none, it is not this loop's business.
+    func arrival(
+        of inbound: InboundEvent,
+        in context: ExtensionContext
+    ) async -> (Arrival, by: String) {
+        for extend in extensions {
+            if let arrival = await extend.arrived(inbound, in: context) {
+                return (arrival, by: extend.name)
+            }
+        }
+        return (.leave, by: "swaco")
+    }
+
     /// Whether the loop may take another turn.
     func mayContinue(after turn: Int, in context: ExtensionContext) async -> Event? {
         for extend in extensions {

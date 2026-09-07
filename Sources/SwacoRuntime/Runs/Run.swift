@@ -44,6 +44,12 @@ public struct Run: Sendable {
         }
     }
 
+    /// What this run's loop was left to deal with by whatever runs it: the
+    /// arrivals no extension claimed. A run is started for each.
+    public func left() async -> [InboundEvent] {
+        await agent.inbox?.takeLeft() ?? []
+    }
+
     /// Everything recorded for this run, in the order it happened.
     public func history() async throws -> [Event] {
         try await store.read(group).map(\.event)

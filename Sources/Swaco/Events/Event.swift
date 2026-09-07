@@ -53,6 +53,9 @@ public enum Event: Sendable, Hashable {
     case turnEnded(StopReason)
     case cancelled(CancellationOrigin, partial: String)
     case failed(String)
+    /// What was done with something that arrived while the loop was running,
+    /// and who decided.
+    case arrivalHandled(Arrival, by: String)
     /// An extension changed something on its way through the loop.
     case rewritten(by: String, subject: Subject)
     /// An extension refused something. What that ends depends on where it

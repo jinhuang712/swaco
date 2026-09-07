@@ -38,26 +38,31 @@ public struct Agent: Sendable {
     public let rendering: any EventRendering
     /// Where the loop is running, as whatever runs it knows.
     public let execution: ExecutionContext
+    /// Where things that arrive mid-loop are handed in. Nil means nothing can
+    /// arrive while this loop runs.
+    public let inbox: Inbox?
 
     public init(
         provider: any Provider,
         tools: [any Tool],
         extensions: [any Extension] = [],
         rendering: any EventRendering = DefaultEventRendering(),
-        execution: ExecutionContext = .unknown
+        execution: ExecutionContext = .unknown,
+        inbox: Inbox? = nil
     ) {
         self.provider = provider
         self.tools = tools
         self.extensions = extensions
         self.rendering = rendering
         self.execution = execution
+        self.inbox = inbox
     }
 
     /// The same agent with a different sense of where it is running. What
     /// runs the loop knows this; the agent it was handed did not.
     public func running(in execution: ExecutionContext) -> Agent {
         Agent(provider: provider, tools: tools, extensions: extensions,
-              rendering: rendering, execution: execution)
+              rendering: rendering, execution: execution, inbox: inbox)
     }
 
     /// Starts a loop from something that arrived.
@@ -129,10 +134,22 @@ public struct Agent: Sendable {
 
         let extending = Extending(extensions: extensions)
 
+        var queued: [InboundEvent] = []
+
         while true {
             turn += 1
             let moment = ExtensionContext(turn: turn, execution: execution)
             emit(.turnStarted(turn))
+
+            // Anything handed in since the last turn joins this one, along
+            // with anything the last turn held back.
+            let (injected, held) = await intake(
+                turn: turn, extending: extending, waiting: false, emit: emit
+            )
+            queued += held
+            for inbound in injected + queued.take() {
+                messages.append(rendering.render(inbound))
+            }
 
             var request = ModelRequest(messages: messages, tools: definitions)
             switch await extending.decide(request, as: { _ in .request }, in: moment,
@@ -216,6 +233,16 @@ public struct Agent: Sendable {
             emit(.turnEnded(response.stop))
 
             if response.toolCalls.isEmpty || response.stop != .toolUse {
+                // Nothing more from the model. Anything queued is what this
+                // loop still owes an answer to, so it takes another turn.
+                let (injected, held) = await intake(
+                    turn: turn, extending: extending, waiting: false, emit: emit
+                )
+                queued += injected + held
+                if !queued.isEmpty {
+                    for inbound in queued.take() { messages.append(rendering.render(inbound)) }
+                    continue
+                }
                 if let refusal = await extending.mayContinue(after: turn, in: moment) { emit(refusal) }
                 emit(.finished)
                 await extending.loopEnded(in: moment)
@@ -275,6 +302,31 @@ public struct Agent: Sendable {
                 return
             }
         }
+    }
+
+    /// Takes whatever arrived and asks the extensions what to do with it.
+    /// Returns what goes into this turn, and what is held for later.
+    private func intake(
+        turn: Int,
+        extending: Extending,
+        waiting: Bool,
+        emit: @Sendable (Event) -> Void
+    ) async -> (inject: [InboundEvent], queue: [InboundEvent]) {
+        guard let inbox, await !inbox.isEmpty else { return ([], []) }
+        var inject: [InboundEvent] = []
+        var queue: [InboundEvent] = []
+        let moment = ExtensionContext(turn: turn, execution: execution, waitingForResult: waiting)
+        for inbound in await inbox.take() {
+            emit(.arrived(inbound))
+            let (arrival, by) = await extending.arrival(of: inbound, in: moment)
+            emit(.arrivalHandled(arrival, by: by))
+            switch arrival {
+            case .inject: inject.append(inbound)
+            case .queue: queue.append(inbound)
+            case .leave: await inbox.leave(inbound)
+            }
+        }
+        return (inject, queue)
     }
 
     /// Nil means cancelled while waiting for a deferred result.

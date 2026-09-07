@@ -68,10 +68,15 @@ public struct ExecutionContext: Sendable, Hashable, Codable {
 public struct ExtensionContext: Sendable {
     public let turn: Int
     public let execution: ExecutionContext
+    /// Whether the loop is waiting on a result that will arrive later. The
+    /// fact an intake rule most wants: something arriving while the agent is
+    /// waiting on a person is not the same as one arriving mid-thought.
+    public let waitingForResult: Bool
 
-    public init(turn: Int, execution: ExecutionContext) {
+    public init(turn: Int, execution: ExecutionContext, waitingForResult: Bool = false) {
         self.turn = turn
         self.execution = execution
+        self.waitingForResult = waitingForResult
     }
 }
 
@@ -88,6 +93,10 @@ public protocol Extension: Sendable {
     /// A name for the log, so a rewrite or a refusal says who did it.
     var name: String { get }
 
+    /// Something arrived while the loop was running. Nil is no opinion; with
+    /// no opinion from anyone the event is left, which is how an app that
+    /// lists no intake extension gets a new run for every arrival.
+    func arrived(_ inbound: InboundEvent, in context: ExtensionContext) async -> Arrival?
     func beforeRequest(_ request: ModelRequest, in context: ExtensionContext) async -> Decision<ModelRequest>
     func afterResponse(_ response: Response, in context: ExtensionContext) async -> Decision<Response>
     /// A refusal here becomes the call's result, marked as an error, so the
@@ -103,6 +112,7 @@ public protocol Extension: Sendable {
 }
 
 public extension Extension {
+    func arrived(_ inbound: InboundEvent, in context: ExtensionContext) async -> Arrival? { nil }
     func beforeRequest(_ request: ModelRequest, in context: ExtensionContext) async -> Decision<ModelRequest> { .pass }
     func afterResponse(_ response: Response, in context: ExtensionContext) async -> Decision<Response> { .pass }
     func beforeToolCall(_ call: ToolCall, in context: ExtensionContext) async -> Decision<ToolCall> { .pass }
