@@ -167,7 +167,11 @@ met it is marked here and the next becomes the current one.
    through one hosted provider and one on-device provider, with a session
    that survives relaunch and an `ask` that survives relaunch. Every module
    it links is independently linkable and the crash-at-every-event harness
-   passes on its log.
+   passes on its log. *Current. In the simulator the app restores a
+   conversation and a question a previous process left unanswered, and picks
+   the loop back up; the harness passes and each module builds alone. What
+   remains is a real device, and both providers exercised by hand in the
+   app.*
 4. **The doors are proven.** One companion toolset and one template
    extension exist, written through public protocols only, with nothing
    added to the core to make them possible.

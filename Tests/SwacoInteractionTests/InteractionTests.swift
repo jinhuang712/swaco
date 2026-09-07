@@ -18,7 +18,7 @@ private func asking(_ arguments: String, then answer: String, tool: String) -> S
         let agent = Agent(
             provider: asking(#"{"question":"Which city?","options":["Paris","Rome"]}"#,
                              then: "Paris then.", tool: "ask"),
-            tools: await desk.tools
+            tools: desk.tools
         )
         let run = Run(agent: agent, store: InMemoryEventStore())
 
@@ -44,7 +44,7 @@ private func asking(_ arguments: String, then answer: String, tool: String) -> S
         let agent = Agent(
             provider: asking(#"{"action":"Delete the file","detail":"It cannot be undone"}"#,
                              then: "Left alone.", tool: "confirm"),
-            tools: await desk.tools
+            tools: desk.tools
         )
         let run = Run(agent: agent, store: InMemoryEventStore())
 
@@ -66,7 +66,7 @@ private func asking(_ arguments: String, then answer: String, tool: String) -> S
         let desk = Interaction()
         let agent = Agent(
             provider: asking(#"{"message":"Halfway there"}"#, then: "All done.", tool: "report"),
-            tools: await desk.tools
+            tools: desk.tools
         )
         let run = Run(agent: agent, store: InMemoryEventStore())
 
@@ -84,7 +84,7 @@ private func asking(_ arguments: String, then answer: String, tool: String) -> S
         let desk = Interaction()
         let agent = Agent(
             provider: asking(#"{"question":"Which city?"}"#, then: "Paris then.", tool: "ask"),
-            tools: await desk.tools
+            tools: desk.tools
         )
         let run = Run(agent: agent, store: InMemoryEventStore())
 
@@ -115,7 +115,7 @@ private func asking(_ arguments: String, then answer: String, tool: String) -> S
         do {
             let desk = Interaction()
             let run = Run(group: group,
-                          agent: Agent(provider: script(), tools: await desk.tools),
+                          agent: Agent(provider: script(), tools: desk.tools),
                           store: try FileEventStore(directory: directory))
             for try await event in run.start("book me a trip") {
                 if case .toolCallDeferred = event { break }
@@ -125,7 +125,7 @@ private func asking(_ arguments: String, then answer: String, tool: String) -> S
         // After: a new desk, a new store, nothing kept in memory.
         let desk = Interaction()
         let store = try FileEventStore(directory: directory)
-        let run = Run(group: group, agent: Agent(provider: script(), tools: await desk.tools), store: store)
+        let run = Run(group: group, agent: Agent(provider: script(), tools: desk.tools), store: store)
         #expect(try await run.state() == .awaitingResults([
             ToolCall(id: "r1", name: "ask", arguments: #"{"question":"Which city?"}"#),
         ]))

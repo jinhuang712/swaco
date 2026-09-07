@@ -7,5 +7,9 @@ xcuserdata/
 .build/
 .swiftpm/
 
+# Xcode project state
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+
 # Local tooling
 .serena/

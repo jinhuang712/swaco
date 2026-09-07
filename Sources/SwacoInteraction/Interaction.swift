@@ -67,8 +67,9 @@ public actor Interaction {
     }
 
     /// The tools to hand to an agent. A single tool is a toolset of one, and
-    /// an app that wants only some of them names only those.
-    public var tools: [any Tool] { [Ask(self), Confirm(self), Tell(self)] }
+    /// an app that wants only some of them names only those. Reachable from
+    /// anywhere: building the tools touches nothing the desk is guarding.
+    public nonisolated var tools: [any Tool] { [Ask(self), Confirm(self), Tell(self)] }
 
     /// Requests waiting for an answer, in the order they were made.
     public var pending: [PendingRequest] {
