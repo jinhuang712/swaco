@@ -4,7 +4,9 @@ import Swaco
 
 /// A token pair, as OAuth hands it over.
 public struct Tokens: Sendable, Hashable, Codable {
+    /// The token attached to a request.
     public var access: String
+    /// The token exchanged for a new pair when the access one goes stale.
     public var refresh: String?
     /// When the access token stops working, where the vendor said.
     public var expires: Date?

@@ -26,6 +26,7 @@ public struct Run: Sendable {
         self.limit = limit
     }
 
+    /// A name for a run nobody has named. An app with its own naming uses it.
     public static func newGroup() -> GroupID { GroupID(UUID().uuidString) }
 
     /// Starts a loop from something that arrived.

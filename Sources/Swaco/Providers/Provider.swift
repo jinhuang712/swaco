@@ -31,8 +31,11 @@ public struct Usage: Sendable, Hashable, Codable {
         self.reasoningTokens = reasoningTokens
     }
 
+    /// In and out together. Not a price and not a score: a count.
     public var totalTokens: Int { inputTokens + outputTokens }
 
+    /// Two turns' counts, added. Whoever is counting does the adding;
+    /// swaco carries the numbers and keeps no total of its own.
     public static func + (left: Usage, right: Usage) -> Usage {
         Usage(
             inputTokens: left.inputTokens + right.inputTokens,
@@ -133,8 +136,11 @@ public struct ModelRequest: Sendable {
 /// What a model has declared it can take. Facts, not policy: swaco makes sure
 /// they are visible, and the app decides what to do when they do not line up.
 public struct ModelCapabilities: Sendable, Hashable, Codable {
+    /// Whether the model can be given tools and will ask for them.
     public var tools: Bool
+    /// Whether it can be given pictures.
     public var vision: Bool
+    /// Whether it hands back what it thought on the way.
     public var reasoning: Bool
     /// Tools the vendor runs itself, such as its own web search.
     public var providerExecutedTools: Bool

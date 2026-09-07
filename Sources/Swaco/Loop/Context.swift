@@ -5,9 +5,14 @@
 /// A fresh loop has one message and no waiting calls. A loop being continued
 /// after the process that started it is gone has whatever its log projects.
 public struct Context: Sendable {
+    /// What the model will see.
     public var messages: [Message]
+    /// What began this, when something did. Recorded first, so a log stands
+    /// on its own.
     public var arrival: InboundEvent?
+    /// Calls issued and never answered, to be handed back to their tools.
     public var waiting: [ToolCall]
+    /// How many turns the log already holds, so numbering carries on.
     public var turnsSoFar: Int
 
     public init(

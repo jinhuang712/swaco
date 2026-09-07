@@ -18,6 +18,7 @@ public struct Session: Sendable {
         self.store = store
     }
 
+    /// A name for a session nobody has named.
     public static func newID() -> GroupID { GroupID(UUID().uuidString) }
 
     /// A run in this session, served by the agent given now.

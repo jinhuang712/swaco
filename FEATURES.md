@@ -396,7 +396,11 @@ requires showing that it does. The list is kept short on purpose.
 - [x] iOS 26 minimum; macOS 26 compiles but is not yet supported
 - [~] Swift 6 strict concurrency; all public types `Sendable` and
       serialisable
-- [ ] Every public symbol documented, Swift naming conventions
+- [~] Every public symbol documented, Swift naming conventions. Every type,
+      every protocol requirement and every member whose meaning is not given
+      by the protocol it satisfies. A conformance does not repeat what its
+      protocol already says: `read` on a store means what `EventStore` says
+      it means, and saying it twice is how documentation starts to lie
 - [x] Swift Testing suite that never touches the network. Ninety-six checks
       on macOS and on the simulator; the one exchange with a real model was
       recorded by hand and is replayed from a file
@@ -405,8 +409,9 @@ requires showing that it does. The list is kept short on purpose.
       built, and two acceptance checks that a person would otherwise have
       to remember: the first program stays at twenty lines, and no test
       carries a credential
-- [ ] Breaking changes allowed and recorded before 1.0; semantic versioning
-      after
+- [x] Breaking changes allowed and recorded before 1.0; semantic versioning
+      after. Written down in the git flow, along with the reason there is no
+      changelog file: the log is the changelog
 - [x] A sample app demonstrating one-step adoption: a chatbot under
       `Examples/ChatApp`, four things to adopt swaco (a store, a desk, an
       agent, a session), and it restores a question a previous process left

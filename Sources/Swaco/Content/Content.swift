@@ -14,6 +14,7 @@ public enum ContentSource: Sendable, Hashable, Codable {
     /// Somewhere the vendor can reach on its own.
     case url(URL, type: String)
 
+    /// The kind of bytes, as a MIME type, wherever they are.
     public var type: String {
         switch self {
         case .bytes(_, let type): type
@@ -25,7 +26,9 @@ public enum ContentSource: Sendable, Hashable, Codable {
 
 /// Where a claim in a reply came from, when a model says.
 public struct Citation: Sendable, Hashable, Codable {
+    /// What the source was called, where the model said.
     public let title: String?
+    /// Where it is.
     public let url: URL?
     /// The part of the reply this citation is for, as a range of characters.
     public let range: Range<Int>?

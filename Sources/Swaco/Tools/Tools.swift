@@ -45,6 +45,8 @@ public enum ToolOutcome: Sendable {
 public struct ResultDelivery: Sendable {
     let deliver: @Sendable (ToolResult) async -> Void
 
+    /// Delivers the result. Called like a function, because a tool that
+    /// says `await delivery(result)` reads as what it is.
     public func callAsFunction(_ result: ToolResult) async {
         await deliver(result)
     }

@@ -31,8 +31,11 @@ public enum Recovery: Sendable, Hashable {
 
 /// One turn as the model produced it, before the loop acts on it.
 public struct Response: Sendable, Hashable {
+    /// What the model said, in parts.
     public var content: [ContentPart]
+    /// What it asked to have done.
     public var toolCalls: [ToolCall]
+    /// Why it stopped.
     public var stop: StopReason
     /// What this turn cost, where the vendor said.
     public var usage: Usage?
@@ -67,6 +70,7 @@ public struct ExecutionContext: Sendable, Hashable, Codable {
         case appExtension
     }
 
+    /// Where this process is: in front of someone, behind, or beside.
     public var placement: Placement
     /// How long this process can expect to keep running, where the system says.
     public var remainingTime: TimeInterval?

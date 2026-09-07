@@ -38,6 +38,7 @@ public enum JSONValue: Codable, Hashable, Sendable {
         self = try JSONDecoder().decode(JSONValue.self, from: Data(jsonText.utf8))
     }
 
+    /// The value as JSON text, for handing to something that wants text.
     public var jsonText: String {
         get throws {
             String(decoding: try JSONEncoder().encode(self), as: UTF8.self)
