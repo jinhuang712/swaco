@@ -58,6 +58,8 @@ public enum Event: Sendable, Hashable {
     case toolCallIssued(ToolCall)
     case toolCallDeferred(ToolCall)
     case toolResultArrived(ToolResult)
+    /// What the turn cost, as the vendor counted it.
+    case usage(Usage)
     case turnEnded(StopReason)
     case cancelled(CancellationOrigin, partial: String)
     case failed(String)

@@ -40,6 +40,11 @@ change PHILOSOPHY first, and say so.
 - Every public symbol is documented and `Sendable`.
 - Tests use Swift Testing and never touch the network. Provider tests run
   against recorded fixtures.
+- After changing the shape of a public type that others store inline, such as
+  adding a case to `Event`, delete `.build` before trusting a test run.
+  Incremental builds have handed test targets the old layout and produced a
+  segmentation fault inside `JSONEncoder`, which looks like a bug in the code
+  and is not one.
 - The event log format is public API. Evolve it by addition only; never
   drop an unknown event type.
 - The canonical first program stays at twenty lines or fewer. Protocols bend

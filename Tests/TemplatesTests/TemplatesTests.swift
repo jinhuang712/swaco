@@ -151,3 +151,29 @@ private struct Watching: Provider {
         }
     }
 }
+
+@Suite struct BudgetsCount {
+    /// Tokens are counted by whoever cares, which is the template, not swaco.
+    @Test func aTokenBudgetStopsTheLoop() async throws {
+        let costly = ScriptedProvider(turns: (1...5).map { turn in
+            [.text("turn \(turn)"),
+             .usage(Usage(inputTokens: 400, outputTokens: 200)),
+             .toolCall(ToolCall(id: "c\(turn)", name: "echo", arguments: "{}")),
+             .stop(.toolUse)]
+        })
+        let run = Run(
+            agent: Agent(provider: costly, tools: [Echo()], extensions: [Budget(tokens: 1_000)]),
+            store: InMemoryEventStore()
+        )
+        var events: [Event] = []
+        for try await event in run.start("spend it") { events.append(event) }
+
+        // 600 after one turn, 1200 after two: it stops at the end of the second.
+        #expect(events.filter { if case .turnStarted = $0 { true } else { false } }.count == 2)
+        #expect(events.contains { if case .refused(by: "budget", _, let reason) = $0 {
+            reason.contains("tokens is spent")
+        } else { false } })
+        // And what each turn cost is in the log, for anyone who wants it.
+        #expect(events.filter { if case .usage = $0 { true } else { false } }.count == 2)
+    }
+}

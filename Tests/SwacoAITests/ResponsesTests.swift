@@ -65,8 +65,10 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
 
         // A turn that asked for a tool stops for tool use, not end of turn.
         #expect(events.last == .stop(.toolUse))
-        // Reasoning and bookkeeping events are carried by no swaco event.
-        #expect(events.count == text.count + 2)
+        // Text, the call, what it cost, and the stop. Reasoning and the
+        // vendor's bookkeeping are carried by no swaco event.
+        #expect(events.count == text.count + 3)
+        #expect(events.contains { if case .usage = $0 { true } else { false } })
     }
 
     @Test func vendorErrorsBecomeProviderErrors() {
@@ -251,5 +253,25 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
             return data
         }
         func remove(_ reference: ContentReference) async throws {}
+    }
+}
+
+@Suite struct WhatATurnCost {
+    /// The vendor's counts arrive as swaco's, from the recorded exchange.
+    @Test func usageIsNormalisedFromTheRecording() throws {
+        var mapper = ResponsesEventMapper()
+        var events: [StreamEvent] = []
+        for recorded in try recordedEvents("muse-spark-1.3-tool-call") {
+            events += try mapper.map(recorded)
+        }
+        let usage = events.compactMap { if case .usage(let usage) = $0 { usage } else { nil } }
+        let spent = try #require(usage.first)
+        #expect(spent.inputTokens > 0)
+        #expect(spent.outputTokens > 0)
+        #expect(spent.reasoningTokens > 0, "the model reasoned, and the count says so")
+        #expect(spent.totalTokens == spent.inputTokens + spent.outputTokens)
+        // Counted once per turn, and before the stop.
+        #expect(usage.count == 1)
+        #expect(events.last == .stop(.toolUse))
     }
 }

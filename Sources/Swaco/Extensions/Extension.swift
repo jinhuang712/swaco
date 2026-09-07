@@ -25,11 +25,19 @@ public struct Response: Sendable, Hashable {
     public var content: [ContentPart]
     public var toolCalls: [ToolCall]
     public var stop: StopReason
+    /// What this turn cost, where the vendor said.
+    public var usage: Usage?
 
-    public init(content: [ContentPart], toolCalls: [ToolCall], stop: StopReason) {
+    public init(
+        content: [ContentPart],
+        toolCalls: [ToolCall],
+        stop: StopReason,
+        usage: Usage? = nil
+    ) {
         self.content = content
         self.toolCalls = toolCalls
         self.stop = stop
+        self.usage = usage
     }
 
     public init(text: String, toolCalls: [ToolCall], stop: StopReason) {

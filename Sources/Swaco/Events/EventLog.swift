@@ -16,6 +16,7 @@ extension Event: Codable {
         static let toolCallIssued = "tool_call_issued"
         static let toolCallDeferred = "tool_call_deferred"
         static let toolResultArrived = "tool_result_arrived"
+        static let usage = "usage"
         static let turnEnded = "turn_ended"
         static let cancelled = "cancelled"
         static let failed = "failed"
@@ -28,7 +29,7 @@ extension Event: Codable {
 
     private enum Key: String, CodingKey {
         case type, turn, text, call, result, stop, origin, partial, message, source
-        case capability, by, subject, reason, handling, content
+        case capability, by, subject, reason, handling, content, usage
     }
 
     public init(from decoder: any Decoder) throws {
@@ -49,6 +50,8 @@ extension Event: Codable {
             self = .toolCallDeferred(try container.decode(ToolCall.self, forKey: .call))
         case Name.toolResultArrived:
             self = .toolResultArrived(try container.decode(ToolResult.self, forKey: .result))
+        case Name.usage:
+            self = .usage(try container.decode(Usage.self, forKey: .usage))
         case Name.turnEnded:
             self = .turnEnded(try container.decode(StopReason.self, forKey: .stop))
         case Name.cancelled:
@@ -114,6 +117,9 @@ extension Event: Codable {
         case .toolResultArrived(let result):
             try container.encode(Name.toolResultArrived, forKey: .type)
             try container.encode(result, forKey: .result)
+        case .usage(let usage):
+            try container.encode(Name.usage, forKey: .type)
+            try container.encode(usage, forKey: .usage)
         case .turnEnded(let stop):
             try container.encode(Name.turnEnded, forKey: .type)
             try container.encode(stop, forKey: .stop)

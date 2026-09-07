@@ -12,28 +12,53 @@ import Swaco
 public struct Budget: Extension {
     public let name = "budget"
     private let turns: Int?
+    private let tokens: Int?
     private let time: Duration?
     private let started: @Sendable () -> ContinuousClock.Instant
+    private let spent = Spent()
 
     public init(
         turns: Int? = nil,
+        tokens: Int? = nil,
         time: Duration? = nil,
         clock: ContinuousClock = ContinuousClock()
     ) {
         self.turns = turns
+        self.tokens = tokens
         self.time = time
         let start = clock.now
         self.started = { start }
+    }
+
+    /// Counting is done here because swaco does not count: it carries what the
+    /// vendor said a turn cost and leaves the adding up to whoever cares.
+    public func afterResponse(
+        _ response: Response,
+        in context: ExtensionContext
+    ) async -> Decision<Response> {
+        if let usage = response.usage { await spent.add(usage) }
+        return .pass
     }
 
     public func turnEnded(_ turn: Int, in context: ExtensionContext) async -> Verdict {
         if let turns, turn >= turns {
             return .refuse("the budget of \(turns) turns is spent")
         }
+        if let tokens {
+            let used = await spent.total.totalTokens
+            if used >= tokens {
+                return .refuse("the budget of \(tokens) tokens is spent, at \(used)")
+            }
+        }
         if let time, ContinuousClock().now - started() >= time {
             return .refuse("the budget of \(time) is spent")
         }
         return .pass
+    }
+
+    private actor Spent {
+        private(set) var total = Usage()
+        func add(_ usage: Usage) { total = total + usage }
     }
 }
 

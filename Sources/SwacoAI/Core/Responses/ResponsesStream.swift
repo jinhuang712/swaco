@@ -30,8 +30,14 @@ public struct ResponsesEventMapper: Sendable {
             return [.toolCall(ToolCall(id: id, name: name, arguments: item.arguments ?? "{}"))]
 
         case "response.completed":
-            if payload.response?.incompleteDetails?.reason != nil { return [.stop(.maxTokens)] }
-            return [.stop(sawToolCall ? .toolUse : .endTurn)]
+            var events: [StreamEvent] = []
+            if let usage = payload.response?.usage { events.append(.usage(usage.normalised)) }
+            if payload.response?.incompleteDetails?.reason != nil {
+                events.append(.stop(.maxTokens))
+            } else {
+                events.append(.stop(sawToolCall ? .toolUse : .endTurn))
+            }
+            return events
 
         case "response.incomplete":
             return [.stop(.maxTokens)]
@@ -69,11 +75,46 @@ public struct ResponsesEventMapper: Sendable {
         struct Summary: Decodable {
             let incompleteDetails: Incomplete?
             let error: Failure?
+            let usage: Counts?
             enum CodingKeys: String, CodingKey {
-                case error
+                case error, usage
                 case incompleteDetails = "incomplete_details"
             }
             struct Incomplete: Decodable { let reason: String? }
+
+            /// The vendor's counts, in the vendor's shape.
+            struct Counts: Decodable {
+                let inputTokens: Int?
+                let outputTokens: Int?
+                let inputDetails: InputDetails?
+                let outputDetails: OutputDetails?
+
+                enum CodingKeys: String, CodingKey {
+                    case inputTokens = "input_tokens"
+                    case outputTokens = "output_tokens"
+                    case inputDetails = "input_tokens_details"
+                    case outputDetails = "output_tokens_details"
+                }
+
+                struct InputDetails: Decodable {
+                    let cachedTokens: Int?
+                    enum CodingKeys: String, CodingKey { case cachedTokens = "cached_tokens" }
+                }
+
+                struct OutputDetails: Decodable {
+                    let reasoningTokens: Int?
+                    enum CodingKeys: String, CodingKey { case reasoningTokens = "reasoning_tokens" }
+                }
+
+                var normalised: Usage {
+                    Usage(
+                        inputTokens: inputTokens ?? 0,
+                        outputTokens: outputTokens ?? 0,
+                        cachedInputTokens: inputDetails?.cachedTokens ?? 0,
+                        reasoningTokens: outputDetails?.reasoningTokens ?? 0
+                    )
+                }
+            }
         }
 
         struct Failure: Decodable {

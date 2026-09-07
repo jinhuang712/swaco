@@ -193,6 +193,7 @@ public struct Agent: Sendable {
             var text = ""
             var calls: [ToolCall] = []
             var stop: StopReason = .endTurn
+            var spent: Usage?
             var attempt = 0
 
             streaming: while true {
@@ -200,6 +201,7 @@ public struct Agent: Sendable {
                 text = ""
                 parts = []
                 calls = []
+                spent = nil
                 do {
                     for try await event in provider.stream(request) {
                         if Task.isCancelled { break }
@@ -208,6 +210,10 @@ public struct Agent: Sendable {
                             text += piece
                             parts.append(.text(piece))
                             emit(.text(piece))
+                        case .reasoning(let thought):
+                            parts.append(.reasoning(thought))
+                        case .usage(let usage):
+                            spent = usage
                         case .toolCall(let call):
                             calls.append(call)
                             emit(.toolCallIssued(call))
@@ -242,7 +248,8 @@ public struct Agent: Sendable {
                 return
             }
 
-            var response = Response(content: parts.normalised, toolCalls: calls, stop: stop)
+            if let spent { emit(.usage(spent)) }
+            var response = Response(content: parts.normalised, toolCalls: calls, stop: stop, usage: spent)
             switch await extending.decide(response, as: { _ in .response }, in: moment,
                                           hook: { await $0.afterResponse($1, in: moment) }) {
             case .unchanged:

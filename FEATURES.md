@@ -206,8 +206,9 @@ vendor. Our providers are built on it; a third party may use it or ignore it.
       between swaco's vocabulary and vendor shapes, ids preserved. Done for
       the Responses protocol, including a tool's JSON Schema reaching the
       vendor as JSON rather than as a string
-- [~] Normalisation of stop reasons, usage and errors into swaco's types.
-      Stop reasons and errors done; usage not yet carried
+- [x] Normalisation of stop reasons, usage and errors into swaco's types.
+      Usage is what the vendor counted, carried and not interpreted: swaco
+      does not price it, add it up or decide when there has been too much
 - [~] Generic implementation of the OpenAI-compatible protocol, configured
       per vendor rather than re-implemented. The Responses protocol is
       implemented; chat completions is not
