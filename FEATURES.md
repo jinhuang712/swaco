@@ -415,7 +415,9 @@ requires showing that it does. The list is kept short on purpose.
 - [x] A sample app demonstrating one-step adoption: a chatbot under
       `Examples/ChatApp`, four things to adopt swaco (a store, a desk, an
       agent, a session), and it restores a question a previous process left
-      unanswered
+      unanswered. It runs on a recording as well as on a live model, so it
+      needs no key to try, and four tests drive it by tapping: kill the
+      process mid-question, relaunch, answer, and the loop carries on
 - [x] Templates: a minimal, complete, compiling example each of an app tool,
       a toolset and an extension, built in CI so they never drift from the
       API. Two tools, because the shape that matters most is the one whose

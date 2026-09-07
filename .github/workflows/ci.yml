@@ -89,3 +89,8 @@ jobs:
             build
       # The app is an adopter like any other: when the vocabulary grows, it
       # has to keep compiling, and it is easier to notice here than later.
+      - name: Drive the sample app by tapping
+        run: |
+          xcodebuild test -project Examples/ChatApp/ChatApp.xcodeproj \
+            -scheme ChatApp \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro'

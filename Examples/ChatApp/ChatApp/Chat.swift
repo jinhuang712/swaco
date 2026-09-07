@@ -5,6 +5,7 @@ import SwacoFoundationModels
 import SwacoInteraction
 import SwacoOpenAI
 import SwacoRuntime
+import SwacoTesting
 
 /// Everything this app needs to be agentic, in one place.
 ///
@@ -33,6 +34,10 @@ final class Chat {
         // One log, in this app's own container. An app extension would reach
         // the same one through an App Group.
         let directory = URL.documentsDirectory.appending(path: "swaco")
+        // A test that drives this screen says where to start from.
+        if ProcessInfo.processInfo.arguments.contains("-forget-everything") {
+            try? FileManager.default.removeItem(at: directory)
+        }
         store = try! FileEventStore(directory: directory)
         session = Session(id: GroupID("the-conversation"), store: store)
     }
@@ -74,6 +79,14 @@ final class Chat {
     }
 
     private func provider() -> any Provider {
+        // A conversation this app once had with a real model, kept in the
+        // bundle. It is how the app runs with no key and no network: in a
+        // preview, in a demo, and in the tests that drive this screen.
+        if Self.replaying,
+           let file = Bundle.main.url(forResource: "asking", withExtension: "jsonl"),
+           let recorded = try? ScriptedProvider.replaying(file) {
+            return recorded
+        }
         if useOnDeviceModel { return OnDeviceModel(instructions: Self.instructions) }
         return OpenAI.compatible(
             model: "muse-spark-1.3-contributor",
@@ -82,6 +95,10 @@ final class Chat {
             headers: ["x-opencode-session": "swaco-chat-app"]
         )
     }
+
+    /// Set by a launch argument, so a test or a demo says so from outside
+    /// rather than the app deciding for itself.
+    static let replaying = ProcessInfo.processInfo.arguments.contains("-recorded")
 
     private static let instructions = """
         You are a helpful assistant inside a small iOS app. Keep replies short. \

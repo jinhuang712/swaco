@@ -171,9 +171,13 @@ met it is marked here and the next becomes the current one.
    a conversation and a question a previous process left unanswered and
    picks the loop back up; the harness passes; each of the nine modules
    builds alone for the simulator; both a hosted model and the on-device one
-   are wired in and either can be chosen. What remains needs an iPhone in
-   somebody's hand: a real relaunch after a real kill, and the two providers
-   exercised by tapping rather than by test.*
+   are wired in and either can be chosen. Four tests drive the app by
+   tapping, on a conversation it once had with a real model and kept: they
+   kill the process while the agent is waiting on an answer, relaunch, find
+   the question where the person left it, and answer it into the loop that
+   asked a process ago. What remains is an iPhone in somebody's hand, for
+   the one thing a simulator cannot do: be killed by memory pressure, and be
+   woken with nobody watching.*
 4. **The doors are proven.** One companion toolset and one template
    extension exist, written through public protocols only, with nothing
    added to the core to make them possible. *Half met. Six templates exist

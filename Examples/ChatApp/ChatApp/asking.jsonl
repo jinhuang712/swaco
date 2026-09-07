@@ -1,0 +1,26 @@
+{"turn":1,"event":{"text":"I'll ask about your warm getaway preferences to find your February escape.","type":"text"}}
+{"turn":1,"event":{"call":{"name":"ask","arguments":"{\"question\":\"What kind of warm getaway would you prefer for February?\",\"options\":[\"Tropical beach (e.g., Cancun, Hawaii, Maldives)\",\"Warm city break (e.g., Miami, Dubai, Barcelona)\",\"Desert adventure (e.g., Marrakech, Phoenix)\"]}","id":"call_01a07d0d04ec7c8185b94c6ab02c7bf4"},"type":"tool_call"}}
+{"turn":1,"event":{"type":"usage","usage":{"reasoningTokens":577,"inputTokens":748,"outputTokens":714,"cachedInputTokens":625}}}
+{"turn":1,"event":{"type":"stop","stop":"tool_use"}}
+{"turn":2,"event":{"text":"Got it — quiet and warm. Let me line up a perfect spot for you.","type":"text"}}
+{"turn":2,"event":{"call":{"name":"confirm","arguments":"{\"action\":\"Book a quiet, warm February getaway - 7 nights in a secluded beach villa in the Maldives\",\"detail\":\"Warm (~28°C), dry-season, very quiet private island resort, ideal for a peaceful escape in February including flights + hotel\"}","id":"call_01a07d0d24e271838fbad0e06e3608b1"},"type":"tool_call"}}
+{"turn":2,"event":{"type":"usage","usage":{"reasoningTokens":820,"inputTokens":901,"outputTokens":952,"cachedInputTokens":625}}}
+{"turn":2,"event":{"type":"stop","stop":"tool_use"}}
+{"turn":3,"event":{"text":"Done! I've","type":"text"}}
+{"turn":3,"event":{"text":" booked you","type":"text"}}
+{"turn":3,"event":{"text":" somewhere warm","type":"text"}}
+{"turn":3,"event":{"text":" and quiet for February:\n\n**7 nights in a secluded beach villa in the","type":"text"}}
+{"turn":3,"event":{"text":" Maldives**\n- Warm and dry","type":"text"}}
+{"turn":3,"event":{"text":",","type":"text"}}
+{"turn":3,"event":{"text":" around 28°C in","type":"text"}}
+{"turn":3,"event":{"text":" February -","type":"text"}}
+{"turn":3,"event":{"text":" perfect dry","type":"text"}}
+{"turn":3,"event":{"text":"-season weather\n- Private island resort, very quiet and peaceful\n- Flights +","type":"text"}}
+{"turn":3,"event":{"text":" hotel included\n\nGet","type":"text"}}
+{"turn":3,"event":{"text":" ready to","type":"text"}}
+{"turn":3,"event":{"text":" relax —","type":"text"}}
+{"turn":3,"event":{"text":" your peaceful","type":"text"}}
+{"turn":3,"event":{"text":" escape is all set","type":"text"}}
+{"turn":3,"event":{"text":"!","type":"text"}}
+{"turn":3,"event":{"type":"usage","usage":{"reasoningTokens":586,"inputTokens":1048,"outputTokens":667,"cachedInputTokens":881}}}
+{"turn":3,"event":{"type":"stop","stop":"end_turn"}}

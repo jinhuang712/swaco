@@ -60,7 +60,8 @@ let package = Package(
         // Run by hand to refresh a recording against a real model. CI has no
         // key and needs none.
         .executableTarget(name: "Record",
-                          dependencies: ["Swaco", "SwacoOpenAI", "SwacoExtensions", "SwacoTesting"],
+                          dependencies: ["Swaco", "SwacoOpenAI", "SwacoExtensions", "SwacoInteraction",
+                                         "SwacoTesting"],
                           path: "Examples/Record"),
 
         // Complete, compiling strategies an app copies and owns from then on.
