@@ -47,9 +47,11 @@ Fixed now, before code. Each word means one thing.
 - [ ] Content parts can hold a reference to stored bytes instead of the bytes
       themselves, loaded on demand through the `ContentStore` protocol, so a
       long history with media stays cheap in memory
-- [ ] `EventStore` and `ContentStore` protocols with their contracts: ordered
+- [x] `EventStore` and `ContentStore` protocols with their contracts: ordered
       append, durable on return, read by group in write order, replay from a
-      position; bytes by reference. The core defines both and holds neither
+      position; bytes by reference. The core defines both and holds neither.
+      Each contract is written where its protocol is, and the suite that
+      checks it is the one every third-party store runs
 - [~] `Tool` protocol: JSON Schema parameters, typed results, and a
       declared access of read-only or writing. Access has no default and is
       a fact for extensions and the app to read; the loop acts on it in no
@@ -123,11 +125,13 @@ The core fixes what must be stored and with what guarantees; the app decides
 where. No store is chosen by default: an app that uses sessions or referenced
 content names one.
 
-- [ ] Conformance test suites that any `EventStore` or `ContentStore`
-      implementation runs, in `SwacoTesting`
-- [ ] Reference implementations in the runtime: in-memory, and a plain file
+- [x] Conformance test suites that any `EventStore` or `ContentStore`
+      implementation runs, in `SwacoTesting`. Our own stores run them, so a
+      wrong contract is wrong for everyone at once
+- [x] Reference implementations in the runtime: in-memory, and a plain file
       store that can live in an App Group container so an app extension and
-      the main app share it
+      the main app share it. The file store is one JSON object per line,
+      flushed before append returns
 - [ ] SQLite, SwiftData and CloudKit stores as companions or third-party
       packages, not in swaco
 
@@ -268,11 +272,13 @@ swaco.
 What swaco does for the life of an app around it: debugging, shipping,
 upgrading. Build tooling, signing, distribution and onboarding are the app's.
 
-- [ ] The event log format is public API, on the same terms as the Swift
+- [~] The event log format is public API, on the same terms as the Swift
       API: documented, versioned, evolved by addition only. A newer swaco
       replays logs written by an older one, and unknown event types are
       preserved, never dropped. A run is reproduced by replaying its log
-      through the mock provider; a bug report is a log
+      through the mock provider; a bug report is a log. The format has
+      stable names and keeps the event types it does not know, checked by
+      the store contract; replaying a log through the mock provider is next
 - [ ] Recording: run once against a real provider, keep the exchange as a
       fixture, replay it thereafter. Development, previews and tests need no
       key and no network
