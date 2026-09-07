@@ -16,9 +16,11 @@ public struct DefaultEventRendering: EventRendering {
     public func render(_ inbound: InboundEvent) -> Message {
         switch inbound.source {
         case .person:
-            return .user(inbound.text)
+            return .user(inbound.content.normalised)
         case .shortcut, .notification, .url, .share, .system, .schedule, .sensor:
-            return .user("[\(name(of: inbound.source))] \(inbound.text)")
+            // Where it came from travels with it, so the model and the
+            // extensions can tell a person's words from a delivery.
+            return .user(([.text("[\(name(of: inbound.source))] ")] + inbound.content).normalised)
         }
     }
 
@@ -36,13 +38,13 @@ public extension Message {
         rendering: some EventRendering = DefaultEventRendering()
     ) -> [Message] {
         var messages: [Message] = []
-        var text = ""
+        var content: [ContentPart] = []
         var calls: [ToolCall] = []
 
         func closeTurn() {
-            guard !text.isEmpty || !calls.isEmpty else { return }
-            messages.append(.assistant(text: text, toolCalls: calls))
-            text = ""
+            guard !content.isEmpty || !calls.isEmpty else { return }
+            messages.append(.assistant(content: content.normalised, toolCalls: calls))
+            content = []
             calls = []
         }
 
@@ -52,7 +54,11 @@ public extension Message {
                 closeTurn()
                 messages.append(rendering.render(inbound))
             case .text(let piece):
-                text += piece
+                if case .text(let sofar) = content.last {
+                    content[content.count - 1] = .text(sofar + piece)
+                } else {
+                    content.append(.text(piece))
+                }
             case .toolCallIssued(let call):
                 calls.append(call)
             case .turnEnded:

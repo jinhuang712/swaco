@@ -72,8 +72,8 @@ public struct OnDeviceModel: Provider {
     /// Everything but the last thing said, which becomes the prompt.
     private static func divide(_ messages: [Message]) -> ([Message], String) {
         guard let last = messages.last else { return ([], "") }
-        if case .user(let text) = last {
-            return (messages.dropLast(), text)
+        if case .user(let content) = last {
+            return (messages.dropLast(), content.text)
         }
         return (messages, "")
     }
@@ -93,14 +93,14 @@ public struct OnDeviceModel: Provider {
                     segments: [.text(Transcript.TextSegment(content: text))],
                     toolDefinitions: []
                 )))
-            case .user(let text):
+            case .user(let content):
                 entries.append(.prompt(Transcript.Prompt(
-                    segments: [.text(Transcript.TextSegment(content: text))]
+                    segments: [.text(Transcript.TextSegment(content: content.text))]
                 )))
-            case .assistant(let text, _) where !text.isEmpty:
+            case .assistant(let content, _) where !content.text.isEmpty:
                 entries.append(.response(Transcript.Response(
                     assetIDs: [],
-                    segments: [.text(Transcript.TextSegment(content: text))]
+                    segments: [.text(Transcript.TextSegment(content: content.text))]
                 )))
             case .toolResult(let result):
                 // This model was not given the tool, so a result reaches it as

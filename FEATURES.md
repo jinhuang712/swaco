@@ -40,13 +40,18 @@ Fixed now, before code. Each word means one thing.
 - [x] Source travels with the content into the model's context, so the
       model and extensions can tell what a person said from what the system
       delivered
-- [ ] Canonical message and content types: text, image, tool call, tool
-      result, reasoning, provider-executed tool use and result, citations
+- [x] Canonical message and content types: text, image, tool call, tool
+      result, reasoning, provider-executed tool use and result, citations.
+      Adjacent runs of words become one part, so two messages that say the
+      same thing are the same message
 - [~] Canonical streaming event set shared by all providers
 - [x] Messages are a projection of the event log, not a separate store
-- [ ] Content parts can hold a reference to stored bytes instead of the bytes
+- [x] Content parts can hold a reference to stored bytes instead of the bytes
       themselves, loaded on demand through the `ContentStore` protocol, so a
-      long history with media stays cheap in memory
+      long history with media stays cheap in memory. A request names the
+      store; the provider fetches through it and holds none. A part that
+      points somewhere with no store named is an error the app is told
+      about, never a picture quietly dropped
 - [x] `EventStore` and `ContentStore` protocols with their contracts: ordered
       append, durable on return, read by group in write order, replay from a
       position; bytes by reference. The core defines both and holds neither.

@@ -41,6 +41,9 @@ public struct Agent: Sendable {
     /// Where things that arrive mid-loop are handed in. Nil means nothing can
     /// arrive while this loop runs.
     public let inbox: Inbox?
+    /// Where a content part that points at bytes is resolved. The app names
+    /// it; swaco holds no store.
+    public let content: (any ContentStore)?
 
     public init(
         provider: any Provider,
@@ -48,7 +51,8 @@ public struct Agent: Sendable {
         extensions: [any Extension] = [],
         rendering: any EventRendering = DefaultEventRendering(),
         execution: ExecutionContext = .unknown,
-        inbox: Inbox? = nil
+        inbox: Inbox? = nil,
+        content: (any ContentStore)? = nil
     ) {
         self.provider = provider
         self.tools = tools
@@ -56,13 +60,14 @@ public struct Agent: Sendable {
         self.rendering = rendering
         self.execution = execution
         self.inbox = inbox
+        self.content = content
     }
 
     /// The same agent with a different sense of where it is running. What
     /// runs the loop knows this; the agent it was handed did not.
     public func running(in execution: ExecutionContext) -> Agent {
         Agent(provider: provider, tools: tools, extensions: extensions,
-              rendering: rendering, execution: execution, inbox: inbox)
+              rendering: rendering, execution: execution, inbox: inbox, content: content)
     }
 
     /// Starts a loop from something that arrived.
@@ -132,6 +137,20 @@ public struct Agent: Sendable {
             emit(.capabilityMissing(.tools))
         }
 
+        /// What the content asked for that the model has not declared.
+        let missing: @Sendable ([Message]) -> [Capability] = { messages in
+            let asked = messages.reduce(into: Set<Capability>()) { $0.formUnion($1.needs) }
+            return asked.filter { capability in
+                switch capability {
+                case .vision: !provider.capabilities.vision
+                case .reasoning: !provider.capabilities.reasoning
+                case .tools: !provider.capabilities.tools
+                }
+            }
+            .sorted { "\($0)" < "\($1)" }
+        }
+        var alreadySaid: Set<Capability> = []
+
         let extending = Extending(extensions: extensions)
 
         var queued: [InboundEvent] = []
@@ -151,7 +170,12 @@ public struct Agent: Sendable {
                 messages.append(rendering.render(inbound))
             }
 
-            var request = ModelRequest(messages: messages, tools: definitions)
+            for capability in missing(messages) where !alreadySaid.contains(capability) {
+                alreadySaid.insert(capability)
+                emit(.capabilityMissing(capability))
+            }
+
+            var request = ModelRequest(messages: messages, tools: definitions, content: content)
             switch await extending.decide(request, as: { _ in .request }, in: moment,
                                           hook: { await $0.beforeRequest($1, in: moment) }) {
             case .unchanged:
@@ -165,6 +189,7 @@ public struct Agent: Sendable {
                 return
             }
 
+            var parts: [ContentPart] = []
             var text = ""
             var calls: [ToolCall] = []
             var stop: StopReason = .endTurn
@@ -173,6 +198,7 @@ public struct Agent: Sendable {
             streaming: while true {
                 attempt += 1
                 text = ""
+                parts = []
                 calls = []
                 do {
                     for try await event in provider.stream(request) {
@@ -180,6 +206,7 @@ public struct Agent: Sendable {
                         switch event {
                         case .text(let piece):
                             text += piece
+                            parts.append(.text(piece))
                             emit(.text(piece))
                         case .toolCall(let call):
                             calls.append(call)
@@ -215,7 +242,7 @@ public struct Agent: Sendable {
                 return
             }
 
-            var response = Response(text: text, toolCalls: calls, stop: stop)
+            var response = Response(content: parts.normalised, toolCalls: calls, stop: stop)
             switch await extending.decide(response, as: { _ in .response }, in: moment,
                                           hook: { await $0.afterResponse($1, in: moment) }) {
             case .unchanged:
@@ -229,7 +256,7 @@ public struct Agent: Sendable {
                 return
             }
 
-            messages.append(.assistant(text: response.text, toolCalls: response.toolCalls))
+            messages.append(.assistant(content: response.content, toolCalls: response.toolCalls))
             emit(.turnEnded(response.stop))
 
             if response.toolCalls.isEmpty || response.stop != .toolUse {

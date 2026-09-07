@@ -1,4 +1,5 @@
 import Foundation
+import Swaco
 
 /// Where a provider sends its requests and how they are authenticated.
 /// Everything is passed explicitly in code: no configuration files, no
@@ -26,4 +27,7 @@ public enum ProviderError: Error, Sendable, Equatable {
     case http(status: Int, body: String)
     case vendor(type: String, message: String)
     case malformed(String)
+    /// A part pointed at bytes and the request named no store to fetch them
+    /// from. The app names the store; swaco does not choose one.
+    case noContentStore(ContentReference)
 }

@@ -33,7 +33,7 @@ public struct ResponsesProvider: Provider {
                     for (field, value) in connection.headers {
                         http.setValue(value, forHTTPHeaderField: field)
                     }
-                    http.httpBody = try ResponsesRequest(
+                    http.httpBody = try await ResponsesRequest(
                         model: model, request: request, maxOutputTokens: maxOutputTokens
                     ).encoded()
                     try await connection.authentication.authenticate(&http)
@@ -56,7 +56,7 @@ public extension ResponsesProvider {
     /// The body this provider would send for a request. Public so the
     /// conformance suite and a vendor's fixtures can check conversion without
     /// opening a connection.
-    func encodedRequestForTesting(_ request: ModelRequest) throws -> Data {
-        try ResponsesRequest(model: model, request: request, maxOutputTokens: maxOutputTokens).encoded()
+    func encodedRequestForTesting(_ request: ModelRequest) async throws -> Data {
+        try await ResponsesRequest(model: model, request: request, maxOutputTokens: maxOutputTokens).encoded()
     }
 }

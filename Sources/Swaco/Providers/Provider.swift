@@ -12,14 +12,45 @@ public enum StreamEvent: Sendable, Hashable {
     case stop(StopReason)
 }
 
-/// One message in the context sent to a model. A projection of events, kept
-/// minimal for the spike.
+/// One message in the context sent to a model, projected from the events that
+/// happened rather than stored beside them.
 public enum Message: Sendable, Codable, Hashable {
     /// Standing instructions, ahead of the conversation.
     case system(String)
-    case user(String)
-    case assistant(text: String, toolCalls: [ToolCall])
+    case user([ContentPart])
+    case assistant(content: [ContentPart], toolCalls: [ToolCall])
     case toolResult(ToolResult)
+
+    /// What a person said, in words.
+    public static func user(_ text: String) -> Message {
+        .user([.text(text)].normalised)
+    }
+
+    /// What the model said, in words.
+    public static func assistant(text: String, toolCalls: [ToolCall]) -> Message {
+        .assistant(content: text.isEmpty ? [] : [.text(text)], toolCalls: toolCalls)
+    }
+
+    /// The words in this message. Reading a conversation should not mean
+    /// taking it apart.
+    public var text: String {
+        switch self {
+        case .system(let text): text
+        case .user(let content): content.text
+        case .assistant(let content, _): content.text
+        case .toolResult(let result): result.content
+        }
+    }
+
+    /// What this message needs the model to be able to take.
+    public var needs: Set<Capability> {
+        switch self {
+        case .user(let content), .assistant(let content, _):
+            Set(content.compactMap(\.needs))
+        case .system, .toolResult:
+            []
+        }
+    }
 }
 
 public struct ToolDefinition: Sendable, Codable, Hashable {
@@ -38,10 +69,19 @@ public struct ToolDefinition: Sendable, Codable, Hashable {
 public struct ModelRequest: Sendable {
     public let messages: [Message]
     public let tools: [ToolDefinition]
+    /// Where a part that points at bytes is resolved. A provider fetches
+    /// through this and holds no store of its own; nil means nothing in this
+    /// request points anywhere.
+    public let content: (any ContentStore)?
 
-    public init(messages: [Message], tools: [ToolDefinition]) {
+    public init(
+        messages: [Message],
+        tools: [ToolDefinition],
+        content: (any ContentStore)? = nil
+    ) {
         self.messages = messages
         self.tools = tools
+        self.content = content
     }
 }
 

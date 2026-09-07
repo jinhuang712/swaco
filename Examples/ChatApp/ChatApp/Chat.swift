@@ -123,7 +123,8 @@ final class Chat {
             notice = "This model runs no tools, so it cannot ask you anything."
         case .failed(let message):
             notice = message
-        case .cancelled, .capabilityMissing, .turnStarted, .toolCallIssued, .finished, .unrecognised:
+        case .cancelled, .capabilityMissing, .turnStarted, .toolCallIssued, .finished,
+             .rewritten, .refused, .arrivalHandled, .unrecognised:
             break
         }
     }
@@ -131,8 +132,8 @@ final class Chat {
     private func show(history: [Event]) async {
         turns = Message.projection(of: history).compactMap { message in
             switch message {
-            case .user(let text): Turn(who: .person, text: text)
-            case .assistant(let text, _) where !text.isEmpty: Turn(who: .agent, text: text)
+            case .user: Turn(who: .person, text: message.text)
+            case .assistant where !message.text.isEmpty: Turn(who: .agent, text: message.text)
             default: nil
             }
         }

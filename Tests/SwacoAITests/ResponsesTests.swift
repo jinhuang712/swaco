@@ -101,13 +101,13 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
 
     /// A tool's schema is JSON the app wrote. It reaches the vendor as JSON,
     /// not as a string, and unchanged.
-    @Test func toolSchemaPassesThroughAsJSON() throws {
+    @Test func toolSchemaPassesThroughAsJSON() async throws {
         let tool = Weather()
         let request = ModelRequest(
             messages: [.user("hello")],
             tools: [ToolDefinition(name: tool.name, description: tool.description, parameters: tool.parameters)]
         )
-        let body = try encodedBody(for: request)
+        let body = try await encodedBody(for: request)
         let tools = try #require(body["tools"] as? [[String: Any]])
         let schema = try #require(tools.first?["parameters"] as? [String: Any])
         #expect(schema["type"] as? String == "object")
@@ -116,7 +116,7 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
     }
 
     /// Ids are preserved, so a result returns to the call that asked for it.
-    @Test func callsAndResultsKeepTheirIdentity() throws {
+    @Test func callsAndResultsKeepTheirIdentity() async throws {
         let call = ToolCall(id: "call_7", name: "weather", arguments: #"{"city":"Paris"}"#)
         let request = ModelRequest(
             messages: [
@@ -126,7 +126,8 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
             ],
             tools: []
         )
-        let items = try #require(try encodedBody(for: request)["input"] as? [[String: Any]])
+        let body = try await encodedBody(for: request)
+        let items = try #require(body["input"] as? [[String: Any]])
         #expect(items.count == 4)
         #expect(items[1]["role"] as? String == "assistant")
         #expect(items[2]["type"] as? String == "function_call")
@@ -137,25 +138,26 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
     }
 
     /// An assistant turn that was only a tool call carries no empty message.
-    @Test func emptyAssistantTextIsNotSent() throws {
+    @Test func emptyAssistantTextIsNotSent() async throws {
         let request = ModelRequest(
             messages: [.assistant(text: "", toolCalls: [ToolCall(id: "c", name: "n", arguments: "{}")])],
             tools: []
         )
-        let items = try #require(try encodedBody(for: request)["input"] as? [[String: Any]])
+        let body = try await encodedBody(for: request)
+        let items = try #require(body["input"] as? [[String: Any]])
         #expect(items.count == 1)
         #expect(items[0]["type"] as? String == "function_call")
     }
 
     /// The body a provider would send, without sending it.
-    private func encodedBody(for request: ModelRequest) throws -> [String: Any] {
+    private func encodedBody(for request: ModelRequest) async throws -> [String: Any] {
         let provider = OpenAI.compatible(
             model: "muse-spark-1.3-contributor",
             endpoint: "https://example.invalid/v1/responses",
             authentication: .bearer("not-used"),
             headers: ["x-opencode-session": "test"]
         )
-        let data = try provider.encodedRequestForTesting(request)
+        let data = try await provider.encodedRequestForTesting(request)
         return try #require(try JSONSerialization.jsonObject(with: data) as? [String: Any])
     }
 }
@@ -179,5 +181,75 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
         await #expect(throws: AuthenticationError.missingEnvironmentVariable("SWACO_ABSENT_KEY")) {
             try await Authentication.bearer(environment: "SWACO_ABSENT_KEY").authenticate(&request)
         }
+    }
+}
+
+@Suite struct SendingPictures {
+    private let pixel = Data([0x89, 0x50, 0x4E, 0x47])
+
+    /// Bytes go on the wire as the vendor wants them, in the same message as
+    /// the words they came with.
+    @Test func bytesBecomeADataURLBesideTheWords() async throws {
+        let request = ModelRequest(
+            messages: [.user([.text("what is this?"), .image(.bytes(pixel, type: "image/png"))])],
+            tools: []
+        )
+        let items = try #require(try await body(for: request)["input"] as? [[String: Any]])
+        let parts = try #require(items.first?["content"] as? [[String: Any]])
+        #expect(parts.count == 2)
+        #expect(parts[0]["type"] as? String == "input_text")
+        #expect(parts[1]["type"] as? String == "input_image")
+        #expect(parts[1]["image_url"] as? String == "data:image/png;base64,\(pixel.base64EncodedString())")
+    }
+
+    /// A part that points at bytes is resolved through the store the request
+    /// names. The provider fetches; it holds no store of its own.
+    @Test func aReferenceIsFetchedThroughTheStoreTheRequestNames() async throws {
+        let store = Bytes(pixel)
+        let reference = ContentReference(identifier: "one", type: "image/png")
+        let request = ModelRequest(
+            messages: [.user([.image(.reference(reference))])],
+            tools: [],
+            content: store
+        )
+        let items = try #require(try await body(for: request)["input"] as? [[String: Any]])
+        let parts = try #require(items.first?["content"] as? [[String: Any]])
+        #expect(parts[0]["image_url"] as? String == "data:image/png;base64,\(pixel.base64EncodedString())")
+        #expect(await store.loads == 1, "the bytes are read once, when the request is built")
+    }
+
+    /// Reasoning is the model's own. It is not sent back to it.
+    @Test func reasoningIsNotSentBack() async throws {
+        let request = ModelRequest(
+            messages: [.assistant(content: [.reasoning("thinking"), .text("done")], toolCalls: [])],
+            tools: []
+        )
+        let items = try #require(try await body(for: request)["input"] as? [[String: Any]])
+        let parts = try #require(items.first?["content"] as? [[String: Any]])
+        #expect(parts.count == 1)
+        #expect(parts[0]["text"] as? String == "done")
+    }
+
+    private func body(for request: ModelRequest) async throws -> [String: Any] {
+        let provider = OpenAI.compatible(
+            model: "any", endpoint: "https://example.invalid/v1/responses",
+            authentication: .bearer("not-used")
+        )
+        let data = try await provider.encodedRequestForTesting(request)
+        return try #require(try JSONSerialization.jsonObject(with: data) as? [String: Any])
+    }
+
+    private actor Bytes: ContentStore {
+        private let data: Data
+        private(set) var loads = 0
+        init(_ data: Data) { self.data = data }
+        func store(_ data: Data, type: String) async throws -> ContentReference {
+            ContentReference(identifier: "one", type: type)
+        }
+        func load(_ reference: ContentReference) async throws -> Data {
+            loads += 1
+            return data
+        }
+        func remove(_ reference: ContentReference) async throws {}
     }
 }

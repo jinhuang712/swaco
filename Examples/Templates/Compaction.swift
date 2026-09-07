@@ -56,12 +56,14 @@ public struct Compaction: Extension {
     public static let joined: @Sendable ([Message]) async -> String = { messages in
         messages.compactMap { message in
             switch message {
-            case .system(let text): "instructions: \(text)"
-            case .user(let text): "the person said: \(text)"
-            case .assistant(let text, let calls) where !text.isEmpty:
-                calls.isEmpty ? "the agent said: \(text)" : "the agent said: \(text), and used \(calls.count) tools"
+            case .system: "instructions: \(message.text)"
+            case .user: "the person said: \(message.text)"
+            case .assistant(let content, let calls) where !content.text.isEmpty:
+                calls.isEmpty
+                    ? "the agent said: \(message.text)"
+                    : "the agent said: \(message.text), and used \(calls.count) tools"
             case .assistant(_, let calls): "the agent used \(calls.count) tools"
-            case .toolResult(let result): "a tool returned: \(result.content)"
+            case .toolResult: "a tool returned: \(message.text)"
             }
         }
         .joined(separator: " ")

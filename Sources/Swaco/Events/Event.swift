@@ -15,12 +15,20 @@ public enum Source: Sendable, Hashable {
 /// The beginning of a run, recorded like everything else.
 public struct InboundEvent: Sendable, Hashable {
     public let source: Source
-    public let text: String
+    /// What arrived: words, pictures, or anything else a part can hold.
+    public let content: [ContentPart]
+
+    public init(source: Source, content: [ContentPart]) {
+        self.source = source
+        self.content = content
+    }
 
     public init(source: Source, text: String) {
-        self.source = source
-        self.text = text
+        self.init(source: source, content: [.text(text)])
     }
+
+    /// The words that arrived. A share sheet may bring none.
+    public var text: String { content.text }
 
     /// What a person typed.
     public static func person(_ text: String) -> InboundEvent {

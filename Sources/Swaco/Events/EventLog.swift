@@ -28,7 +28,7 @@ extension Event: Codable {
 
     private enum Key: String, CodingKey {
         case type, turn, text, call, result, stop, origin, partial, message, source
-        case capability, by, subject, reason, handling
+        case capability, by, subject, reason, handling, content
     }
 
     public init(from decoder: any Decoder) throws {
@@ -37,7 +37,7 @@ extension Event: Codable {
         case Name.arrived:
             self = .arrived(InboundEvent(
                 source: try container.decode(Source.self, forKey: .source),
-                text: try container.decode(String.self, forKey: .text)
+                content: try container.decode([ContentPart].self, forKey: .content)
             ))
         case Name.turnStarted:
             self = .turnStarted(try container.decode(Int.self, forKey: .turn))
@@ -98,7 +98,7 @@ extension Event: Codable {
         case .arrived(let inbound):
             try container.encode(Name.arrived, forKey: .type)
             try container.encode(inbound.source, forKey: .source)
-            try container.encode(inbound.text, forKey: .text)
+            try container.encode(inbound.content, forKey: .content)
         case .turnStarted(let turn):
             try container.encode(Name.turnStarted, forKey: .type)
             try container.encode(turn, forKey: .turn)

@@ -22,15 +22,22 @@ public enum Recovery: Sendable, Hashable {
 
 /// One turn as the model produced it, before the loop acts on it.
 public struct Response: Sendable, Hashable {
-    public var text: String
+    public var content: [ContentPart]
     public var toolCalls: [ToolCall]
     public var stop: StopReason
 
-    public init(text: String, toolCalls: [ToolCall], stop: StopReason) {
-        self.text = text
+    public init(content: [ContentPart], toolCalls: [ToolCall], stop: StopReason) {
+        self.content = content
         self.toolCalls = toolCalls
         self.stop = stop
     }
+
+    public init(text: String, toolCalls: [ToolCall], stop: StopReason) {
+        self.init(content: text.isEmpty ? [] : [.text(text)], toolCalls: toolCalls, stop: stop)
+    }
+
+    /// The words the model said.
+    public var text: String { content.text }
 }
 
 /// Where the loop is running and what it can count on. Filled in by whatever
