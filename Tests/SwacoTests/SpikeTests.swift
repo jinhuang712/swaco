@@ -46,7 +46,8 @@ actor AskTool: Tool {
             [.text("Done."), .stop(.endTurn)],
         ])
         let ask = AskTool()
-        let agent = Agent(provider: provider, tools: [await ClockTool(), ask])
+        let ticker = ClockTool()
+        let agent = Agent(provider: provider, tools: [ticker, ask])
         let run = agent.run("go")
 
         var events: [Event] = []

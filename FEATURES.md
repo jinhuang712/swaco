@@ -390,14 +390,16 @@ requires showing that it does. The list is kept short on purpose.
 
 ## Project
 
-- [~] Swift Package with independently linkable modules; the core works
-      when every other module is absent. Four modules build alone for the
-      simulator
+- [x] Swift Package with independently linkable modules; the core works
+      when every other module is absent. Nine modules build alone for the
+      simulator, checked in CI rather than claimed
 - [x] iOS 26 minimum; macOS 26 compiles but is not yet supported
 - [~] Swift 6 strict concurrency; all public types `Sendable` and
       serialisable
 - [ ] Every public symbol documented, Swift naming conventions
-- [~] Swift Testing suite that never touches the network
+- [x] Swift Testing suite that never touches the network. Ninety-six checks
+      on macOS and on the simulator; the one exchange with a real model was
+      recorded by hand and is replayed from a file
 - [x] CI on GitHub Actions: every module linked on its own, the suite run
       on macOS and the simulator with warnings as errors, the examples
       built, and two acceptance checks that a person would otherwise have

@@ -87,3 +87,5 @@ jobs:
             -scheme ChatApp \
             -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
             build
+      # The app is an adopter like any other: when the vocabulary grows, it
+      # has to keep compiling, and it is easier to notice here than later.

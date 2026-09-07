@@ -123,8 +123,10 @@ final class Chat {
             notice = "This model runs no tools, so it cannot ask you anything."
         case .failed(let message):
             notice = message
+        case .handedOver:
+            notice = "Picking this up again in a moment."
         case .cancelled, .capabilityMissing, .turnStarted, .toolCallIssued, .finished,
-             .rewritten, .refused, .arrivalHandled, .unrecognised:
+             .rewritten, .refused, .arrivalHandled, .usage, .unrecognised:
             break
         }
     }
