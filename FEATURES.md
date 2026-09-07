@@ -196,13 +196,16 @@ vendor. Our providers are built on it; a third party may use it or ignore it.
       when the vendor signals it has expired. Implementations: static API
       key in the vendor's header, static bearer token, OAuth token pair with
       refresh, app-defined closure for an app's own backend. None is the
-      default; the app names one. Done except OAuth. The shipped ones are
+      default; the app names one. The shipped ones are
       static members of one `Authentication` value so a call site names one
       with a leading dot; the protocol stays the door, and
       `Authentication.custom` carries a third party's own through it
-- [ ] `TokenStore` protocol for OAuth tokens; Keychain-backed reference
+- [x] `TokenStore` protocol for OAuth tokens; Keychain-backed reference
       implementation. Vendor-specific authorisation flows, which need a web
-      view and vendor client ids, are companions
+      view and vendor client ids, are companions. Swaco does the dull part
+      nobody should rewrite: attach the token, notice it is about to stop
+      working, exchange it, keep the new one. Whether the Keychain item is
+      shared with an app extension is the app's to say
 - [x] All configuration is passed explicitly in code. No configuration
       files; an environment variable is read only where an authenticator
       is asked to

@@ -311,3 +311,79 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
         #expect(second.last == .stop(.endTurn))
     }
 }
+
+@Suite struct KeepingTokens {
+    /// The dull part swaco does: attach the token, notice it is stale,
+    /// exchange it, keep the new one.
+    @Test func astaleTokenIsExchangedBeforeTheRequest() async throws {
+        let store = InMemoryTokenStore(Tokens(
+            access: "old", refresh: "renew", expires: Date().addingTimeInterval(10)
+        ))
+        let exchanges = Exchanges()
+        let authentication = Authentication.oauth(store: store) { refresh in
+            await exchanges.note(refresh)
+            return Tokens(access: "new", refresh: "renew-again",
+                          expires: Date().addingTimeInterval(3600))
+        }
+
+        var request = URLRequest(url: URL(string: "https://example.invalid")!)
+        try await authentication.authenticate(&request)
+
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer new")
+        #expect(await exchanges.all == ["renew"])
+        // And the new pair is the one kept, so the next request does not
+        // exchange again.
+        #expect(try await store.tokens()?.access == "new")
+        try await authentication.authenticate(&request)
+        #expect(await exchanges.all.count == 1)
+    }
+
+    /// A token with life in it is used as it is.
+    @Test func afreshTokenIsUsedAsItIs() async throws {
+        let store = InMemoryTokenStore(Tokens(
+            access: "good", refresh: "renew", expires: Date().addingTimeInterval(3600)
+        ))
+        let exchanges = Exchanges()
+        let authentication = Authentication.oauth(store: store) { refresh in
+            await exchanges.note(refresh)
+            return Tokens(access: "unexpected")
+        }
+        var request = URLRequest(url: URL(string: "https://example.invalid")!)
+        try await authentication.authenticate(&request)
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer good")
+        #expect(await exchanges.all.isEmpty)
+    }
+
+    /// Nobody has signed in yet, which is an error the app can act on rather
+    /// than a request that fails at the vendor. Signing in is the app's flow.
+    @Test func withNoTokensTheAppIsToldBeforeTheRequest() async {
+        let authentication = Authentication.oauth(store: InMemoryTokenStore()) { _ in
+            Tokens(access: "never")
+        }
+        var request = URLRequest(url: URL(string: "https://example.invalid")!)
+        await #expect(throws: AuthenticationError.noTokens) {
+            try await authentication.authenticate(&request)
+        }
+    }
+
+    /// Staleness is about the next request, not the last one: a token that
+    /// expires in flight fails the request it was attached to.
+    @Test func atokenAboutToExpireCountsAsStale() {
+        let now = Date()
+        #expect(Tokens(access: "a", expires: now.addingTimeInterval(30)).isStale(now: now))
+        #expect(!Tokens(access: "a", expires: now.addingTimeInterval(300)).isStale(now: now))
+        // A token with no expiry says nothing, so nothing is assumed.
+        #expect(!Tokens(access: "a").isStale(now: now))
+    }
+
+    @Test func tokensSurviveBeingWrittenDown() throws {
+        let tokens = Tokens(access: "a", refresh: "b", expires: Date(timeIntervalSince1970: 1))
+        let data = try JSONEncoder().encode(tokens)
+        #expect(try JSONDecoder().decode(Tokens.self, from: data) == tokens)
+    }
+
+    private actor Exchanges {
+        private(set) var all: [String] = []
+        func note(_ refresh: String) { all.append(refresh) }
+    }
+}

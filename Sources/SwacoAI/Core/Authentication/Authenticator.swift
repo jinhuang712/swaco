@@ -41,6 +41,33 @@ public struct Authentication: Authenticator {
         Authentication { $0.setValue(key, forHTTPHeaderField: header) }
     }
 
+    /// An OAuth token pair, refreshed when it is about to stop working.
+    ///
+    /// Swaco holds no client id and runs no browser: getting the first pair
+    /// is a vendor's own flow, with a web view and a registered app, and that
+    /// is a companion's business or the app's. What swaco does is the dull
+    /// part nobody should rewrite: attach the token, notice it is stale,
+    /// exchange it, keep the new one.
+    ///
+    /// - Parameters:
+    ///   - store: where the pair lives. The app names it.
+    ///   - refresh: how this vendor exchanges a refresh token for a new pair.
+    public static func oauth(
+        store: any TokenStore,
+        refresh: @Sendable @escaping (String) async throws -> Tokens
+    ) -> Authentication {
+        Authentication { request in
+            guard var tokens = try await store.tokens() else {
+                throw AuthenticationError.noTokens
+            }
+            if tokens.isStale(), let refreshToken = tokens.refresh {
+                tokens = try await refresh(refreshToken)
+                try await store.save(tokens)
+            }
+            request.setValue("Bearer \(tokens.access)", forHTTPHeaderField: "Authorization")
+        }
+    }
+
     /// The app's own scheme, for its own backend.
     public static func custom(_ authenticate: @Sendable @escaping (inout URLRequest) async throws -> Void) -> Authentication {
         Authentication(authenticate)
@@ -54,4 +81,6 @@ public struct Authentication: Authenticator {
 
 public enum AuthenticationError: Error, Sendable, Equatable {
     case missingEnvironmentVariable(String)
+    /// Nobody has signed in yet. Signing in is the app's flow, not swaco's.
+    case noTokens
 }
