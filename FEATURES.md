@@ -124,10 +124,11 @@ Fixed now, before code. Each word means one thing.
       queue or leave; left events start a new run. An app that does not list
       the extension starts a new run for every event that arrives during
       another
-- [~] Execution context exposed to extensions: foreground, background,
+- [x] Execution context exposed to extensions: foreground, background,
       app extension process, remaining time, whether a person is present.
-      The type is declared and reaches every hook; what fills it in from the
-      system is the runtime's and is not written yet
+      The type is the core's so an extension reads it without knowing a
+      platform; answering it is the runtime's, and nothing said is kept
+      distinct from plenty
 - [x] A loop can stop after one turn and hand the rest to a later process;
       the handover survives the process boundary. A handover is its own
       verdict and its own event, told apart from an ending and from a
@@ -340,9 +341,10 @@ upgrading. Build tooling, signing, distribution and onboarding are the app's.
       API: documented, versioned, evolved by addition only. A newer swaco
       replays logs written by an older one, and unknown event types are
       preserved, never dropped. A run is reproduced by replaying its log
-      through the mock provider; a bug report is a log. The format has
-      stable names and keeps the event types it does not know, checked by
-      the store contract; replaying a log through the mock provider is next
+      through the mock provider; a bug report is a log. All of it: stable
+      names, unknown event types kept, and a log anyone holds can be run
+      again, with the model built from what it said and the tools answering
+      what they answered
 - [x] Recording: run once against a real provider, keep the exchange as a
       fixture, replay it thereafter. Development, previews and tests need no
       key and no network. One JSON object per line, plain enough to trim by
