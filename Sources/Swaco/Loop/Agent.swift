@@ -45,6 +45,28 @@ public struct Agent: Sendable {
     /// it; swaco holds no store.
     public let content: (any ContentStore)?
 
+    /// - Parameter toolsets: whatever the app has, one tool or a framework's
+    ///   worth. A single tool is a toolset of one, so nothing needs wrapping.
+    public init(
+        provider: any Provider,
+        toolsets: [any ToolSet],
+        extensions: [any Extension] = [],
+        rendering: any EventRendering = DefaultEventRendering(),
+        execution: ExecutionContext = .unknown,
+        inbox: Inbox? = nil,
+        content: (any ContentStore)? = nil
+    ) {
+        self.init(
+            provider: provider,
+            tools: toolsets.tools,
+            extensions: extensions,
+            rendering: rendering,
+            execution: execution,
+            inbox: inbox,
+            content: content
+        )
+    }
+
     public init(
         provider: any Provider,
         tools: [any Tool],

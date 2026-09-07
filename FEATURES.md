@@ -28,7 +28,7 @@ Fixed now, before code. Each word means one thing.
 
 ## Core
 
-- [ ] One event vocabulary for everything that enters or leaves the agent.
+- [x] One event vocabulary for everything that enters or leaves the agent.
       Inbound events carry a source (person, shortcut, notification, URL,
       share, system, schedule, sensor), a payload of content parts or
       structured data, and the execution context they arrived in. A
@@ -61,8 +61,10 @@ Fixed now, before code. Each word means one thing.
       declared access of read-only or writing. Access has no default and is
       a fact for extensions and the app to read; the loop acts on it in no
       way
-- [ ] `ToolSet` protocol: name, description, expansion into tools; a single
-      tool is a toolset of one
+- [x] `ToolSet` protocol: name, description, expansion into tools; a single
+      tool is a toolset of one, so `Tool` is a `ToolSet` and nothing needs
+      wrapping to be handed over. An app takes part of a set at the
+      granularity of a tool, by name or by a rule over what a tool declared
 - [~] Tool execution is a pair of events, call issued and result arrived,
       never an awaited function. A tool either delivers its result at once
       or registers that the result will arrive later; the loop advances only
@@ -335,7 +337,7 @@ upgrading. Build tooling, signing, distribution and onboarding are the app's.
 - [x] Providers expose availability: not on this device, model downloading,
       ready. Apps decide before the first request, not after the first
       failure
-- [ ] No initialisation step, no account, no configuration file. The core
+- [x] No initialisation step, no account, no configuration file. The core
       works the moment it is linked
 
 ## Declared by the app, no default
@@ -374,7 +376,7 @@ requires showing that it does. The list is kept short on purpose.
 - [~] Swift Package with independently linkable modules; the core works
       when every other module is absent. Four modules build alone for the
       simulator
-- [ ] iOS 26 minimum; macOS 26 compiles but is not yet supported
+- [x] iOS 26 minimum; macOS 26 compiles but is not yet supported
 - [~] Swift 6 strict concurrency; all public types `Sendable` and
       serialisable
 - [ ] Every public symbol documented, Swift naming conventions
@@ -390,6 +392,7 @@ requires showing that it does. The list is kept short on purpose.
       `Examples/ChatApp`, four things to adopt swaco (a store, a desk, an
       agent, a session), and it restores a question a previous process left
       unanswered
-- [ ] Templates: a minimal, complete, compiling example each of an app tool,
+- [x] Templates: a minimal, complete, compiling example each of an app tool,
       a toolset and an extension, built in CI so they never drift from the
-      API
+      API. Two tools, because the shape that matters most is the one whose
+      result comes later, in a process that did not ask for it

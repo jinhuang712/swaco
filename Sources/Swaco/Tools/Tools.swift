@@ -58,7 +58,7 @@ public struct ResultDelivery: Sendable {
 /// calls the delivery. `resume` is how a deferred call is re-armed in a fresh
 /// process: given the call it once registered, arrange for the result to be
 /// delivered again.
-public protocol Tool: Sendable {
+public protocol Tool: ToolSet {
     var name: String { get }
     var description: String { get }
     var access: ToolAccess { get }
@@ -76,4 +76,7 @@ public extension Tool {
 
     /// A tool that takes no arguments.
     var parameters: String { #"{"type":"object","properties":{}}"# }
+
+    /// A single tool is a toolset of one.
+    var tools: [any Tool] { [self] }
 }

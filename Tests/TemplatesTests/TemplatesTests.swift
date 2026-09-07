@@ -177,3 +177,85 @@ private struct Watching: Provider {
         #expect(events.filter { if case .usage = $0 { true } else { false } }.count == 2)
     }
 }
+
+@Suite struct AnAppsOwnToolsAndSets {
+    /// The template shape works through the public doors: a set is handed
+    /// over whole, and a single tool needs no wrapping to sit beside it.
+    @Test func aSetAndALoneToolAreHandedOverTogether() async throws {
+        let notes = NoteDown.Notes()
+        let door = WaitForTheDoor.Door()
+        let household = HouseholdTools(notes: notes, door: door)
+
+        let agent = Agent(
+            provider: ScriptedProvider(turns: [
+                [.toolCall(ToolCall(id: "n", name: "note_down", arguments: #"{"note":"milk"}"#)),
+                 .stop(.toolUse)],
+                [.text("Written down."), .stop(.endTurn)],
+            ]),
+            toolsets: [household, Echo()],
+            extensions: [DropDuplicateTools()]
+        )
+        let run = Run(agent: agent, store: InMemoryEventStore())
+        var events: [Event] = []
+        for try await event in run.start("note milk") { events.append(event) }
+
+        #expect(events.contains(.toolResultArrived(ToolResult(callID: "n", content: "written down"))))
+        #expect(await notes.all == ["milk"])
+        #expect(events.last == .finished)
+    }
+
+    /// Part of a set, at the granularity of a tool.
+    @Test func anAppMayTakePartOfASet() {
+        let household = HouseholdTools(notes: NoteDown.Notes(), door: WaitForTheDoor.Door())
+        #expect(household.tools.map(\.name).sorted() == ["note_down", "wait_for_the_door"])
+        #expect(household.only(["note_down"]).tools.map(\.name) == ["note_down"])
+        #expect(household.except(["note_down"]).tools.map(\.name) == ["wait_for_the_door"])
+        // A rule reads what a tool declared about itself and nothing else.
+        #expect(household.keeping { $0.access == .readOnly }.tools.map(\.name) == ["wait_for_the_door"])
+    }
+
+    /// A tool is a toolset of one, so nothing has to be wrapped to fit.
+    @Test func aSingleToolIsASetOfOne() {
+        let echo = Echo()
+        #expect(echo.tools.count == 1)
+        #expect(echo.tools[0].name == "echo")
+        // And a list of sets is just its tools, with a duplicate name dropped
+        // rather than left to shadow another at call time.
+        let sets: [any ToolSet] = [echo, Echo(), HouseholdTools(notes: .init(), door: .init())]
+        #expect(sets.tools.map(\.name).sorted() == ["echo", "note_down", "wait_for_the_door"])
+    }
+
+    /// The pair that lets a wait outlive a process, in a template an app copies.
+    @Test func aDeferredToolInATemplateSurvivesARelaunch() async throws {
+        let directory = URL.temporaryDirectory.appending(path: "swaco-door-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let group = Run.newGroup()
+        let script = ScriptedProvider(turns: [
+            [.toolCall(ToolCall(id: "d", name: "wait_for_the_door", arguments: "{}")), .stop(.toolUse)],
+            [.text("Someone came."), .stop(.endTurn)],
+        ])
+
+        do {
+            let run = Run(group: group,
+                          agent: Agent(provider: script, toolsets: [WaitForTheDoor(door: .init())]),
+                          store: try FileEventStore(directory: directory))
+            for try await event in run.start("tell me when someone arrives") {
+                if case .toolCallDeferred = event { break }
+            }
+        }
+
+        // A new process: a new door that remembers nothing.
+        let door = WaitForTheDoor.Door()
+        let run = Run(group: group,
+                      agent: Agent(provider: script, toolsets: [WaitForTheDoor(door: door)]),
+                      store: try FileEventStore(directory: directory))
+        var events: [Event] = []
+        for try await event in run.resume() {
+            events.append(event)
+            if case .toolCallDeferred = event { await door.opened(by: "the postman") }
+        }
+        #expect(events.contains(.toolResultArrived(
+            ToolResult(callID: "d", content: "opened by the postman"))))
+        #expect(events.last == .finished)
+    }
+}
