@@ -75,12 +75,16 @@ public struct Run: Sendable {
                     loop = run
                     for await event in run.events {
                         try await store.append(event, to: group)
+                        // Structure, never content: a log left on carries
+                        // nobody's words.
+                        Log.run.debug("\(group.rawValue, privacy: .public): \(event.kind, privacy: .public)")
                         continuation.yield(event)
                     }
                     continuation.finish()
                 } catch {
                     // The store failed, so the log and the app would disagree
                     // from here on. Stop rather than carry on unrecorded.
+                    Log.store.error("\(group.rawValue, privacy: .public): \(String(describing: error), privacy: .public)")
                     loop?.cancel()
                     continuation.finish(throwing: error)
                 }

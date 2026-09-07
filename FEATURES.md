@@ -317,13 +317,21 @@ upgrading. Build tooling, signing, distribution and onboarding are the app's.
 - [ ] Recording: run once against a real provider, keep the exchange as a
       fixture, replay it thereafter. Development, previews and tests need no
       key and no network
-- [ ] `os.Logger` by subsystem and signposts per turn and tool call, so a
-      run is visible in Instruments. Structure is logged, content is not
-- [ ] Privacy manifest shipped with the package: no tracking, no collection,
-      no required-reason APIs
-- [ ] Each module states its deployment requirements: entitlements, App
+- [x] `os.Logger` by subsystem and signposts per turn and tool call, so a
+      run is visible in Instruments. Structure is logged, content is not:
+      an event can say its kind, and a kind never carries what was said.
+      The signposts are an extension, written through the same doors as any
+      other, because the moments worth measuring are the moments the loop
+      already offers
+- [x] Privacy manifest shipped with the package: no tracking, no collection,
+      no required-reason APIs. One with each library target
+- [~] Each module states its deployment requirements: entitlements, App
       Group, Info.plist usage strings. A debug-build check fails at launch,
-      with a clear message, when a linked module's requirements are missing
+      with a clear message, when a linked module's requirements are missing.
+      The App Group is stated and checked, and a store in one names the
+      failure rather than letting a file error surface later. The check is a
+      call the app makes, because explicit beats magic. Usage strings arrive
+      with the toolsets that need them
 - [x] Providers expose availability: not on this device, model downloading,
       ready. Apps decide before the first request, not after the first
       failure

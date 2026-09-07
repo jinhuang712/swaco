@@ -80,3 +80,34 @@ public enum Event: Sendable, Hashable {
     /// exactly as it was written, and written back unchanged.
     case unrecognised(type: String, fields: [String: JSONValue])
 }
+
+public extension Event {
+    /// The name of what happened, and nothing about what it said.
+    /// The name of what happened, carrying nothing of what it said.
+    ///
+    /// This is what may be written to a system log, sent in a bug report, or
+    /// shown in a trace: that a turn started, that a tool was called, that a
+    /// call was refused. Never what a person said, what the model replied, or
+    /// what a tool returned. A log that can be left on is one that carries
+    /// nobody's words.
+    var kind: String {
+        switch self {
+        case .arrived(let inbound): "arrived(\(inbound.source))"
+        case .turnStarted(let turn): "turn \(turn) started"
+        case .text: "text"
+        case .toolCallIssued(let call): "call issued(\(call.name))"
+        case .toolCallDeferred(let call): "call deferred(\(call.name))"
+        case .toolResultArrived(let result): result.isError ? "result arrived(error)" : "result arrived"
+        case .usage: "usage"
+        case .turnEnded(let stop): "turn ended(\(stop))"
+        case .cancelled(let origin, _): "cancelled(\(origin))"
+        case .failed: "failed"
+        case .capabilityMissing(let capability): "capability missing(\(capability))"
+        case .rewritten(let by, _): "rewritten(\(by))"
+        case .refused(let by, _, _): "refused(\(by))"
+        case .arrivalHandled(let arrival, let by): "arrival \(arrival)(\(by))"
+        case .finished: "finished"
+        case .unrecognised(let type, _): "unrecognised(\(type))"
+        }
+    }
+}

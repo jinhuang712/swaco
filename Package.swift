@@ -15,17 +15,18 @@ let package = Package(
         .library(name: "SwacoTesting", targets: ["SwacoTesting"]),
     ],
     targets: [
-        .target(name: "Swaco"),
+        .target(name: "Swaco", resources: [.copy("PrivacyInfo.xcprivacy")]),
 
         // The AI layer: shared machinery, then one thin target per vendor.
-        .target(name: "SwacoAI", dependencies: ["Swaco"], path: "Sources/SwacoAI/Core"),
+        .target(name: "SwacoAI", dependencies: ["Swaco"], path: "Sources/SwacoAI/Core",
+                resources: [.copy("PrivacyInfo.xcprivacy")]),
         .target(name: "SwacoOpenAI", dependencies: ["SwacoAI"], path: "Sources/SwacoAI/OpenAI"),
         .target(name: "SwacoFoundationModels", dependencies: ["Swaco"],
                 path: "Sources/SwacoAI/FoundationModels"),
 
-        .target(name: "SwacoExtensions", dependencies: ["Swaco"]),
-        .target(name: "SwacoInteraction", dependencies: ["Swaco"]),
-        .target(name: "SwacoRuntime", dependencies: ["Swaco"]),
+        .target(name: "SwacoExtensions", dependencies: ["Swaco"], resources: [.copy("PrivacyInfo.xcprivacy")]),
+        .target(name: "SwacoInteraction", dependencies: ["Swaco"], resources: [.copy("PrivacyInfo.xcprivacy")]),
+        .target(name: "SwacoRuntime", dependencies: ["Swaco"], resources: [.copy("PrivacyInfo.xcprivacy")]),
 
         // Public, so companions and third parties run the same contracts.
         .target(name: "SwacoTesting", dependencies: ["Swaco", "SwacoRuntime"]),
