@@ -264,9 +264,13 @@ Strategies an app may want and would answer in its own way. Each is a
 complete, compiling example under `Examples/`, built in CI, copied into the
 app and owned by it from then on. Not shipped, not versioned.
 
-- [ ] Progressive tool disclosure: expose few tools plus a discovery tool
-- [ ] Budget: stop a loop after a chosen number of turns, tokens or seconds
-- [ ] Context compaction
+- [x] Progressive tool disclosure: expose few tools plus a discovery tool
+- [x] Budget: stop a loop after a chosen number of turns, tokens or
+      seconds. Turns and seconds; also one that spends what the process has
+      left, which is the honest budget in an app extension. Tokens wait on
+      usage being carried
+- [x] Context compaction. It rewrites what is sent and leaves the log
+      alone, so what happened is still what happened
 
 Authorisation gating, which hides or defers tools whose system permission is
 not granted, is a bridge to the platform and ships with the platform toolsets

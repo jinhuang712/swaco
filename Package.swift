@@ -44,5 +44,12 @@ let package = Package(
         // The canonical first program, built in CI so it never drifts.
         .executableTarget(name: "FirstProgram", dependencies: ["Swaco", "SwacoOpenAI"],
                           path: "Examples/FirstProgram"),
+
+        // Complete, compiling strategies an app copies and owns from then on.
+        // Built here so they cannot drift from the API; shipped to nobody.
+        .target(name: "Templates", dependencies: ["Swaco"], path: "Examples/Templates",
+                exclude: ["README.md"]),
+        .testTarget(name: "TemplatesTests",
+                    dependencies: ["Templates", "SwacoRuntime", "SwacoTesting"]),
     ]
 )

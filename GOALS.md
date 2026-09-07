@@ -174,6 +174,9 @@ met it is marked here and the next becomes the current one.
    app.*
 4. **The doors are proven.** One companion toolset and one template
    extension exist, written through public protocols only, with nothing
-   added to the core to make them possible.
+   added to the core to make them possible. *Half met: three templates
+   exist under `Examples/`, each through the public doors, each built and
+   checked in CI, and the core needed nothing added for them. The companion
+   waits on a repository of its own, which is not ours to create.*
 
 Nothing after the fourth is planned until the fourth is met.

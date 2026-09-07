@@ -76,6 +76,8 @@ jobs:
           test "$lines" -le 20
       - name: Build the first program
         run: swift build --product FirstProgram
+      - name: Build the templates
+        run: swift build --target Templates
       - name: Build the sample app
         run: |
           xcodebuild -project Examples/ChatApp/ChatApp.xcodeproj \
