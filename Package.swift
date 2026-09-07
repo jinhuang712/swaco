@@ -8,6 +8,7 @@ let package = Package(
         .library(name: "Swaco", targets: ["Swaco"]),
         .library(name: "SwacoAI", targets: ["SwacoAI"]),
         .library(name: "SwacoOpenAI", targets: ["SwacoOpenAI"]),
+        .library(name: "SwacoRuntime", targets: ["SwacoRuntime"]),
         .library(name: "SwacoTesting", targets: ["SwacoTesting"]),
     ],
     targets: [
@@ -17,9 +18,13 @@ let package = Package(
         .target(name: "SwacoAI", dependencies: ["Swaco"], path: "Sources/SwacoAI/Core"),
         .target(name: "SwacoOpenAI", dependencies: ["SwacoAI"], path: "Sources/SwacoAI/OpenAI"),
 
+        .target(name: "SwacoRuntime", dependencies: ["Swaco"]),
+
+        // Public, so companions and third parties run the same contracts.
         .target(name: "SwacoTesting", dependencies: ["Swaco"]),
 
         .testTarget(name: "SwacoTests", dependencies: ["Swaco", "SwacoTesting"]),
+        .testTarget(name: "SwacoRuntimeTests", dependencies: ["SwacoRuntime", "SwacoTesting"]),
         .testTarget(name: "SwacoAITests", dependencies: ["SwacoAI", "SwacoOpenAI"],
                     resources: [.copy("Fixtures")]),
 

@@ -1,5 +1,5 @@
 /// Why the model stopped producing.
-public enum StopReason: Sendable, Codable, Hashable {
+public enum StopReason: Sendable, Hashable {
     case endTurn
     case toolUse
     case maxTokens
