@@ -130,3 +130,16 @@ Written down so they are not eroded one convenience at a time.
 
 Swaco is developed by building a real app on it first. What gets built, and in
 what order, is decided by what that app needs, not by what would look complete.
+
+The first app is a simple chatbot: one conversation with one model, a few
+tools, on an iPhone. It is chosen because it is the form most adopters start
+from and the easiest to demonstrate, not because swaco assumes it. Two
+consequences follow and are accepted:
+
+- The parts of the runtime that a chat exercises come first: sessions,
+  persistence, recovery after relaunch, `ask` and `confirm` while a person
+  is present.
+- The parts a chat does not exercise, an agent woken with nobody watching
+  and a run that spans processes, are not driven by this app. They stay in
+  the design and wait for the second app or a deliberate test harness. The
+  first app must not be allowed to bend the vocabulary toward chat.
