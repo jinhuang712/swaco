@@ -143,3 +143,29 @@ consequences follow and are accepted:
   and a run that spans processes, are not driven by this app. They stay in
   the design and wait for the second app or a deliberate test harness. The
   first app must not be allowed to bend the vocabulary toward chat.
+
+## Milestones
+
+The goals above are where we are going. These are the next things that can
+be declared done, in order, each with the test that decides it. When one is
+met it is marked here and the next becomes the current one.
+
+1. **The spike has an answer.** A package with the `Swaco` target alone
+   compiles under Swift 6 strict concurrency with the event-pair loop, a
+   main-actor tool, a deferred result and external cancellation, and no
+   unchecked escape. The answer is "yes" or "no, and this is what changes
+   in the design". Needs no Xcode and no simulator. *Current.*
+2. **The first program runs.** `import Swaco`, one provider, one tool, one
+   `Agent`, one `for await`, in twenty lines or fewer, against the mock
+   provider on an iOS simulator. Protocols bent to fit; the example did not
+   grow.
+3. **The first app works.** The chatbot described above, on a phone,
+   through one hosted provider and one on-device provider, with a session
+   that survives relaunch and an `ask` that survives relaunch. Every module
+   it links is independently linkable and the crash-at-every-event harness
+   passes on its log.
+4. **The doors are proven.** One companion toolset and one template
+   extension exist, written through public protocols only, with nothing
+   added to the core to make them possible.
+
+Nothing after the fourth is planned until the fourth is met.
