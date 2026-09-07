@@ -66,6 +66,9 @@ public enum Event: Sendable, Hashable {
     /// What was done with something that arrived while the loop was running,
     /// and who decided.
     case arrivalHandled(Arrival, by: String)
+    /// The loop stopped on purpose and expects another process to go on from
+    /// here. Not an ending: the work is unfinished and says so.
+    case handedOver(by: String, reason: String)
     /// An extension changed something on its way through the loop.
     case rewritten(by: String, subject: Subject)
     /// An extension refused something. What that ends depends on where it
@@ -105,6 +108,7 @@ public extension Event {
         case .capabilityMissing(let capability): "capability missing(\(capability))"
         case .rewritten(let by, _): "rewritten(\(by))"
         case .refused(let by, _, _): "refused(\(by))"
+        case .handedOver(let by, _): "handed over(\(by))"
         case .arrivalHandled(let arrival, let by): "arrival \(arrival)(\(by))"
         case .finished: "finished"
         case .unrecognised(let type, _): "unrecognised(\(type))"

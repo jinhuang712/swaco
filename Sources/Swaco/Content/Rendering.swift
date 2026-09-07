@@ -67,7 +67,8 @@ public extension Message {
                 closeTurn()
                 messages.append(.toolResult(result))
             case .turnStarted, .toolCallDeferred, .cancelled, .failed, .capabilityMissing,
-                 .rewritten, .refused, .arrivalHandled, .usage, .finished, .unrecognised:
+                 .rewritten, .refused, .handedOver, .arrivalHandled, .usage, .finished,
+                 .unrecognised:
                 // A turn interrupted before it ended is closed by whatever
                 // comes next; nothing received is discarded.
                 continue

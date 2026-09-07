@@ -54,11 +54,16 @@ struct Extending: Sendable {
         return (.leave, by: "swaco")
     }
 
-    /// Whether the loop may take another turn.
+    /// Whether the loop may take another turn, and if not, what to record.
     func mayContinue(after turn: Int, in context: ExtensionContext) async -> Event? {
         for extend in extensions {
-            if case .refuse(let reason) = await extend.turnEnded(turn, in: context) {
+            switch await extend.turnEnded(turn, in: context) {
+            case .pass:
+                continue
+            case .refuse(let reason):
                 return .refused(by: extend.name, subject: .turn(turn), reason: reason)
+            case .handOver(let reason):
+                return .handedOver(by: extend.name, reason: reason)
             }
         }
         return nil

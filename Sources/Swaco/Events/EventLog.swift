@@ -23,6 +23,7 @@ extension Event: Codable {
         static let capabilityMissing = "capability_missing"
         static let rewritten = "rewritten"
         static let refused = "refused"
+        static let handedOver = "handed_over"
         static let arrivalHandled = "arrival_handled"
         static let finished = "finished"
     }
@@ -63,6 +64,11 @@ extension Event: Codable {
             self = .failed(try container.decode(String.self, forKey: .message))
         case Name.capabilityMissing:
             self = .capabilityMissing(try container.decode(Capability.self, forKey: .capability))
+        case Name.handedOver:
+            self = .handedOver(
+                by: try container.decode(String.self, forKey: .by),
+                reason: try container.decode(String.self, forKey: .reason)
+            )
         case Name.arrivalHandled:
             self = .arrivalHandled(
                 try container.decode(Arrival.self, forKey: .handling),
@@ -133,6 +139,10 @@ extension Event: Codable {
         case .capabilityMissing(let capability):
             try container.encode(Name.capabilityMissing, forKey: .type)
             try container.encode(capability, forKey: .capability)
+        case .handedOver(let by, let reason):
+            try container.encode(Name.handedOver, forKey: .type)
+            try container.encode(by, forKey: .by)
+            try container.encode(reason, forKey: .reason)
         case .arrivalHandled(let handling, let by):
             try container.encode(Name.arrivalHandled, forKey: .type)
             try container.encode(handling, forKey: .handling)

@@ -11,7 +11,16 @@ public enum Decision<Subject: Sendable>: Sendable {
 /// What an extension decides where there is nothing to rewrite.
 public enum Verdict: Sendable, Hashable {
     case pass
+    /// Stop, and do not expect to go on.
     case refuse(String)
+    /// Stop, and expect another process to go on from here.
+    ///
+    /// The difference from a refusal is what it means afterwards: a refused
+    /// loop is over, a handed-over loop is waiting for its next process. An
+    /// app extension with three seconds left, a background wake-up that must
+    /// give the system its time back: both stop like this, and both are
+    /// picked up by whatever runs next.
+    case handOver(String)
 }
 
 /// What to do about a request that failed.
@@ -119,7 +128,9 @@ public protocol Extension: Sendable {
     /// call has a result.
     func beforeToolCall(_ call: ToolCall, in context: ExtensionContext) async -> Decision<ToolCall>
     func afterToolCall(_ result: ToolResult, in context: ExtensionContext) async -> Decision<ToolResult>
-    /// A refusal here ends the loop, which is how a budget stops one.
+    /// A refusal here ends the loop, which is how a budget stops one; a
+    /// handover stops it for now, which is how a process gives its time back
+    /// without losing the work.
     func turnEnded(_ turn: Int, in context: ExtensionContext) async -> Verdict
     /// The first extension that asks for a retry gets it.
     func requestFailed(_ error: any Error, attempt: Int, in context: ExtensionContext) async -> Recovery

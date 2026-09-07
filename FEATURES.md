@@ -97,7 +97,7 @@ Fixed now, before code. Each word means one thing.
       go. Things that arrive mid-loop are handed to an `Inbox` the app
       holds, drained at the start of each turn and again before the loop
       would end
-- [~] Cancellation at any point with no inconsistent state. Nothing received
+- [x] Cancellation at any point with no inconsistent state. Nothing received
       is ever discarded: a partial reply is recorded as received and marked
       with why it stopped, by a person or by the system. Whether it is shown
       or sent back to the model is the app's decision
@@ -128,8 +128,12 @@ Fixed now, before code. Each word means one thing.
       app extension process, remaining time, whether a person is present.
       The type is declared and reaches every hook; what fills it in from the
       system is the runtime's and is not written yet
-- [ ] A loop can stop after one turn and hand the rest to a later process;
-      the handover survives the process boundary
+- [x] A loop can stop after one turn and hand the rest to a later process;
+      the handover survives the process boundary. A handover is its own
+      verdict and its own event, told apart from an ending and from a
+      refusal, and a handed-over run is the one state that means resume me.
+      The rule is the app's: after a turn, or when the process is nearly out
+      of time
 - [x] Session registry and lookup, through the store rather than a second
       list to keep in step
 - [~] Concurrency limit across all runs, with or without

@@ -103,6 +103,10 @@ public enum RunState: Sendable, Equatable {
     /// One or more calls were issued and never answered. A person's answer is
     /// one of these.
     case awaitingResults([ToolCall])
+    /// The loop stopped on purpose, expecting another process to go on. The
+    /// one state that means "resume me": everything else is either done or
+    /// waiting on something outside.
+    case handedOver(String)
     /// The loop stopped because a person or the system asked.
     case cancelled(CancellationOrigin)
     case failed(String)
@@ -115,6 +119,7 @@ public enum RunState: Sendable, Equatable {
         for event in events.reversed() {
             switch event {
             case .finished: self = .finished; return
+            case .handedOver(_, let reason): self = .handedOver(reason); return
             case .failed(let message): self = .failed(message); return
             case .cancelled(let origin, _): self = .cancelled(origin); return
             default: continue

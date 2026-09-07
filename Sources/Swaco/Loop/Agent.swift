@@ -299,7 +299,14 @@ public struct Agent: Sendable {
                     for inbound in queued.take() { messages.append(rendering.render(inbound)) }
                     continue
                 }
-                if let refusal = await extending.mayContinue(after: turn, in: moment) { emit(refusal) }
+                if let stopping = await extending.mayContinue(after: turn, in: moment) {
+                    // The model had nothing more to say anyway, so a handover
+                    // here is simply the end of the work.
+                    emit(stopping)
+                    if case .handedOver = stopping {} else { emit(.finished) }
+                    await extending.loopEnded(in: moment)
+                    return
+                }
                 emit(.finished)
                 await extending.loopEnded(in: moment)
                 return
