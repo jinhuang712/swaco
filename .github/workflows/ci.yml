@@ -1,0 +1,84 @@
+name: CI
+
+# Every pull request, and main itself, so a branch that lands is a branch that
+# was green.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Rule 5: every module is independently linkable. Checked by linking each
+  # one on its own rather than by saying so.
+  modules:
+    name: ${{ matrix.module }} alone
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [Swaco, SwacoAI, SwacoOpenAI, SwacoFoundationModels, SwacoExtensions, SwacoInteraction, SwacoRuntime, SwacoTesting]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Build for the simulator
+        run: |
+          xcodebuild -scheme ${{ matrix.module }} \
+            -destination 'generic/platform=iOS Simulator' \
+            build | xcbeautify --quiet || xcodebuild -scheme ${{ matrix.module }} \
+            -destination 'generic/platform=iOS Simulator' build
+
+  tests:
+    name: Tests, with no network
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Build, warnings are errors
+        run: swift build --build-tests -Xswiftc -warnings-as-errors
+      - name: Test on macOS
+        run: swift test
+      - name: Test on the simulator
+        run: |
+          xcodebuild test -scheme swaco-Package \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+      # The promise is that a test never needs a key or a connection. If one
+      # ever does, it fails here rather than in someone's spare time.
+      - name: No test may reach for a key
+        run: |
+          if grep -rniE 'api[_-]?key|bearer [a-z0-9]{16,}|sk-[a-z0-9]{16,}' Tests \
+             --include='*.swift' --exclude-dir=Fixtures | grep -vE 'not-used|SWACO_ABSENT_KEY|header:'; then
+            echo "a test looks like it carries a credential"
+            exit 1
+          fi
+
+  examples:
+    name: The examples still compile
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      # The canonical first program is an acceptance test: it must stay at
+      # twenty lines or fewer, including the tool.
+      - name: The first program is still twenty lines
+        run: |
+          lines=$(wc -l < Examples/FirstProgram/FirstProgram.swift)
+          echo "$lines lines"
+          test "$lines" -le 20
+      - name: Build the first program
+        run: swift build --product FirstProgram
+      - name: Build the sample app
+        run: |
+          xcodebuild -project Examples/ChatApp/ChatApp.xcodeproj \
+            -scheme ChatApp \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            build

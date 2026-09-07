@@ -360,7 +360,11 @@ requires showing that it does. The list is kept short on purpose.
       serialisable
 - [ ] Every public symbol documented, Swift naming conventions
 - [~] Swift Testing suite that never touches the network
-- [ ] CI on GitHub Actions
+- [x] CI on GitHub Actions: every module linked on its own, the suite run
+      on macOS and the simulator with warnings as errors, the examples
+      built, and two acceptance checks that a person would otherwise have
+      to remember: the first program stays at twenty lines, and no test
+      carries a credential
 - [ ] Breaking changes allowed and recorded before 1.0; semantic versioning
       after
 - [x] A sample app demonstrating one-step adoption: a chatbot under
