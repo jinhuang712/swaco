@@ -167,16 +167,34 @@ met it is marked here and the next becomes the current one.
    through one hosted provider and one on-device provider, with a session
    that survives relaunch and an `ask` that survives relaunch. Every module
    it links is independently linkable and the crash-at-every-event harness
-   passes on its log. *Current. In the simulator the app restores a
-   conversation and a question a previous process left unanswered, and picks
-   the loop back up; the harness passes and each module builds alone. What
-   remains is a real device, and both providers exercised by hand in the
-   app.*
+   passes on its log. *Current, and met but for a device. The app restores
+   a conversation and a question a previous process left unanswered and
+   picks the loop back up; the harness passes; each of the nine modules
+   builds alone for the simulator; both a hosted model and the on-device one
+   are wired in and either can be chosen. What remains needs an iPhone in
+   somebody's hand: a real relaunch after a real kill, and the two providers
+   exercised by tapping rather than by test.*
 4. **The doors are proven.** One companion toolset and one template
    extension exist, written through public protocols only, with nothing
-   added to the core to make them possible. *Half met: three templates
-   exist under `Examples/`, each through the public doors, each built and
-   checked in CI, and the core needed nothing added for them. The companion
-   waits on a repository of its own, which is not ours to create.*
+   added to the core to make them possible. *Half met. Six templates exist
+   under `Examples/`: three strategies, and an app's own tool, deferred
+   tool, toolset and extension. Each is written through the same public
+   protocols a third party has, each is built and checked in CI, and the
+   core needed nothing added for any of them. The companion waits on a
+   repository of its own, which is not ours to create.*
 
 Nothing after the fourth is planned until the fourth is met.
+
+## What is waiting on somebody
+
+Not blocked by design, and not forgotten: these need something no amount of
+work here provides.
+
+- **A device.** The last of the third milestone. A simulator cannot be killed
+  by memory pressure or woken with nobody watching.
+- **A repository for the first companion.** Companions live under our name
+  and outside swaco, so the first one begins with a repository, and that is
+  a decision rather than a task.
+- **Keys for the vendors we do not have.** Anthropic and Gemini are written
+  down and unwritten. The recording tool means each needs one exchange with
+  a real key, once, and never again.
