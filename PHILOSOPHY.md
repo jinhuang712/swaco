@@ -49,11 +49,14 @@ or feel. What an agent means for a given app is decided by that app alone.
 This is what makes swaco worth adopting: it brings agentic ability without
 bringing anyone else's judgement.
 
-Swaco makes no decision on behalf of any product. Where the right answer
-depends on the product, swaco asks for it explicitly rather than assuming one;
-where it does not, swaco does not ask. A safety floor is not a product
-decision: where an agent could act on something no person asked for, swaco
-holds back until the app says otherwise.
+The line between the two is facts and policy. Swaco owns the facts: it makes
+sure that whatever a decision would need to know is declared up front and
+visible when it matters, whether a tool reads or writes, what a model can
+take, where an event came from. The app owns the policy: what to allow, what
+to hold, what to do when the facts do not line up. Swaco holds no policy of
+its own, not even a cautious one. Where the right answer depends on the
+product, swaco asks for it explicitly rather than assuming one; where it does
+not, swaco does not ask.
 
 In one line: swaco is responsible for making an agent work correctly inside
 an app; the app is responsible for deciding what that agent is as a product.
@@ -68,6 +71,11 @@ everything else on that record.
 A person speaking to the agent is one kind of event among many. A shortcut, a
 notification, another app, a place, a time: each is as natural a beginning as
 a typed message, and none is assumed.
+
+The record is not ours alone. An app cannot reach into the core, so the log
+of what the core did is the one thing it holds in its own hands: to store, to
+move, to read, to replay. Its format is therefore part of what swaco promises,
+on the same terms as the code, and kept with the same care.
 
 ## Native to its home
 

@@ -10,6 +10,7 @@ agent core, one voice for any model, and a way to shape behaviour from the
 outside without growing the core. No UI, no bundled tools, no third-party
 dependencies.
 
+- [Origin](ORIGIN.md): where swaco starts from, and what it borrows.
 - [Philosophy](PHILOSOPHY.md): what we believe and never violate.
 - [Goals](GOALS.md): what we are trying to achieve, and what we are not.
 - [Architecture](ARCHITECTURE.md): how swaco is divided, and the rules between the parts.

@@ -16,10 +16,11 @@ Fixed now, before code. Each word means one thing.
   notification, a URL, a share, the system, a schedule, a sensor
 - **Turn**: one request to the model and everything until the model stops
 - **Loop**: continuing with another turn while the model asks for tools
-- **Run**: swaco's unit of work; a loop from a starting event to a final
-  result. Lives in the runtime, not the core
+- **Agent**: the loop, configured and callable: model, tools, extensions in;
+  a stream of events out. Lives in the core
+- **Run**: swaco's unit of work; an agent's loop from a starting event to a
+  final result, recorded and recoverable. Lives in the runtime, not the core
 - **Session**: swaco's grouping of runs into a persistent history. Optional
-- **Agent**: the configured executor of a run: model, tools, extensions
 - **Tool**: something the model can ask to have done
 - **Toolset**: a named group of tools; a single tool is a toolset of one
 - **Extension**: a value that acts at one or more moments of the loop
@@ -31,7 +32,11 @@ Fixed now, before code. Each word means one thing.
       Inbound events carry a source (person, shortcut, notification, URL,
       share, system, schedule, sensor), a payload of content parts or
       structured data, and the execution context they arrived in. A
-      message from a person is one kind of inbound event
+      message from a person is one kind of inbound event. What the loop and
+      its extensions decide along the way is recorded the same way: a
+      rewrite, a refusal, an injected or queued arrival, a capability the
+      content asked for and the model had not declared. Replaying the log
+      shows why the loop went the way it did, not only where it went
 - [ ] Source travels with the content into the model's context, so the
       model and extensions can tell what a person said from what the system
       delivered
@@ -40,33 +45,42 @@ Fixed now, before code. Each word means one thing.
 - [ ] Canonical streaming event set shared by all providers
 - [ ] Messages are a projection of the event log, not a separate store
 - [ ] Content parts can hold a reference to stored bytes instead of the bytes
-      themselves, loaded on demand, so a long history with media stays cheap
-      in memory
-- [ ] `Tool` protocol with JSON Schema parameters and typed results
+      themselves, loaded on demand through the `ContentStore` protocol, so a
+      long history with media stays cheap in memory
+- [ ] `EventStore` and `ContentStore` protocols with their contracts: ordered
+      append, durable on return, read by group in write order, replay from a
+      position; bytes by reference. The core defines both and holds neither
+- [ ] `Tool` protocol: JSON Schema parameters, typed results, and a
+      declared access of read-only or writing. Access has no default and is
+      a fact for extensions and the app to read; the loop acts on it in no
+      way
 - [ ] `ToolSet` protocol: name, description, expansion into tools; a single
       tool is a toolset of one
 - [ ] Tool execution is a pair of events, call issued and result arrived,
       never an awaited function. A tool either delivers its result at once
       or registers that the result will arrive later; the loop advances only
-      on the result event. This is what lets a wait survive relaunch
+      on the result event. A tool that registers a later result also states
+      how to resume it: given the call it once registered, in a fresh
+      process, it re-arms whatever will deliver the result. This pair,
+      register and resume, is what lets a wait survive relaunch
 - [ ] Tools may run on the main actor; the loop performs the hop
-- [ ] Safety floor: in a turn triggered by an event whose source is not a
-      person, every tool call is held for the app's release. The app may
-      lift this per source or per tool; it is the one rule that is on
-      unless switched off
 - [ ] Rendering of inbound events into model-readable content is a
       protocol with one default implementation the app may replace whole
 - [ ] `Provider` protocol: one streaming call, declared capabilities
       (vision, reasoning, provider-executed tools, context size)
 - [ ] Model described as data (provider, identifier, capabilities)
-- [ ] Agent loop: context in, event stream out; request, stream, execute
-      tool calls, repeat until the model stops. Knows nothing about runs or
-      sessions
+- [ ] `Agent`: the loop, callable on its own. Context in, event stream out;
+      request, stream, execute tool calls, repeat until the model stops.
+      Knows nothing about runs or sessions; the first program calls it
+      directly
 - [ ] Extension protocol whose hooks are exactly the moments of the loop:
-      before a request, after a response, before a tool call, after a tool
-      call, end of turn, end of loop. The app declares extensions as an
-      ordered list; swaco applies them strictly in that order and imposes no
-      ordering of its own. Rewrites chain, any refusal wins
+      an event arrives while the loop is running, before a request, after a
+      response, before a tool call, after a tool call, end of turn, end of
+      loop. Each hook may pass, rewrite or refuse; the arrival hook may also
+      inject the event into the next turn, queue it, or leave it for whatever
+      runs the loop. The app declares extensions as an ordered list; swaco
+      applies them strictly in that order, chains rewrites, and lets any
+      refusal win
 - [ ] Cancellation at any point with no inconsistent state. Nothing received
       is ever discarded: a partial reply is recorded as received and marked
       with why it stopped, by a person or by the system. Whether it is shown
@@ -75,18 +89,22 @@ Fixed now, before code. Each word means one thing.
 
 ## Runtime
 
-- [ ] `Run`: swaco's standard unit of work. Instructions, input, tools and
-      model in; events and a final result out. Needs no session
+- [ ] `Run`: swaco's standard unit of work; an `Agent` loop with every event
+      recorded to the named store as it happens. Instructions, input, tools
+      and model in; events and a final result out. Needs no session
 - [ ] `Session`: swaco's standard grouping of runs into a persistent
       history. Optional; apps with no history never touch it
 - [ ] Agent configuration decoupled from history: one session can be
       continued by differently configured agents, one configuration can
       serve many sessions
-- [ ] Session state machine: idle, running, awaiting tool approval, awaiting
-      person, interrupted, failed
-- [ ] Event intake policy when a run is in progress: start a new run, inject
-      into the next turn, or queue. Declared by the app when it uses
-      sessions; there is no default
+- [ ] Session state machine: idle, running, awaiting a result, interrupted,
+      failed. Awaiting a result covers every tool that registered a later
+      result, a person's answer among them
+- [ ] Intake extension: the runtime's implementation of the arrival hook.
+      The app supplies a mapping from source and session state to inject,
+      queue or leave; left events start a new run. An app that does not list
+      the extension starts a new run for every event that arrives during
+      another
 - [ ] Execution context exposed to extensions: foreground, background,
       app extension process, remaining time, whether a person is present
 - [ ] A loop can stop after one turn and hand the rest to a later process;
@@ -94,27 +112,26 @@ Fixed now, before code. Each word means one thing.
 - [ ] Session registry and lookup
 - [ ] Concurrency limit across all runs, with or without
       sessions
-- [ ] Recovery on relaunch according to last persisted state
-- [ ] A tool may wait on a person indefinitely; the wait survives relaunch
+- [ ] Recovery on relaunch according to last persisted state: the log is
+      read, every call left without a result is handed back to its tool to
+      resume, and the loop continues from where the events stop
 - [ ] Sub-agent as a tool (longer term)
 
 ## Storage
 
-Swaco fixes what must be stored and with what guarantees; the app decides
-where. No store is chosen by default: an app that uses sessions names one.
+The core fixes what must be stored and with what guarantees; the app decides
+where. No store is chosen by default: an app that uses sessions or referenced
+content names one.
 
-- [ ] `EventStore` protocol with a strict contract: ordered append, durable
-      on return, read by group in write order, replay from a position
-- [ ] Conformance test suite that any `EventStore` implementation runs
-- [ ] Reference implementations: in-memory, and a plain file store that can
-      live in an App Group container so an app extension and the main app
-      share it
-- [ ] `ContentStore` protocol for bytes referenced from content parts, with
-      the same contract-plus-conformance approach
-- [ ] SQLite, SwiftData and CloudKit stores as satellites or third-party
+- [ ] Conformance test suites that any `EventStore` or `ContentStore`
+      implementation runs, in `SwacoTesting`
+- [ ] Reference implementations in the runtime: in-memory, and a plain file
+      store that can live in an App Group container so an app extension and
+      the main app share it
+- [ ] SQLite, SwiftData and CloudKit stores as companions or third-party
       packages, not in swaco
 
-## Media (satellite)
+## Media (companion)
 
 A package under our name, outside swaco. Turns media as it exists on a phone
 into content the chosen model accepts. Presenting a picker is the app's;
@@ -146,7 +163,7 @@ vendor. Our providers are built on it; a third party may use it or ignore it.
       default; the app names one
 - [ ] `TokenStore` protocol for OAuth tokens; Keychain-backed reference
       implementation. Vendor-specific authorisation flows, which need a web
-      view and vendor client ids, are satellites
+      view and vendor client ids, are companions
 - [ ] All configuration is passed explicitly in code. No configuration
       files, no environment variables
 - [ ] Assembly of streamed tool-call arguments from partial fragments
@@ -156,8 +173,8 @@ vendor. Our providers are built on it; a third party may use it or ignore it.
 - [ ] Generic implementation of the OpenAI-compatible protocol, configured
       per vendor rather than re-implemented
 - [ ] Model catalogue: identifier, provider, declared capabilities
-- [ ] Recorded request and response fixtures, and the provider conformance
-      suite that runs against them
+- [ ] Recorded request and response fixtures for every provider we ship;
+      the conformance suite that runs them lives in `SwacoTesting`
 
 ## Providers
 
@@ -192,21 +209,26 @@ relaunch). The app owns the presentation.
 Only what nearly every app needs and no product would answer differently.
 
 - [ ] Environment context: time, time zone, locale, device
-- [ ] Tool approval: route tool calls through `confirm`; the carrier of the
-      safety floor
+- [ ] Tool approval: route chosen tool calls through `confirm`. Which calls
+      are chosen is the app's rule over the facts swaco declares, a tool's
+      access and an event's source; with no rule, nothing is held
 - [ ] Retry with backoff for transient network errors
 
-## Extensions (satellites or templates)
+## Extensions (templates)
 
-Product strategy, or tied to platform frameworks. Not in swaco.
+Strategies an app may want and would answer in its own way. Each is a
+complete, compiling example under `Examples/`, built in CI, copied into the
+app and owned by it from then on. Not shipped, not versioned.
 
-- [ ] Authorisation gating: hide or defer tools whose system permission is
-      not granted (ships with the platform toolsets)
 - [ ] Progressive tool disclosure: expose few tools plus a discovery tool
 - [ ] Budget: stop a loop after a chosen number of turns, tokens or seconds
 - [ ] Context compaction
 
-## Platform toolsets (satellites)
+Authorisation gating, which hides or defers tools whose system permission is
+not granted, is a bridge to the platform and ships with the platform toolsets
+in `swaco-kits`.
+
+## Platform toolsets (companions)
 
 Separate packages under our name, outside swaco, depending on it through the
 same protocols any third party uses. Each toolset is coarse-grained,
@@ -231,8 +253,11 @@ swaco.
 What swaco does for the life of an app around it: debugging, shipping,
 upgrading. Build tooling, signing, distribution and onboarding are the app's.
 
-- [ ] Event log export in a stable, documented format; a run is reproduced
-      by replaying its log through the mock provider. A bug report is a log
+- [ ] The event log format is public API, on the same terms as the Swift
+      API: documented, versioned, evolved by addition only. A newer swaco
+      replays logs written by an older one, and unknown event types are
+      preserved, never dropped. A run is reproduced by replaying its log
+      through the mock provider; a bug report is a log
 - [ ] Recording: run once against a real provider, keep the exchange as a
       fixture, replay it thereafter. Development, previews and tests need no
       key and no network
@@ -243,8 +268,6 @@ upgrading. Build tooling, signing, distribution and onboarding are the app's.
 - [ ] Each module states its deployment requirements: entitlements, App
       Group, Info.plist usage strings. A debug-build check fails at launch,
       with a clear message, when a linked module's requirements are missing
-- [ ] Event log format is versioned. A newer swaco replays logs written by
-      an older one; unknown event types are preserved, never dropped
 - [ ] Providers expose availability: not on this device, model downloading,
       ready. Apps decide before the first request, not after the first
       failure
@@ -257,17 +280,18 @@ Every item here is one whose answer depends on the product. Adding an item
 requires showing that it does. The list is kept short on purpose.
 
 - Ordered list of extensions
-- Event intake policy, when sessions are used
 - Event store and content store, when sessions or referenced content are used
 - Authenticator, when a hosted provider is used
-- Lifting the safety floor, per source or per tool
+- Which tool calls require approval, by declared access or by source, when
+  the approval extension is used
 - Concurrency limit across runs, when more than one may run
 
 ## Acceptance
 
-- [ ] The canonical first program: one provider, one tool, one run, one
-      `for await` over events, in twenty lines or fewer including the tool.
-      Protocols bend to keep it so; the example does not grow
+- [ ] The canonical first program: `import Swaco`, one provider, one tool,
+      one `Agent`, one `for await` over its events, in twenty lines or fewer
+      including the tool. No runtime, no store. Protocols bend to keep it
+      so; the example does not grow
 
 ## Spike before design
 

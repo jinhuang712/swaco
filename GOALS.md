@@ -44,8 +44,8 @@ Within swaco there are two circles:
 - **The core** holds only mechanics: the context sent to a model, the events
   that come back, the loop that continues while the model asks for tools,
   tools and the sets they come in, and the points where behaviour can be
-  shaped. It groups nothing, stores nothing, limits nothing and knows no
-  platform.
+  shaped. It defines what a store must do without holding one, groups
+  nothing, limits nothing and knows no platform.
 - **Swaco as a whole** adds everything an agent needs to work correctly in a
   real app and that every app would otherwise rebuild: standard ways of
   grouping work and keeping its history, state and recovery, concurrency
@@ -59,11 +59,22 @@ authenticated and where tokens live. For these swaco fixes the contract and leav
 strict protocol, a conformance test suite any implementation must pass, one or
 two reference implementations, and no default. The app names what it uses.
 
-Around swaco sit **satellites**: packages we write under our own name that
-depend on swaco but do not live in it. Wrappers around the platform's
-frameworks and the handling of media are the first of these. A satellite uses exactly the same doors as
-any third party, so it doubles as proof that the doors are enough; it has its
-own version and its own pace; and it never widens what swaco itself promises.
+Alongside swaco sit **companions**: packages we write under our own name that
+depend on swaco but do not live in it. A companion is a bridge and nothing
+more: it connects something the platform already has, a framework or a
+storage medium, to a protocol swaco already defines. Platform toolsets, media
+handling and stores are the first of these. A companion uses exactly the same
+doors as any third party, so it doubles as proof that the doors are enough;
+it has its own version and its own pace; and it never widens what swaco
+itself promises. When a companion cannot be written through the public doors,
+the protocol has failed to express a fact about the platform, and the core is
+fixed.
+
+What is not a bridge is not a companion. Extensions that embody a strategy,
+such as budgets, compaction or progressive disclosure, are shown as templates
+in the examples: complete, compiling, built in CI, copied into an app and
+owned by it from then on. We write them once to prove the doors are enough
+and to spare the first adopter a blank page; we do not version or ship them.
 
 The app owns the rest: the interface, which capabilities to expose, what to
 allow, what to say to the model, and what to call things.
@@ -93,7 +104,7 @@ Written down so they are not eroded one convenience at a time.
 - We do not build orchestration of many agents.
 - We do not manage prompts.
 - We do not curate a library, catalogue or marketplace of capabilities.
-  What ships inside swaco stays deliberately few; our own satellites are few
+  What ships inside swaco stays deliberately few; our own companions are few
   and named; everything else belongs to independent packages, which we make
   easy to write.
 - We do not account for cost or measure quality.
