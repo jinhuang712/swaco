@@ -2,6 +2,7 @@ import Foundation
 import Testing
 import SwacoCore
 import SwacoRuntime
+import SwacoEnvironment
 import SwacoTesting
 
 @Suite struct KnowingWhereWeAreRunning {

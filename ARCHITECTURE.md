@@ -124,9 +124,8 @@ recoverable, and `Session` as the optional grouping of runs into history. The
 standard intake extension. The in-memory and plain-file reference
 implementations of the core's store protocols. Recovery from the last
 persisted event, including handing every tool call that was left waiting back
-to its tool to resume. Concurrency across runs. The execution context exposed
-to extensions: foreground, background, app extension process, remaining time,
-whether a person is present.
+to its tool to resume. Concurrency across runs. It reads the execution
+context the environment filled in, and never invents one.
 
 ### SwacoEnvironment
 
@@ -135,11 +134,11 @@ not a dependency, so linking this never drags durability along.
 
 Holds the open vocabulary of sources: platform layers provide the
 well-known ones, apps define their own, and the core carries only the
-identifier. Holds the platform facts an app fills in: what woke the agent,
+identifier. Reads the system for the execution context: what woke the agent,
 where the process is, how long it has got, whether anyone is present. It
-translates platform events into arrivals, fills in the execution context the
-runtime answers, and triggers the handover the runtime recorded. It decides
-none of it: translation, facts, and the tripwire, never the policy.
+translates platform events into arrivals, fills in the context the loop runs
+in, and offers the tripwire an app arms when its time is nearly up. It
+decides none of it: translation, facts, and the tripwire, never the policy.
 
 ### SwacoTesting and SwacoConformance
 
@@ -235,6 +234,8 @@ swaco/
 │   │   └── Stores/              reference implementations
 │   │
 │   ├── SwacoEnvironment/        open source vocabulary, platform facts
+│   │   ├── EventSource           where an arrival came from, openly
+│   │   └── WhereWeAreRunning     reading the system, filling the context
 │   │
 │   ├── SwacoTesting/            mock provider, recording, replay
 │   └── SwacoConformance/        store contracts, crash-at-every-event harness

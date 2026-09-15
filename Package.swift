@@ -51,7 +51,8 @@ let package = Package(
 
         .testTarget(name: "SwacoTests", dependencies: ["SwacoCore", "SwacoTesting"]),
         .testTarget(name: "SwacoRuntimeTests",
-                    dependencies: ["SwacoRuntime", "SwacoTesting", "SwacoConformance", "SwacoAI"]),
+                    dependencies: ["SwacoRuntime", "SwacoTesting", "SwacoConformance", "SwacoAI",
+                                   "SwacoEnvironment"]),
         .testTarget(name: "SwacoInteractionTests",
                     dependencies: ["SwacoInteraction", "SwacoRuntime", "SwacoTesting"]),
         .testTarget(name: "SwacoExtensionsTests",

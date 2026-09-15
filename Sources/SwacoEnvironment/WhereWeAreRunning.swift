@@ -7,9 +7,12 @@ import UIKit
 /// Reads from the system what an extension is told about where it is running.
 ///
 /// The type is the core's, because an extension must be able to read it
-/// without knowing a platform. Filling it in is the runtime's, because only
-/// something that knows the platform can answer: is this the app or a share
-/// sheet, is anyone looking, how long has this process got.
+/// without knowing a platform. Filling it in is the environment's, because
+/// only something that knows the platform can answer: is this the app or a
+/// share sheet, is anyone looking, how long has this process got. This file
+/// lives here, not in the runtime, so that reading the system never drags
+/// durability along: an app that links only the core and the environment
+/// knows where it is without keeping anything.
 ///
 /// Every answer here is a fact, and none of it decides anything. A budget that
 /// stops early and a handover that gives time back are both the app's rules
