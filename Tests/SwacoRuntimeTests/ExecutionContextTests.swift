@@ -68,7 +68,7 @@ import SwacoTesting
 }
 
 private struct Echo: Tool {
-    let name = "echo", description = "Returns its arguments", access = ToolAccess.readOnly
+    let name = "echo", description = "Returns its arguments", effect = ToolEffect.observation
     func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
         .result(ToolResult(callID: call.id, content: call.arguments))
     }

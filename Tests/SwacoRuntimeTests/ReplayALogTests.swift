@@ -97,7 +97,7 @@ import SwacoTesting
 }
 
 private struct Weather: Tool {
-    let name = "weather", description = "Weather for a city", access = ToolAccess.readOnly
+    let name = "weather", description = "Weather for a city", effect = ToolEffect.observation
     func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
         .result(ToolResult(callID: call.id, content: "18C and sunny"))
     }

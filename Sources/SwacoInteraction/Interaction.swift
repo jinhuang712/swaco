@@ -142,7 +142,7 @@ public actor Interaction {
 struct Ask: Tool {
     let name = "ask"
     let description = "Ask the person a question and wait for their answer"
-    let access = ToolAccess.readOnly
+    let effect = ToolEffect.observation
     let parameters = """
     {"type":"object","properties":{\
     "question":{"type":"string","description":"What to ask"},\
@@ -177,7 +177,7 @@ struct Ask: Tool {
 struct Confirm: Tool {
     let name = "confirm"
     let description = "Ask the person to approve an action before it is taken"
-    let access = ToolAccess.readOnly
+    let effect = ToolEffect.observation
     let parameters = """
     {"type":"object","properties":{\
     "action":{"type":"string","description":"What is about to happen"},\
@@ -210,7 +210,7 @@ struct Confirm: Tool {
 struct Tell: Tool {
     let name = "report"
     let description = "Tell the person about progress without waiting for a reply"
-    let access = ToolAccess.readOnly
+    let effect = ToolEffect.observation
     let parameters = """
     {"type":"object","properties":{\
     "message":{"type":"string","description":"What to tell the person"}},\

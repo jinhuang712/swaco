@@ -95,7 +95,7 @@ private func recordedEvents(_ name: String) throws -> [ServerSentEvent] {
 
 @Suite struct ResponsesRequestEncoding {
     private struct Weather: Tool {
-        let name = "weather", description = "Weather for a city", access = ToolAccess.readOnly
+        let name = "weather", description = "Weather for a city", effect = ToolEffect.observation
         let parameters = #"{"type":"object","properties":{"city":{"type":"string"}},"required":["city"]}"#
         func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
             .result(ToolResult(callID: call.id, content: "18C"))

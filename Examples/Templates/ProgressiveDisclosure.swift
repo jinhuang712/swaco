@@ -48,7 +48,7 @@ public struct ProgressiveDisclosure: Extension {
         public static let toolName = "find_tools"
         public let name = Discover.toolName
         public let description = "Find tools that are available but not listed"
-        public let access = ToolAccess.readOnly
+        public let effect = ToolEffect.observation
         public let parameters = """
         {"type":"object","properties":{\
         "need":{"type":"string","description":"What you are trying to do"}},\

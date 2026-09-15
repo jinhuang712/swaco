@@ -80,7 +80,7 @@ public struct ReplayingALog: Sendable {
 struct RecordedTool: Tool {
     let name: String
     let description = "What this tool answered in the log being replayed"
-    let access = ToolAccess.readOnly
+    let effect = ToolEffect.observation
     private let answers: Answers
 
     init(name: String, answers: [ToolResult]) {

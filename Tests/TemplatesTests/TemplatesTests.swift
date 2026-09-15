@@ -112,14 +112,14 @@ import Templates
 }
 
 private struct Echo: Tool {
-    let name = "echo", description = "Returns its arguments", access = ToolAccess.readOnly
+    let name = "echo", description = "Returns its arguments", effect = ToolEffect.observation
     func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
         .result(ToolResult(callID: call.id, content: call.arguments))
     }
 }
 
 private struct Weather: Tool {
-    let name = "weather", description = "The weather for a city", access = ToolAccess.readOnly
+    let name = "weather", description = "The weather for a city", effect = ToolEffect.observation
     func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
         .result(ToolResult(callID: call.id, content: "18C"))
     }
@@ -211,7 +211,7 @@ private struct Watching: Provider {
         #expect(household.only(["note_down"]).tools.map(\.name) == ["note_down"])
         #expect(household.except(["note_down"]).tools.map(\.name) == ["wait_for_the_door"])
         // A rule reads what a tool declared about itself and nothing else.
-        #expect(household.keeping { $0.access == .readOnly }.tools.map(\.name) == ["wait_for_the_door"])
+        #expect(household.keeping { $0.effect == .observation }.tools.map(\.name) == ["wait_for_the_door"])
     }
 
     /// A tool is a toolset of one, so nothing has to be wrapped to fit.

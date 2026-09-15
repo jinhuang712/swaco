@@ -60,10 +60,11 @@ Fixed now, before code. Each word means one thing.
       Each contract is written where its protocol is, and the suite that
       checks it is the one every third-party store runs
 - [x] `Tool` protocol: JSON Schema parameters, typed results, and a
-      declared access of read-only or writing. A result carries words for
-      the model and, where the tool produced one, a shape for the app. Access has no default and is
-      a fact for extensions and the app to read; the loop acts on it in no
-      way
+      declared effect of observation, mutation, or external effect, plus
+      orthogonal facts (reversible, expensive, long-running). A result
+      carries words for the model and, where the tool produced one, a shape
+      for the app. Effect has no default and is a fact for extensions and
+      the app to read; the loop acts on it in no way
 - [x] `ToolSet` protocol: name, description, expansion into tools; a single
       tool is a toolset of one, so `Tool` is a `ToolSet` and nothing needs
       wrapping to be handed over. An app takes part of a set at the
@@ -381,7 +382,7 @@ requires showing that it does. The list is kept short on purpose.
 - Ordered list of extensions
 - Event store and content store, when sessions or referenced content are used
 - Authenticator, when a hosted provider is used
-- Which tool calls require approval, by declared access or by source, when
+- Which tool calls require approval, by declared effect or by source, when
   the approval extension is used
 - Concurrency limit across runs, when more than one may run
 

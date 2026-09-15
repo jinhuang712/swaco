@@ -1,10 +1,14 @@
 import Foundation
 
-/// Whether a tool only reads or may write. A fact for extensions and the app;
-/// the loop acts on it in no way.
-public enum ToolAccess: Sendable, Codable, Hashable {
-    case readOnly
-    case writing
+/// What running a tool may do to the world beyond the loop. A fact for
+/// extensions and the app; the loop acts on it in no way.
+public enum ToolEffect: String, Sendable, Codable, Hashable {
+    /// Only reads: the world is the same afterwards.
+    case observation
+    /// May change the application's own state.
+    case mutation
+    /// Acts outside the app, such as placing a call or sending a message.
+    case externalEffect
 }
 
 /// A request from the model to have a tool run.
@@ -103,7 +107,14 @@ public struct ResultDelivery: Sendable {
 public protocol Tool: ToolSet {
     var name: String { get }
     var description: String { get }
-    var access: ToolAccess { get }
+    var effect: ToolEffect { get }
+    /// Whether running it can be undone by the app. Orthogonal to effect:
+    /// a mutation may be reversible, an external effect usually is not.
+    var isReversible: Bool { get }
+    /// Whether running it may cost notably, in money or time.
+    var isExpensive: Bool { get }
+    /// Whether running it may take a while.
+    var isLongRunning: Bool { get }
     /// JSON Schema for the arguments, as JSON text. The core does not model
     /// schemas; it carries what the app wrote to whatever provider is in use.
     var parameters: String { get }
@@ -113,6 +124,12 @@ public protocol Tool: ToolSet {
 }
 
 public extension Tool {
+    /// Most tools are reversible, cheap, and quick; the ones that are not
+    /// say so.
+    var isReversible: Bool { true }
+    var isExpensive: Bool { false }
+    var isLongRunning: Bool { false }
+
     /// Tools that always answer at once have nothing to resume.
     func resume(_ call: ToolCall, delivering delivery: ResultDelivery) async throws {}
 

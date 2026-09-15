@@ -10,7 +10,7 @@ import SwacoTesting
 private actor Question: Tool {
     nonisolated let name = "ask"
     nonisolated let description = "Ask the person"
-    nonisolated let access = ToolAccess.readOnly
+    nonisolated let effect = ToolEffect.observation
     /// One delivery per call. Re-arming replaces it, so an answer always
     /// reaches the loop that is waiting now rather than one that is gone.
     private var deliveries: [String: ResultDelivery] = [:]

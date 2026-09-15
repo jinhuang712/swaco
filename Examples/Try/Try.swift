@@ -7,7 +7,7 @@ import SwacoOpenAI
 /// Points the first program's shape at whichever model is named on the command
 /// line, so a new model is one argument rather than one branch.
 struct Weather: Tool {
-    let name = "weather", description = "Weather for a city", access = ToolAccess.readOnly
+    let name = "weather", description = "Weather for a city", effect = ToolEffect.observation
     let parameters = #"{"type":"object","properties":{"city":{"type":"string"}}}"#
     func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
         .result(ToolResult(callID: call.id, content: "18C and sunny"))

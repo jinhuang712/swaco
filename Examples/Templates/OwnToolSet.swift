@@ -19,7 +19,7 @@ public struct NoteDown: Tool {
     public let description = "Write a short note into the app's own list"
     /// Declared, never guessed. Extensions and the app read this; the loop
     /// acts on it in no way.
-    public let access = ToolAccess.writing
+    public let effect = ToolEffect.mutation
     public let parameters = """
     {"type":"object","properties":{\
     "note":{"type":"string","description":"What to write down"}},\
@@ -63,7 +63,7 @@ public struct NoteDown: Tool {
 public struct WaitForTheDoor: Tool {
     public let name = "wait_for_the_door"
     public let description = "Wait until someone opens the door"
-    public let access = ToolAccess.readOnly
+    public let effect = ToolEffect.observation
 
     private let door: Door
 

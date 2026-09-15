@@ -13,7 +13,7 @@ import SwacoTesting
 /// a network from then on. Run it by hand when a recording needs refreshing;
 /// nothing in CI runs it, because CI has no key and should not need one.
 struct Weather: Tool {
-    let name = "weather", description = "Weather for a city", access = ToolAccess.readOnly
+    let name = "weather", description = "Weather for a city", effect = ToolEffect.observation
     let parameters = #"{"type":"object","properties":{"city":{"type":"string"}}}"#
     func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
         .result(ToolResult(callID: call.id, content: "18C and sunny"))

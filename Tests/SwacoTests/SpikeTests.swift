@@ -7,7 +7,7 @@ import SwacoTesting
 final class ClockTool: Tool {
     nonisolated let name = "clock"
     nonisolated let description = "The current tick"
-    nonisolated let access = ToolAccess.readOnly
+    nonisolated let effect = ToolEffect.observation
     private(set) var ticks = 0
 
     func execute(_ call: ToolCall, delivering delivery: ResultDelivery) async throws -> ToolOutcome {
@@ -21,7 +21,7 @@ final class ClockTool: Tool {
 actor AskTool: Tool {
     nonisolated let name = "ask"
     nonisolated let description = "Ask the person"
-    nonisolated let access = ToolAccess.readOnly
+    nonisolated let effect = ToolEffect.observation
     private var registered: [(ToolCall, ResultDelivery)] = []
 
     func execute(_ call: ToolCall, delivering delivery: ResultDelivery) async throws -> ToolOutcome {

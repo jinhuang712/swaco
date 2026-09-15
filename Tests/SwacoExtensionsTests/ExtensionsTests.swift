@@ -8,16 +8,25 @@ import SwacoRuntime
 import SwacoTesting
 
 private struct Filing: Tool {
-    let name = "file", description = "Files something away", access = ToolAccess.writing
+    let name = "file", description = "Files something away", effect = ToolEffect.mutation
     func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
         .result(ToolResult(callID: call.id, content: "filed"))
     }
 }
 
 private struct Reading: Tool {
-    let name = "read", description = "Reads something", access = ToolAccess.readOnly
+    let name = "read", description = "Reads something", effect = ToolEffect.observation
     func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
         .result(ToolResult(callID: call.id, content: "read"))
+    }
+}
+
+private struct Phoning: Tool {
+    let name = "call", description = "Places a call", effect = ToolEffect.externalEffect
+    let isReversible = false
+    let isExpensive = true
+    func execute(_ call: ToolCall, delivering: ResultDelivery) async throws -> ToolOutcome {
+        .result(ToolResult(callID: call.id, content: "called"))
     }
 }
 
@@ -103,6 +112,28 @@ private func callingBoth() -> ScriptedProvider {
                       store: InMemoryEventStore())
         for try await _ in run.start("tidy up") {}
         #expect(await asked.calls.isEmpty)
+    }
+
+    /// An external effect counts as a write, and the orthogonal facts travel
+    /// with the tool for whatever rule wants them.
+    @Test func anExternalEffectIsHeldAsAWrite() async throws {
+        let asked = Asked()
+        let tools: [any Tool] = [Reading(), Phoning()]
+        #expect(Phoning().isReversible == false)
+        #expect(Phoning().isExpensive == true)
+        #expect(Reading().isLongRunning == false)
+        let approval = ToolApproval(tools: tools, rule: ToolApproval.anythingThatWrites,
+                                    approve: { call in await asked.record(call); return true })
+        let calling = ScriptedProvider(turns: [
+            [.toolCall(ToolCall(id: "p", name: "call", arguments: "{}")), .stop(.toolUse)],
+            [.text("Done."), .stop(.endTurn)],
+        ])
+        let run = Run(agent: Agent(provider: calling, tools: tools, extensions: [approval]),
+                      store: InMemoryEventStore())
+        var events: [Event] = []
+        for try await event in run.start("call mom") { events.append(event) }
+        #expect(await asked.calls.map(\.name) == ["call"])
+        #expect(events.contains(.toolResultArrived(ToolResult(callID: "p", content: "called"))))
     }
 
     /// The whole point of approval: the app may route it through `confirm`,
