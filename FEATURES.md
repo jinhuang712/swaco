@@ -12,8 +12,9 @@ Fixed now, before code. Each word means one thing.
 
 - **Event**: anything that enters or leaves the agent, recorded as it happens.
   One word for inbound events and loop events, distinguished by subtype
-- **Source**: where an inbound event came from: a person, a shortcut, a
-  notification, a URL, a share, the system, a schedule, a sensor
+- **Source**: where an inbound event came from, as an open identifier the
+  core carries without knowing the list: a person, a notification, a share,
+  or whatever an app defines
 - **Turn**: one request to the model and everything until the model stops
 - **Loop**: continuing with another turn while the model asks for tools
 - **Agent**: the loop, configured and callable: model, tools, extensions in;
@@ -29,14 +30,16 @@ Fixed now, before code. Each word means one thing.
 ## Core
 
 - [x] One event vocabulary for everything that enters or leaves the agent.
-      Inbound events carry a source (person, shortcut, notification, URL,
-      share, system, schedule, sensor), a payload of content parts or
+      Inbound events carry a source identifier, a payload of content parts or
       structured data, and the execution context they arrived in. A
       message from a person is one kind of inbound event. What the loop and
       its extensions decide along the way is recorded the same way: a
       rewrite, a refusal, an injected or queued arrival, a capability the
       content asked for and the model had not declared. Replaying the log
       shows why the loop went the way it did, not only where it went
+- [x] The source vocabulary is open: `EventSource` in SwacoEnvironment holds
+      the well-known values and apps define their own; the core carries only
+      the identifier, and old logs still read
 - [x] Source travels with the content into the model's context, so the
       model and extensions can tell what a person said from what the system
       delivered

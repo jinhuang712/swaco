@@ -203,10 +203,17 @@ met it is marked here and the next becomes the current one.
    under our name, and publishing is a decision rather than a task.*
 5. **The definitions are rewritten.** `README`, `ORIGIN`, `PHILOSOPHY`, and
    `GOALS` describe a minimal product-agnostic core, an optional runtime,
-   and bridges above it. The audit of every public type against a macOS, an
-   iPadOS, and an iOS host is next. *Current.*
+   and bridges above it. *Met in this change: the four documents are
+   rewritten and land with the code.*
+6. **The core is small again.** The audit ran against a macOS, an iPadOS,
+   and an iOS host: the source vocabulary opened above the core, content
+   went multimodal with declared modalities, tools are described by effect,
+   vendor-executed tools are gone, and `SwacoEnvironment` holds where the
+   agent lives. *Current. What remains is proving the same core under
+   different surroundings: a long-lived macOS host, a suspendable iPadOS
+   host, and a short-lived iOS host.*
 
-Nothing after the fifth is planned until the fifth is met.
+Nothing after the sixth is planned until the sixth is met.
 
 ## What is waiting on somebody
 
