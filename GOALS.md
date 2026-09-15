@@ -7,37 +7,38 @@ separately in the [feature list](FEATURES.md).
 
 ## Goals
 
-1. **Make any iOS app agentic in one step.** Adopting swaco should feel like
-   adding a capability, not starting a project.
-2. **Be indifferent to the model.** An app should be able to change which
-   model it talks to, hosted or on-device, without changing anything else.
-3. **Let apps shape behaviour without touching swaco.** Whatever an app needs
-   the agent to do differently, it should be able to arrange from the outside.
-4. **Be correct in the life an app actually has.** Being interrupted,
-   suspended, killed and relaunched is normal, and nothing should be lost or
-   left unexplained because of it.
-5. **Let many agents work at once, safely.** An app may run several agents
-   simultaneously, and it should stay in control of them.
-6. **Make everything observable and reproducible.** Whatever happened, the app
-   can see it, store it, and rebuild any view of it later.
-7. **Bring the platform's own capabilities to the agent.** What the system
-   already knows how to do should be easy to hand to the agent, in pieces the
-   app chooses.
-8. **Let the agent reach the person, on the person's terms.** On a phone the
-   agent must be able to ask, confirm and report. Swaco makes those exchanges
-   work correctly; the app decides how they look.
-9. **Assume nothing about the shape of the app, or about who wakes the
-    agent.** A set of one-shot prompts, a single timeline served by many
-    agents, a chat with long histories, or something not yet imagined: all
-    are equally natural. So is an agent woken by a shortcut, a notification,
-    another app, a place, a time or a sensor, with no person watching.
-10. **Ask nothing of the app's own choices.** No dependencies, no imposed
-    storage, interface or architecture.
+1. **Remain genuinely small.** A developer reads the complete core and
+   understands the entire execution model. Additions never make this less true.
+2. **One agent core across Apple platforms.** The same `Agent`, `Provider`,
+   `Tool`, `Content`, and event vocabulary work unchanged on macOS, iPadOS,
+   and iOS. Platform differences belong outside the loop.
+3. **Be easy to embed.** Adding swaco never requires restructuring the app.
+   The host provides model, context, and capabilities, and receives agent
+   events. That stays the essential integration.
+4. **Make no assumptions about the product.** Conversational, document-oriented,
+   creative, ambient, one-shot, or continuously interactive: all are equally
+   natural. No one category distorts the vocabulary.
+5. **Expose application state without owning it.** The host turns live state
+   into context and capabilities efficiently. Swaco never copies that state
+   into a swaco-owned model.
+6. **Support multimodal agents naturally.** Text, image, audio, and video are
+   legitimate content, not later exceptions. Large content stays referenceable
+   rather than copied through every message.
+7. **Be indifferent to the model.** An app changes which model it talks to,
+   hosted or on-device, without changing anything else.
+8. **Make interactive steering first-class.** An interactive agent is easy to
+   interrupt, redirect, and cancel. This never depends on whether the host is
+   a chat interface.
+9. **Make durability optional.** Persistent sessions and recovery after relaunch
+   are available when required, without burdening agents that live comfortably
+   in one process.
+10. **Remain Swift-native.** The API feels like Swift, not a translated
+    server framework or coding harness.
 
 ## Boundary
 
-Swaco is responsible for making an agent work correctly inside an iOS app.
-The app is responsible for deciding what that agent is as a product.
+Swaco is responsible for making an agent work correctly inside a native Swift
+app. The app is responsible for deciding what that agent is as a product.
 
 Within swaco there are two circles:
 
@@ -76,6 +77,10 @@ in the examples: complete, compiling, built in CI, copied into an app and
 owned by it from then on. We write them once to prove the doors are enough
 and to spare the first adopter a blank page; we do not version or ship them.
 
+Interaction patterns such as `ask`, `confirm`, and `report` are useful, but
+they are not universal properties of an agent. They live as an optional
+interaction package above the core, not at its centre.
+
 The app owns the rest: the interface, which capabilities to expose, what to
 allow, what to say to the model, and what to call things.
 
@@ -86,7 +91,6 @@ app's.
 
 ## Longer term
 
-- Support for iPadOS and macOS.
 - Agents that delegate to other agents.
 - Capabilities that only make sense on a desktop.
 - Reaching the web from the agent.
@@ -96,17 +100,19 @@ app's.
 Written down so they are not eroded one convenience at a time.
 
 - We do not build user interface, pickers and import screens included.
-- We do not assume the app is a chat.
+- We do not assume the app is a chat, or any other single product shape.
 - We do not favour any model or provider. On-device models are one provider
   among others.
 - We do not ship capabilities inside the core.
 - We do not build memory, retrieval, or knowledge management.
-- We do not build orchestration of many agents.
+- We do not build orchestration of many agents, sub-agents, workflows, DAGs,
+  or task planning.
 - We do not manage prompts.
-- We do not curate a library, catalogue or marketplace of capabilities.
-  What ships inside swaco stays deliberately few; our own companions are few
-  and named; everything else belongs to independent packages, which we make
-  easy to write.
+- We do not curate a library, catalogue or marketplace of capabilities,
+  tools, plugins, or MCP servers. What ships inside swaco stays deliberately
+  few; our own companions are few and named; everything else belongs to
+  independent packages, which we make easy to write.
+- We do not ship a shell, filesystem, browser automation, or sandbox.
 - We do not account for cost or measure quality.
 - We do not run servers or hold credentials on anyone's behalf.
 - We do not target platforms other than Apple's.
@@ -115,6 +121,7 @@ Written down so they are not eroded one convenience at a time.
 - We do not build tooling for building, signing, distributing or onboarding
   an app.
 - We do not build privacy machinery.
+- We do not manage the application's own state.
 
 ## Trade-offs
 
@@ -128,8 +135,8 @@ Written down so they are not eroded one convenience at a time.
 
 ## How we get there
 
-Swaco is developed by building a real app on it first. What gets built, and in
-what order, is decided by what that app needs, not by what would look complete.
+Swaco is developed by building real apps on it first. What gets built, and in
+what order, is decided by what those apps need, not by what would look complete.
 
 The first app is a simple chatbot: one conversation with one model, a few
 tools, on an iPhone. It is chosen because it is the form most adopters start
@@ -143,6 +150,12 @@ consequences follow and are accepted:
   and a run that spans processes, are not driven by this app. They stay in
   the design and wait for the second app or a deliberate test harness. The
   first app must not be allowed to bend the vocabulary toward chat.
+
+The second driver is difference itself: a long-lived macOS application, a
+stateful iPadOS application that moves between foreground and suspended, and
+a short-lived iOS application that exercises relaunch and recovery. The
+surroundings differ significantly while the core remains unchanged. That is
+the conformance test for the architecture above.
 
 ## Milestones
 
@@ -188,8 +201,12 @@ met it is marked here and the next becomes the current one.
    needed nothing added for any of it, which is what they were written to
    find out. What the companion still wants is a repository of its own
    under our name, and publishing is a decision rather than a task.*
+5. **The definitions are rewritten.** `README`, `ORIGIN`, `PHILOSOPHY`, and
+   `GOALS` describe a minimal product-agnostic core, an optional runtime,
+   and bridges above it. The audit of every public type against a macOS, an
+   iPadOS, and an iOS host is next. *Current.*
 
-Nothing after the fourth is planned until the fourth is met.
+Nothing after the fifth is planned until the fifth is met.
 
 ## What is waiting on somebody
 

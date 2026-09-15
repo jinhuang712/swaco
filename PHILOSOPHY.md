@@ -17,22 +17,38 @@ place, and the burden of proof is on the addition. The default answer to
 We measure ourselves by how little there is to learn, not by how much there is
 to offer.
 
-## The core is atomic and cohesive
+## One core, many homes
 
-At the heart of swaco is one thing: the ability for an agent to think, act, and
-continue. That heart is small enough to be understood completely and stable
-enough to be trusted completely.
+There is no macOS agent, iPadOS agent, and iOS agent. There is one agent.
+Different environments provide different surroundings: a macOS app may keep an
+agent alive for hours, an iOS app may be suspended seconds later, an iPadOS app
+may move between both. Those are runtime facts. They must not redefine the
+agent itself.
 
-Nothing that is not essential to that ability lives in the core. Everything
-else lives around it and can be added, replaced, or removed without touching
-it.
+## The core knows mechanics, not meaning
 
-## Behaviour is shaped from the outside
+The core understands model requests, model responses, content, tool calls, tool
+results, turns, cancellation, steering, and agent events. It does not
+understand projects, documents, timelines, filesystems, repositories, tasks,
+calendars, media libraries, games, editors, or workflows. Those are application
+concepts. An application exposes whichever pieces of its world it wants the
+agent to see.
 
-The core does not grow to accommodate new needs. Needs are met by extending it
-from the outside, through a small and deliberate set of points where its
-behaviour can be shaped. Capability accumulates around the core; the core
-itself stays still.
+## The application owns state
+
+Swaco never becomes the application's source of truth. It neither mirrors nor
+replaces the application's structured state. The application decides what
+portion of that state becomes model context and what capabilities may change
+it. Conversation history is one form of context, not more authoritative than
+application state.
+
+## Capability is injected, never assumed
+
+Swaco ships no universal environment. There is no implicit shell, filesystem,
+browser, MCP universe, database, repository, or search system. An agent acts
+only through capabilities its host deliberately provides. A small application
+may expose three tools, another thirty; neither pays architectural complexity
+for capabilities it does not use.
 
 ## Any model, one voice
 
@@ -40,62 +56,49 @@ An agent should not care which model it speaks to. Swaco speaks in one
 vocabulary, and the differences between models are absorbed at the edge, never
 allowed to reach the centre.
 
-## We provide capability, not product
+## Native where native matters
 
-Swaco is a capability that any app can adopt. It makes no product decisions,
-carries no interface, and holds no opinion about how an experience should look
-or feel. What an agent means for a given app is decided by that app alone.
+Swaco belongs in Swift applications. It uses Swift concurrency, value semantics
+where appropriate, actors and isolation, structured cancellation, and Foundation
+types, and it reaches application lifecycles through optional layers. But native
+implementation never leaks platform policy into the core. The core runs wherever
+swaco is supported; platform behaviour sits above it.
 
-This is what makes swaco worth adopting: it brings agentic ability without
-bringing anyone else's judgement.
+## Composition over framework
 
-The line between the two is facts and policy. Swaco owns the facts: it makes
-sure that whatever a decision would need to know is declared up front and
-visible when it matters, whether a tool reads or writes, what a model can
-take, where an event came from. The app owns the policy: what to allow, what
-to hold, what to do when the facts do not line up. Swaco holds no policy of
-its own, not even a cautious one. Where the right answer depends on the
-product, swaco asks for it explicitly rather than assuming one; where it does
-not, swaco does not ask.
+Swaco is a library, not a harness. An application does not adopt a swaco
+architecture, lifecycle, storage model, navigation, dependency injection, or
+interface. It imports the pieces it needs. The dependency direction is always
+app into swaco, never swaco into app.
+
+## Observable, not event-sourced by decree
+
+Everything the agent does is observable. Swaco emits a complete trace of its own
+behaviour: turn started, content streamed, tool requested, tool completed, turn
+ended, cancelled, failed. An application may persist that trace, replay it, or
+ignore it. Swaco never requires the application's own world to be represented as
+an event log.
+
+## Explicit over magical
+
+Swaco never secretly discovers tools, infers permissions, trims context,
+compacts history, selects models, switches providers, retries expensive
+operations, mutates application state, or creates sub-agents. Where the
+application wants one of these, it opts in explicitly. Invisible autonomy makes
+a small core impossible to reason about.
+
+## Policy belongs above the core
+
+Swaco owns facts; the app owns policy. Swaco declares up front whatever a
+decision needs to know: whether a tool reads or writes, where an event came
+from, what a model can take, how long a call has run. The app decides what to
+allow, hold, retry, delay, or route elsewhere. Swaco holds no policy of its
+own, not even a cautious one. Where the right answer depends on the product,
+swaco asks for it explicitly rather than assuming one; where it does not, swaco
+does not ask.
 
 In one line: swaco is responsible for making an agent work correctly inside
 an app; the app is responsible for deciding what that agent is as a product.
-
-## Everything is an event
-
-An agent's life is a sequence of things that happen: something arrives, the
-agent thinks, the agent acts, something comes back. Swaco treats every one of
-these as an event of the same standing, recorded as it happens, and builds
-everything else on that record.
-
-A person speaking to the agent is one kind of event among many. A shortcut, a
-notification, another app, a place, a time: each is as natural a beginning as
-a typed message, and none is assumed.
-
-The record is not ours alone. An app cannot reach into the core, so the log
-of what the core did is the one thing it holds in its own hands: to store, to
-move, to read, to replay. Its format is therefore part of what swaco promises,
-on the same terms as the code, and kept with the same care.
-
-## Native to its home
-
-Swaco belongs to the platform it runs on. It uses what the platform and the
-language already provide instead of recreating them, and it respects how apps
-on that platform actually live: they are interrupted, suspended, resumed, and
-run alongside one another. We design for that reality rather than for an ideal
-one.
-
-## Adoption is effortless
-
-An app should become agentic with almost no ceremony. If adopting swaco ever
-feels like a project rather than a step, we have failed, and we fix swaco
-rather than document the difficulty.
-
-## Explicit, predictable, and honest
-
-We prefer the boring choice to the clever one, the explicit to the implicit,
-and the predictable to the flexible. What swaco does is visible, what it emits
-is complete, and what it promises is what it delivers.
 
 ---
 
