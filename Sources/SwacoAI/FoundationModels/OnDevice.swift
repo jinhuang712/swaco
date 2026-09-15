@@ -18,7 +18,7 @@ public struct OnDeviceModel: Provider {
     }
 
     public var capabilities: ModelCapabilities {
-        ModelCapabilities(tools: false, vision: false, reasoning: false, providerExecutedTools: false)
+        ModelCapabilities(tools: false, vision: false, reasoning: false)
     }
 
     /// Asked before the first request, not discovered after the first failure.

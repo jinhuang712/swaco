@@ -41,7 +41,7 @@ Fixed now, before code. Each word means one thing.
       model and extensions can tell what a person said from what the system
       delivered
 - [x] Canonical message and content types: text, image, tool call, tool
-      result, reasoning, provider-executed tool use and result, citations.
+      result, reasoning, citations.
       Adjacent runs of words become one part, so two messages that say the
       same thing are the same message
 - [x] Canonical streaming event set shared by all providers, in the same
@@ -79,7 +79,7 @@ Fixed now, before code. Each word means one thing.
 - [x] Rendering of inbound events into model-readable content is a
       protocol with one default implementation the app may replace whole
 - [x] `Provider` protocol: one streaming call, declared capabilities
-      (vision, reasoning, provider-executed tools, context size)
+      (vision, reasoning, context size)
 - [x] Model described as data (provider, identifier, capabilities)
 - [x] `Agent`: the loop, callable on its own. Context in, event stream out;
       request, stream, execute tool calls, repeat until the model stops.
@@ -242,10 +242,9 @@ vendor. Our providers are built on it; a third party may use it or ignore it.
 
 Each is a thin module over `SwacoAI`.
 
-- [~] Anthropic (streaming, tool use, provider-executed web search). The
+- [~] Anthropic (streaming, tool use). The
       Messages protocol is implemented and verified against a real endpoint
-      that speaks it; Anthropic's own endpoint and its provider-executed
-      tools await a key
+      that speaks it; Anthropic's own endpoint awaits a key
 - [x] OpenAI, including OpenAI-compatible endpoints. Any endpoint that
       speaks either shape is reached by naming a connection
 - [x] Apple Foundation Models (on-device). It runs tools itself rather than

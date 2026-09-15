@@ -142,8 +142,6 @@ public struct ModelCapabilities: Sendable, Hashable, Codable {
     public var vision: Bool
     /// Whether it hands back what it thought on the way.
     public var reasoning: Bool
-    /// Tools the vendor runs itself, such as its own web search.
-    public var providerExecutedTools: Bool
     /// How much the model can be given, in tokens, where the vendor says.
     public var contextSize: Int?
 
@@ -151,13 +149,11 @@ public struct ModelCapabilities: Sendable, Hashable, Codable {
         tools: Bool = true,
         vision: Bool = false,
         reasoning: Bool = false,
-        providerExecutedTools: Bool = false,
         contextSize: Int? = nil
     ) {
         self.tools = tools
         self.vision = vision
         self.reasoning = reasoning
-        self.providerExecutedTools = providerExecutedTools
         self.contextSize = contextSize
     }
 

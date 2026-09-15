@@ -85,8 +85,6 @@ private let pixel = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
             .image(.reference(ContentReference(identifier: "abc", type: "image/jpeg"))),
             .image(.url(URL(string: "https://example.invalid/cat.png")!, type: "image/png")),
             .reasoning("thinking about it"),
-            .providerTool(name: "web_search", input: .object(["query": .string("cats")])),
-            .providerToolResult(name: "web_search", output: .array([.string("a page")])),
             .citation(Citation(title: "A page", url: URL(string: "https://example.invalid"), range: 0..<4)),
         ]
         let event = Event.arrived(InboundEvent(source: .share, content: parts))

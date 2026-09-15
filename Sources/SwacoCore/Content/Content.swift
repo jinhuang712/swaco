@@ -50,9 +50,6 @@ public enum ContentPart: Sendable, Hashable, Codable {
     case image(ContentSource)
     /// What the model thought on the way, where the vendor gives it to us.
     case reasoning(String)
-    /// A tool the vendor ran itself, such as its own web search.
-    case providerTool(name: String, input: JSONValue)
-    case providerToolResult(name: String, output: JSONValue)
     case citation(Citation)
 
     /// The words in this part, if it has any.
@@ -66,7 +63,7 @@ public enum ContentPart: Sendable, Hashable, Codable {
         switch self {
         case .image: .vision
         case .reasoning: .reasoning
-        case .text, .citation, .providerTool, .providerToolResult: nil
+        case .text, .citation: nil
         }
     }
 }

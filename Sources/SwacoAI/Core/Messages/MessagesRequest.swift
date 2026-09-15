@@ -111,7 +111,7 @@ struct MessagesRequest: Encodable {
                         blocks.append(.text(text))
                     case .image(let source):
                         blocks.append(try await image(source, resolving: content))
-                    case .text, .reasoning, .citation, .providerTool, .providerToolResult:
+                    case .text, .reasoning, .citation:
                         continue
                     }
                 }
