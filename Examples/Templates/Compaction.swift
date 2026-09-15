@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Keeps a long history inside a model's context by replacing the oldest part
 /// of it with a summary.

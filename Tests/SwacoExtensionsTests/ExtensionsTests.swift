@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-import Swaco
+import SwacoCore
 import SwacoAI
 import SwacoExtensions
 import SwacoInteraction

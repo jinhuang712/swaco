@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// The models we happen to know about, as data.
 ///

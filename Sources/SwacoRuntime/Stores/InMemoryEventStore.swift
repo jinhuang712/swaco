@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// An `EventStore` that keeps events for as long as the process lives. The
 /// store for tests, previews and apps with no history.

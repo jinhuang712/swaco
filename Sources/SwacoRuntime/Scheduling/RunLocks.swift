@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Keeps two runs from writing to one log at the same time.
 ///

@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Turns the Messages protocol's server-sent events into swaco's.
 ///

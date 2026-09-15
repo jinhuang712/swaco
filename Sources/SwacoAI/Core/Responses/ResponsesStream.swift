@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Turns the Responses protocol's server-sent events into swaco's canonical
 /// stream events. Pure, so the recorded fixtures test the same code the wire

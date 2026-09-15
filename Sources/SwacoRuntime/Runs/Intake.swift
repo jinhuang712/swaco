@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// The runtime's answer to the arrival hook: a rule the app writes over facts
 /// swaco declares, and nothing else.

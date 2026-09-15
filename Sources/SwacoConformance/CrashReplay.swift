@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-import Swaco
+import SwacoCore
 import SwacoRuntime
 
 /// Runs one piece of work over and over, ending the process after every event

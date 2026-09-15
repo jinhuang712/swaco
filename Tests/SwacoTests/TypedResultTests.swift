@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-import Swaco
+import SwacoCore
 
 /// A tool's answer has two readers who want different things, and swaco
 /// carries both rather than choosing.

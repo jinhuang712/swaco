@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// The request body of the Messages protocol, Anthropic's shape and the one
 /// several other vendors now speak.

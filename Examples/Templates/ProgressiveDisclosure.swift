@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Shows the model a few tools and one tool for finding the rest.
 ///

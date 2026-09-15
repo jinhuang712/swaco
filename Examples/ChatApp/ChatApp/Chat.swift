@@ -1,6 +1,6 @@
 import Foundation
 import Observation
-import Swaco
+import SwacoCore
 import SwacoFoundationModels
 import SwacoInteraction
 import SwacoOpenAI

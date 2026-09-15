@@ -95,7 +95,7 @@
 			);
 			name = ChatApp;
 			packageProductDependencies = (
-				5WAC0000000000000000000A /* Swaco */,
+				5WAC0000000000000000000A /* SwacoCore */,
 				5WAC0000000000000000000B /* SwacoRuntime */,
 				5WAC0000000000000000000C /* SwacoInteraction */,
 				5WAC0000000000000000000D /* SwacoOpenAI */,
@@ -373,9 +373,9 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5WAC0000000000000000000A /* Swaco */ = {
+		5WAC0000000000000000000A /* SwacoCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Swaco;
+			productName = SwacoCore;
 		};
 		5WAC0000000000000000000B /* SwacoRuntime */ = {
 			isa = XCSwiftPackageProductDependency;

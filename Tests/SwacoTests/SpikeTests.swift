@@ -1,5 +1,5 @@
 import Testing
-import Swaco
+import SwacoCore
 import SwacoTesting
 
 /// A tool that must run on the main actor and answers at once.

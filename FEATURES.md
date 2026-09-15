@@ -388,7 +388,7 @@ requires showing that it does. The list is kept short on purpose.
 
 ## Acceptance
 
-- [x] The canonical first program: `import Swaco`, one provider, one tool,
+- [x] The canonical first program: `import SwacoCore`, one provider, one tool,
       one `Agent`, one `for await` over its events, in twenty lines or fewer
       including the tool. No runtime, no store. Protocols bend to keep it
       so; the example does not grow. Twenty lines, and it talks to a real

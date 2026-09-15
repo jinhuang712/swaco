@@ -25,7 +25,7 @@ contain.
 │   ── built on ──              │                                  │
 │   SwacoAI shared machinery    │                                  │
 ├───────────────────────────────┴──────────────────────────────────┤
-│ Swaco                 vocabulary · Agent loop · protocols for    │  mechanics
+│ SwacoCore                 vocabulary · Agent loop · protocols for    │  mechanics
 │                       provider, tool, store · default rendering  │
 ├──────────────────────────────────────────────────────────────────┤
 │ SwacoTesting          mock provider · recording and replay       │  cross-cutting
@@ -37,7 +37,7 @@ Dependencies point downward only. Nothing below knows what is above it.
 
 ## Modules
 
-### Swaco
+### SwacoCore
 
 The core. Depends on the standard library and Foundation, nothing else.
 
@@ -61,7 +61,7 @@ under one directory. Providers are separate targets only so that an app links
 the vendors it uses and nothing else; a provider that imports an Apple
 framework must not be carried by an app that never calls it.
 
-The shared machinery depends on Swaco only and knows no vendor.
+The shared machinery depends on SwacoCore only and knows no vendor.
 
 HTTP and server-sent events over `URLSession`; connection configuration per
 provider, an endpoint and an `Authenticator` (API key, bearer token, OAuth
@@ -97,7 +97,7 @@ among others.
 ### SwacoInteraction
 
 The tools through which the agent reaches a person: `ask`, `confirm`,
-`report`. Depends on Swaco only. Owns the mechanics: the model sees the tool,
+`report`. Depends on SwacoCore only. Owns the mechanics: the model sees the tool,
 a typed request appears in the event stream, the loop waits for the result
 event, the wait survives relaunch. The app owns the presentation.
 
@@ -107,11 +107,11 @@ The three extensions nearly every app needs and no product would answer
 differently: time context, tool approval, retry. Approval holds the
 calls the app's rule selects and nothing more; the facts it selects over, a
 tool's access and an event's source, are declared in the core. Depends on
-Swaco only.
+SwacoCore only.
 
 ### SwacoRuntime
 
-What an agent needs to work correctly inside a real app. Depends on Swaco
+What an agent needs to work correctly inside a real app. Depends on SwacoCore
 only; never on a provider, an extension or a toolset.
 
 `Run` as the unit of work, an `Agent` loop with its events recorded and
@@ -129,7 +129,7 @@ Two targets, because they are for two different moments.
 
 `SwacoTesting` holds the replayable mock provider and the recording that feeds
 it: ask a vendor once, keep what it said, replay it from then on. It depends on
-Swaco alone and on no test framework, so a preview, a debug build and an app
+SwacoCore alone and on no test framework, so a preview, a debug build and an app
 can link it. That matters: development and previews needing no key is a promise
 to the app, not only to our own tests.
 
@@ -151,10 +151,10 @@ bridge are templates under `Examples/`, not companions.
 
 ## Rules
 
-1. **Dependencies point down.** Swaco depends on nothing. SwacoAI,
-   SwacoInteraction, SwacoExtensions and SwacoRuntime depend on Swaco only.
-   Providers depend on SwacoAI. SwacoTesting depends on Swaco alone, so an
-   app may link it; SwacoConformance depends on Swaco and SwacoRuntime.
+1. **Dependencies point down.** SwacoCore depends on nothing. SwacoAI,
+   SwacoInteraction, SwacoExtensions and SwacoRuntime depend on SwacoCore only.
+   Providers depend on SwacoAI. SwacoTesting depends on SwacoCore alone, so an
+   app may link it; SwacoConformance depends on SwacoCore and SwacoRuntime.
    Nothing depends on a provider, an extension or a toolset.
 2. **Peers do not know each other.** A provider does not import an
    extension; an extension does not import the runtime; the runtime does not
@@ -185,7 +185,7 @@ swaco/
 ├── README.md · ORIGIN.md · PHILOSOPHY.md · GOALS.md · ARCHITECTURE.md · FEATURES.md
 │
 ├── Sources/
-│   ├── Swaco/                   core
+│   ├── SwacoCore/                   core
 │   │   ├── Events/              event, source, execution context, rendering
 │   │   ├── Content/             content parts, references, message projection
 │   │   ├── Tools/               tool, toolset, tool call, schema
@@ -238,6 +238,6 @@ replaceability comes from a protocol, not a module boundary.
 
 ## Open
 
-- The core module is named `Swaco` so that `import Swaco` is the first line
-  of the first program. Rename to `SwacoCore` only if the package and module
-  sharing a name causes trouble in practice.
+- The core module was renamed from `SwacoCore` to `SwacoCore` during the revamp,
+  so that the core is distinct from the package, the product name, and the
+  `SwacoEnvironment` layer above it.

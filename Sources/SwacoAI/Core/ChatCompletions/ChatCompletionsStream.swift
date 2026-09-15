@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Turns the chat-completions protocol's chunks into swaco's stream events.
 ///

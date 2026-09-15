@@ -1,6 +1,6 @@
 import Foundation
 import os
-import Swaco
+import SwacoCore
 
 /// Makes a run visible in Instruments: an interval per turn and per tool call.
 ///

@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// The request body of the OpenAI Responses protocol, built from swaco's
 /// vocabulary. Conversion is lossless: ids are preserved so tool results

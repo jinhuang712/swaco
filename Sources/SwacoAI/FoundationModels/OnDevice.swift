@@ -1,6 +1,6 @@
 import Foundation
 import FoundationModels
-import Swaco
+import SwacoCore
 
 /// Apple's on-device model, as one provider among others.
 ///

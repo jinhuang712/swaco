@@ -15,7 +15,7 @@ struct Extending: Sendable {
 
     func decide<Subject: Sendable>(
         _ subject: Subject,
-        as what: @Sendable (Subject) -> Swaco.Subject,
+        as what: @Sendable (Subject) -> SwacoCore.Subject,
         in context: ExtensionContext,
         hook: @Sendable (any Extension, Subject) async -> Decision<Subject>
     ) async -> Outcome<Subject> {

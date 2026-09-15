@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 import SwacoExtensions
 import SwacoInteraction
 import SwacoAnthropic

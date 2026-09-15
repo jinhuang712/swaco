@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-import Swaco
+import SwacoCore
 
 /// The contract every `EventStore` must meet, whoever wrote it. A companion or
 /// a third party runs this against its own store; so do our reference

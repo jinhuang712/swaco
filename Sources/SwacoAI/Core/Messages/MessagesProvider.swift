@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// The Messages protocol, configured per vendor rather than re-implemented.
 public struct MessagesProvider: Provider {

@@ -1,6 +1,6 @@
 import Foundation
 import os
-import Swaco
+import SwacoCore
 
 /// What swaco writes to the system log.
 ///

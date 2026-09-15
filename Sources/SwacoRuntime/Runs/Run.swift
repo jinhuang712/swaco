@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// swaco's unit of work: an `Agent` loop with every event recorded to a store
 /// as it happens, under a name the app can find again.

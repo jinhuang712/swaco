@@ -1,6 +1,6 @@
 import Foundation
 import os
-import Swaco
+import SwacoCore
 
 /// What a module needs from the app around it before it can work.
 ///

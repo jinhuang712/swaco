@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-import Swaco
+import SwacoCore
 import SwacoRuntime
 import SwacoAI
 import SwacoTesting

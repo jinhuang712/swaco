@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Records what a real model said, so nothing has to ask it again.
 ///

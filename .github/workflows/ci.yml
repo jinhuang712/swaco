@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: [Swaco, SwacoAI, SwacoOpenAI, SwacoFoundationModels, SwacoExtensions, SwacoInteraction, SwacoRuntime, SwacoTesting, SwacoConformance]
+        module: [SwacoCore, SwacoAI, SwacoOpenAI, SwacoFoundationModels, SwacoExtensions, SwacoInteraction, SwacoRuntime, SwacoTesting, SwacoConformance]
     steps:
       - uses: actions/checkout@v4
       - uses: maxim-lobanov/setup-xcode@v1

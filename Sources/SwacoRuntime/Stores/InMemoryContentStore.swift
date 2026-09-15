@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// A `ContentStore` that keeps bytes for as long as the process lives.
 public actor InMemoryContentStore: ContentStore {

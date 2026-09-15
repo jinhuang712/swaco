@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// The chat-completions protocol, configured per vendor rather than
 /// re-implemented.

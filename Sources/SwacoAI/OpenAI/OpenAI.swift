@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 import SwacoAI
 
 /// OpenAI, and any endpoint that speaks its Responses protocol. A thin target

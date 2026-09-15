@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Tries a failed request again, backing off, for the failures that are worth
 /// trying again: a vendor that asked us to wait, a network that came and went.

@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 import SwacoAI
 
 /// Anthropic, and any endpoint that speaks its Messages protocol. A thin

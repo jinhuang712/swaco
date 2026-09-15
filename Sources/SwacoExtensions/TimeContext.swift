@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Tells the model when it is and where: the time, the time zone, the locale
 /// and the device.

@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Holds the tool calls the app's rule selects, and nothing more.
 ///

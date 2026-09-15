@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// swaco's grouping of runs into a persistent history. Optional: apps with no
 /// history never touch it.

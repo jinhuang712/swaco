@@ -163,13 +163,13 @@ The goals above are where we are going. These are the next things that can
 be declared done, in order, each with the test that decides it. When one is
 met it is marked here and the next becomes the current one.
 
-1. **The spike has an answer.** A package with the `Swaco` target alone
+1. **The spike has an answer.** A package with the `SwacoCore` target alone
    compiles under Swift 6 strict concurrency with the event-pair loop, a
    main-actor tool, a deferred result and external cancellation, and no
    unchecked escape. The answer is "yes" or "no, and this is what changes
    in the design". Needs no Xcode and no simulator. *Met: yes; the shape
    is recorded in FEATURES under the spike.*
-2. **The first program runs.** `import Swaco`, one provider, one tool, one
+2. **The first program runs.** `import SwacoCore`, one provider, one tool, one
    `Agent`, one `for await`, in twenty lines or fewer, against a real model
    rather than a mock. Protocols bent to fit; the example did not grow.
    *Met on the command line: twenty lines, a hosted model reached through

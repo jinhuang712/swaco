@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Stops a loop after a turn and leaves the rest to a later process.
 ///

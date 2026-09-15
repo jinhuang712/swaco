@@ -1,6 +1,6 @@
 import Foundation
 import Security
-import Swaco
+import SwacoCore
 
 /// A token pair, as OAuth hands it over.
 public struct Tokens: Sendable, Hashable, Codable {

@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// The request body of the chat-completions protocol, the older of the two
 /// OpenAI shapes and the one most other vendors copied.

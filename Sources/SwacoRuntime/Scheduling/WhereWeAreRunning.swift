@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 #if canImport(UIKit)
 import UIKit
 #endif

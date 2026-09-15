@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// A tool of an app's own, a toolset of them, and how they are handed over.
 ///

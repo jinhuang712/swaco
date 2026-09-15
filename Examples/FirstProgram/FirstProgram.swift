@@ -1,4 +1,4 @@
-import Swaco
+import SwacoCore
 import SwacoOpenAI
 
 struct Weather: Tool {

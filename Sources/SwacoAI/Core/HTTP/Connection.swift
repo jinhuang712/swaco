@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// Where a provider sends its requests and how they are authenticated.
 /// Everything is passed explicitly in code: no configuration files, no

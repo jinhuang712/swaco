@@ -1,4 +1,4 @@
-import Swaco
+import SwacoCore
 
 /// A provider that plays a script: one list of stream events per turn, chosen
 /// by how many assistant messages the context already holds. Never touches

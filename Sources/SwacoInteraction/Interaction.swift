@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// A question put to a person.
 public struct Question: Codable, Sendable, Hashable {

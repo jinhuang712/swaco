@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// An `EventStore` of one file per group, a JSON object per line, appended and
 /// flushed before it returns. Plain enough to read in a bug report, and it

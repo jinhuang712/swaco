@@ -1,5 +1,5 @@
 import Foundation
-import Swaco
+import SwacoCore
 
 /// The generic implementation of the OpenAI Responses protocol: configured per
 /// vendor rather than re-implemented. Any endpoint that speaks it, including an
