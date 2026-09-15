@@ -15,17 +15,13 @@ public struct DefaultEventRendering: EventRendering {
 
     public func render(_ inbound: InboundEvent) -> Message {
         switch inbound.source {
-        case .person:
+        case "person":
             return .user(inbound.content.normalised)
-        case .shortcut, .notification, .url, .share, .system, .schedule, .sensor:
+        default:
             // Where it came from travels with it, so the model and the
             // extensions can tell a person's words from a delivery.
-            return .user(([.text("[\(name(of: inbound.source))] ")] + inbound.content).normalised)
+            return .user(([.text("[\(inbound.source)] ")] + inbound.content).normalised)
         }
-    }
-
-    private func name(of source: Source) -> String {
-        Source.wireNames.first { $0.0 == source }?.1 ?? "source"
     }
 }
 

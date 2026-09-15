@@ -37,7 +37,7 @@ public struct Intake: Extension {
     /// A person's words join the conversation; everything else is its own
     /// piece of work. The rule an app with more than a chat tends to want.
     public static let peopleInterruptOthersDoNot = Intake { inbound, _ in
-        inbound.source == .person ? .inject : .leave
+        inbound.source == "person" ? .inject : .leave
     }
 
     public func arrived(_ inbound: InboundEvent, in context: ExtensionContext) async -> Arrival? {

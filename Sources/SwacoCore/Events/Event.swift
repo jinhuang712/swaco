@@ -1,29 +1,22 @@
-/// Where an inbound event came from. A person typing is one source among
-/// many, and none is assumed.
-public enum Source: Sendable, Hashable {
-    case person
-    case shortcut
-    case notification
-    case url
-    case share
-    case system
-    case schedule
-    case sensor
-}
-
 /// Something that entered the agent: where it came from and what it carried.
 /// The beginning of a run, recorded like everything else.
+///
+/// The source is an opaque identifier, not a closed set: a person typing is
+/// one source among many, and the vocabulary of sources lives above the core
+/// (platform layers provide the well-known ones, apps define their own).
+/// The core carries the identifier so the model and extensions can tell what
+/// a person said from what the system delivered, without knowing the list.
 public struct InboundEvent: Sendable, Hashable {
-    public let source: Source
+    public let source: String
     /// What arrived: words, pictures, or anything else a part can hold.
     public let content: [ContentPart]
 
-    public init(source: Source, content: [ContentPart]) {
+    public init(source: String, content: [ContentPart]) {
         self.source = source
         self.content = content
     }
 
-    public init(source: Source, text: String) {
+    public init(source: String, text: String) {
         self.init(source: source, content: [.text(text)])
     }
 
@@ -32,7 +25,7 @@ public struct InboundEvent: Sendable, Hashable {
 
     /// What a person typed.
     public static func person(_ text: String) -> InboundEvent {
-        InboundEvent(source: .person, text: text)
+        InboundEvent(source: "person", text: text)
     }
 }
 

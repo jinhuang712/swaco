@@ -21,7 +21,7 @@ private let pixel = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
                          content: content),
             store: events
         )
-        let arrival = InboundEvent(source: .share, content: [
+        let arrival = InboundEvent(source: "share", content: [
             .text("what is this?"), .image(.reference(reference)),
         ])
         for try await _ in run.start(arrival) {}
@@ -66,7 +66,7 @@ private let pixel = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
             store: InMemoryEventStore()
         )
         var events: [Event] = []
-        for try await event in run.start(InboundEvent(source: .share, content: [
+        for try await event in run.start(InboundEvent(source: "share", content: [
             .text("what is this?"), .image(.bytes(pixel, type: "image/png")),
         ])) { events.append(event) }
 
@@ -87,7 +87,7 @@ private let pixel = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
             .reasoning("thinking about it"),
             .citation(Citation(title: "A page", url: URL(string: "https://example.invalid"), range: 0..<4)),
         ]
-        let event = Event.arrived(InboundEvent(source: .share, content: parts))
+        let event = Event.arrived(InboundEvent(source: "share", content: parts))
         let data = try JSONEncoder().encode(event)
         #expect(try JSONDecoder().decode(Event.self, from: data) == event)
     }

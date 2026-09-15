@@ -38,7 +38,7 @@ extension Event: Codable {
         switch try container.decode(String.self, forKey: .type) {
         case Name.arrived:
             self = .arrived(InboundEvent(
-                source: try container.decode(Source.self, forKey: .source),
+                source: try container.decode(String.self, forKey: .source),
                 content: try container.decode([ContentPart].self, forKey: .content)
             ))
         case Name.turnStarted:
@@ -190,14 +190,6 @@ extension WireNamed {
 extension StopReason: WireNamed {
     static var wireNames: [(StopReason, String)] {
         [(.endTurn, "end_turn"), (.toolUse, "tool_use"), (.maxTokens, "max_tokens")]
-    }
-}
-
-extension Source: WireNamed {
-    static var wireNames: [(Source, String)] {
-        [(.person, "person"), (.shortcut, "shortcut"), (.notification, "notification"),
-         (.url, "url"), (.share, "share"), (.system, "system"),
-         (.schedule, "schedule"), (.sensor, "sensor")]
     }
 }
 

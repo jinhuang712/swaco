@@ -87,7 +87,7 @@ private func askingProvider() -> ScriptedProvider {
     @Test func aSourceOtherThanAPersonSaysSo() async throws {
         let store = InMemoryEventStore()
         let run = Run(agent: Agent(provider: ScriptedProvider.saying("Noted."), tools: []), store: store)
-        for try await _ in run.start(InboundEvent(source: .shortcut, text: "start the day")) {}
+        for try await _ in run.start(InboundEvent(source: "shortcut", text: "start the day")) {}
 
         let messages = Message.projection(of: try await run.history())
         #expect(messages.first == .user("[shortcut] start the day"))

@@ -51,6 +51,17 @@ import SwacoConformance
                 #"{"origin":"person","partial":"half","type":"cancelled"}"#)
     }
 
+    /// Sources are an open vocabulary: one the core never heard of survives
+    /// the log unchanged, and so does one written by an older swaco.
+    @Test func anySourceSurvivesTheLog() throws {
+        let custom = Event.arrived(InboundEvent(source: "selection", text: "this"))
+        #expect(try JSONDecoder().decode(Event.self, from: try JSONEncoder().encode(custom)) == custom)
+
+        let old = #"{"type":"arrived","source":"share","content":[{"text":{"_0":"a photo"}}]}"#
+        #expect(try JSONDecoder().decode(Event.self, from: Data(old.utf8)) ==
+                .arrived(InboundEvent(source: "share", text: "a photo")))
+    }
+
     @Test func everyEventRoundTrips() throws {
         let events: [Event] = [
             .turnStarted(3),

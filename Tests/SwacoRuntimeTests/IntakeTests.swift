@@ -91,7 +91,7 @@ private struct SlowProvider: Provider {
     /// The chat's rule: whatever arrives joins the conversation it arrived
     /// into, and the model sees it on the next turn.
     @Test func aRuleMayInjectItIntoTheNextTurn() async throws {
-        let arrival = InboundEvent(source: .notification, text: "the parcel arrived")
+        let arrival = InboundEvent(source: "notification", text: "the parcel arrived")
         let (events, run, _) = try await runDelivering(
             arrival,
             extensions: [Intake.intoTheConversation],
@@ -112,7 +112,7 @@ private struct SlowProvider: Provider {
     /// With nobody holding an opinion, an arrival is not this loop's business
     /// and is left for whatever runs it.
     @Test func withNoIntakeExtensionAnArrivalIsLeft() async throws {
-        let arrival = InboundEvent(source: .shortcut, text: "start the day")
+        let arrival = InboundEvent(source: "shortcut", text: "start the day")
         let (events, run, _) = try await runDelivering(
             arrival, extensions: [], second: "Should not happen."
         )
@@ -131,7 +131,7 @@ private struct SlowProvider: Provider {
             .person("and one more thing"),
             extensions: [Intake { inbound, situation in
                 seen.note(situation)
-                return inbound.source == .person ? .inject : .leave
+                return inbound.source == "person" ? .inject : .leave
             }],
             second: "Second."
         )
@@ -143,7 +143,7 @@ private struct SlowProvider: Provider {
     /// Queued means after the work in hand, in the same loop.
     @Test func aQueuedArrivalIsAnsweredBeforeTheLoopEnds() async throws {
         let (events, run, _) = try await runDelivering(
-            InboundEvent(source: .schedule, text: "the timer went off"),
+            InboundEvent(source: "schedule", text: "the timer went off"),
             extensions: [Intake { _, _ in .queue }],
             second: "And the timer: noted."
         )
@@ -159,10 +159,10 @@ private struct SlowProvider: Provider {
         let moment = ExtensionContext(turn: 1, execution: .unknown)
         #expect(await Intake.intoTheConversation.arrived(.person("hi"), in: moment) == .inject)
         #expect(await Intake.intoTheConversation
-            .arrived(InboundEvent(source: .sensor, text: "cold"), in: moment) == .inject)
+            .arrived(InboundEvent(source: "sensor", text: "cold"), in: moment) == .inject)
         #expect(await Intake.peopleInterruptOthersDoNot.arrived(.person("hi"), in: moment) == .inject)
         #expect(await Intake.peopleInterruptOthersDoNot
-            .arrived(InboundEvent(source: .sensor, text: "cold"), in: moment) == .leave)
+            .arrived(InboundEvent(source: "sensor", text: "cold"), in: moment) == .leave)
     }
 
     /// Recorded like everything else, so a log explains why a loop went the
