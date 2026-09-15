@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "SwacoExtensions", targets: ["SwacoExtensions"]),
         .library(name: "SwacoInteraction", targets: ["SwacoInteraction"]),
         .library(name: "SwacoRuntime", targets: ["SwacoRuntime"]),
+        .library(name: "SwacoEnvironment", targets: ["SwacoEnvironment"]),
         .library(name: "SwacoTesting", targets: ["SwacoTesting"]),
         .library(name: "SwacoConformance", targets: ["SwacoConformance"]),
     ],
@@ -30,6 +31,12 @@ let package = Package(
         .target(name: "SwacoExtensions", dependencies: ["SwacoCore"], resources: [.copy("PrivacyInfo.xcprivacy")]),
         .target(name: "SwacoInteraction", dependencies: ["SwacoCore"], resources: [.copy("PrivacyInfo.xcprivacy")]),
         .target(name: "SwacoRuntime", dependencies: ["SwacoCore"], resources: [.copy("PrivacyInfo.xcprivacy")]),
+
+        // Where the agent lives: the open vocabulary of sources and the
+        // platform facts an app fills in. Depends on the core only; the
+        // runtime is a peer, not a dependency, so linking this never drags
+        // durability along.
+        .target(name: "SwacoEnvironment", dependencies: ["SwacoCore"]),
 
         // Development tools an app links like any other: the replayable mock
         // provider, and recording a real exchange to replay later. No test
@@ -55,6 +62,8 @@ let package = Package(
                     resources: [.copy("Fixtures")]),
         .testTarget(name: "SwacoFoundationModelsTests",
                     dependencies: ["SwacoFoundationModels", "SwacoRuntime", "SwacoTesting"]),
+        .testTarget(name: "SwacoEnvironmentTests",
+                    dependencies: ["SwacoEnvironment", "SwacoCore"]),
 
         // The canonical first program, built in CI so it never drifts.
         .executableTarget(name: "FirstProgram", dependencies: ["SwacoCore", "SwacoOpenAI"],

@@ -14,6 +14,9 @@ contain.
 │ Companions            separate packages under our name           │
 │ swaco-kits · swaco-media · swaco-stores                          │
 ├──────────────────────────────────────────────────────────────────┤
+│ SwacoEnvironment      open source vocabulary · where the agent   │  where it
+│                       lives: translate · fill · hand over        │  lives
+├──────────────────────────────────────────────────────────────────┤
 │ SwacoRuntime          Run · Session · intake extension           │  working
 │                       stores: reference implementations          │  correctly
 │                       recovery · concurrency · execution context │  in an app
@@ -41,8 +44,10 @@ Dependencies point downward only. Nothing below knows what is above it.
 
 The core. Depends on the standard library and Foundation, nothing else.
 
-Holds the vocabulary as types: event, source, content, tool, toolset,
-extension, provider, model, store. Holds the loop as `Agent`: context in,
+Holds the vocabulary as types: event, content, tool, toolset,
+extension, provider, model, store. An inbound event carries its source as
+an opaque identifier; the vocabulary of sources lives in SwacoEnvironment.
+Holds the loop as `Agent`: context in,
 events out, continue while the model asks for tools, callable on its own.
 Holds the default rendering of inbound events into model-readable content, as
 one implementation of a replaceable protocol. Holds the `EventStore` and
@@ -106,7 +111,7 @@ event, the wait survives relaunch. The app owns the presentation.
 The three extensions nearly every app needs and no product would answer
 differently: time context, tool approval, retry. Approval holds the
 calls the app's rule selects and nothing more; the facts it selects over, a
-tool's access and an event's source, are declared in the core. Depends on
+tool's effect and an event's source, are declared in the core. Depends on
 SwacoCore only.
 
 ### SwacoRuntime
@@ -122,6 +127,19 @@ persisted event, including handing every tool call that was left waiting back
 to its tool to resume. Concurrency across runs. The execution context exposed
 to extensions: foreground, background, app extension process, remaining time,
 whether a person is present.
+
+### SwacoEnvironment
+
+Where the agent lives. Depends on SwacoCore only; the runtime is a peer,
+not a dependency, so linking this never drags durability along.
+
+Holds the open vocabulary of sources: platform layers provide the
+well-known ones, apps define their own, and the core carries only the
+identifier. Holds the platform facts an app fills in: what woke the agent,
+where the process is, how long it has got, whether anyone is present. It
+translates platform events into arrivals, fills in the execution context the
+runtime answers, and triggers the handover the runtime recorded. It decides
+none of it: translation, facts, and the tripwire, never the policy.
 
 ### SwacoTesting and SwacoConformance
 
@@ -152,13 +170,14 @@ bridge are templates under `Examples/`, not companions.
 ## Rules
 
 1. **Dependencies point down.** SwacoCore depends on nothing. SwacoAI,
-   SwacoInteraction, SwacoExtensions and SwacoRuntime depend on SwacoCore only.
-   Providers depend on SwacoAI. SwacoTesting depends on SwacoCore alone, so an
+   SwacoInteraction, SwacoExtensions, SwacoRuntime and SwacoEnvironment
+   depend on SwacoCore only. Providers depend on SwacoAI. SwacoTesting depends on SwacoCore alone, so an
    app may link it; SwacoConformance depends on SwacoCore and SwacoRuntime.
    Nothing depends on a provider, an extension or a toolset.
 2. **Peers do not know each other.** A provider does not import an
    extension; an extension does not import the runtime; the runtime does not
-   import a provider. Composition happens in the app.
+   import a provider; the environment imports neither the runtime nor a
+   provider. Composition happens in the app.
 3. **One door.** Our own toolsets, extensions and providers use only public
    protocols. If writing one of them needs a private path, the core is
    deficient and is fixed; the path is not opened.
@@ -186,7 +205,7 @@ swaco/
 │
 ├── Sources/
 │   ├── SwacoCore/                   core
-│   │   ├── Events/              event, source, execution context, rendering
+│   │   ├── Events/              event, execution context, rendering
 │   │   ├── Content/             content parts, references, message projection
 │   │   ├── Tools/               tool, toolset, tool call, schema
 │   │   ├── Providers/           provider protocol, model, capabilities, stream events
@@ -207,13 +226,15 @@ swaco/
 │   │   └── FoundationModels/    target SwacoFoundationModels
 │   │
 │   ├── SwacoInteraction/        ask, confirm, report
-│   ├── SwacoExtensions/         environment, approval, retry
+│   ├── SwacoExtensions/         time context, approval, retry
 │   │
 │   ├── SwacoRuntime/
 │   │   ├── Runs/                run, session, state, intake extension
 │   │   ├── Scheduling/          concurrency, execution context, handover
 │   │   ├── Recovery/            replay from the last persisted event
 │   │   └── Stores/              reference implementations
+│   │
+│   ├── SwacoEnvironment/        open source vocabulary, platform facts
 │   │
 │   ├── SwacoTesting/            mock provider, recording, replay
 │   └── SwacoConformance/        store contracts, crash-at-every-event harness
