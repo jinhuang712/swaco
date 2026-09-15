@@ -36,7 +36,8 @@ let package = Package(
         // platform facts an app fills in. Depends on the core only; the
         // runtime is a peer, not a dependency, so linking this never drags
         // durability along.
-        .target(name: "SwacoEnvironment", dependencies: ["SwacoCore"]),
+        .target(name: "SwacoEnvironment", dependencies: ["SwacoCore"],
+                resources: [.copy("PrivacyInfo.xcprivacy")]),
 
         // Development tools an app links like any other: the replayable mock
         // provider, and recording a real exchange to replay later. No test

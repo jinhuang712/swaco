@@ -101,6 +101,7 @@
 				5WAC0000000000000000000D /* SwacoOpenAI */,
 				5WAC0000000000000000000E /* SwacoFoundationModels */,
 				5WAC0000000000000000001A /* SwacoTesting */,
+				5WAC0000000000000000001B /* SwacoEnvironment */,
 			);
 			productName = ChatApp;
 			productReference = 5WAC00000000000000000005 /* ChatApp.app */;
@@ -396,6 +397,10 @@
 		5WAC0000000000000000001A /* SwacoTesting */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SwacoTesting;
+		};
+		5WAC0000000000000000001B /* SwacoEnvironment */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SwacoEnvironment;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

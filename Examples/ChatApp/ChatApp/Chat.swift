@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import SwacoCore
+import SwacoEnvironment
 import SwacoFoundationModels
 import SwacoInteraction
 import SwacoOpenAI
@@ -57,7 +58,7 @@ final class Chat {
     func send(_ text: String) async {
         let said = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !said.isEmpty, !running else { return }
-        await consume { session.run(with: agent()).start(said) }
+        await consume { session.run(with: agent()).start(EventSource.person.inbound(said)) }
     }
 
     func answer(_ text: String) async {

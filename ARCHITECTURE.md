@@ -15,7 +15,7 @@ contain.
 │ swaco-kits · swaco-media · swaco-stores                          │
 ├──────────────────────────────────────────────────────────────────┤
 │ SwacoEnvironment      open source vocabulary · where the agent   │  where it
-│                       lives: translate · fill · hand over        │  lives
+│                       lives: translate · fill                  │  lives
 ├──────────────────────────────────────────────────────────────────┤
 │ SwacoRuntime          Run · Session · intake extension           │  working
 │                       stores: reference implementations          │  correctly
@@ -136,9 +136,10 @@ Holds the open vocabulary of sources: platform layers provide the
 well-known ones, apps define their own, and the core carries only the
 identifier. Reads the system for the execution context: what woke the agent,
 where the process is, how long it has got, whether anyone is present. It
-translates platform events into arrivals, fills in the context the loop runs
-in, and offers the tripwire an app arms when its time is nearly up. It
-decides none of it: translation, facts, and the tripwire, never the policy.
+translates platform events into arrivals and fills in the context the loop
+runs in. When its time is nearly up, the app arms the handover itself from
+these facts; the tripwire stays the app's three lines, not our API. The layer
+decides none of it: translation and facts, never the policy.
 
 ### SwacoTesting and SwacoConformance
 
