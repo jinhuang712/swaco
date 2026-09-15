@@ -104,7 +104,7 @@ event, the wait survives relaunch. The app owns the presentation.
 ### SwacoExtensions
 
 The three extensions nearly every app needs and no product would answer
-differently: environment context, tool approval, retry. Approval holds the
+differently: time context, tool approval, retry. Approval holds the
 calls the app's rule selects and nothing more; the facts it selects over, a
 tool's access and an event's source, are declared in the core. Depends on
 Swaco only.

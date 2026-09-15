@@ -1,14 +1,14 @@
 import Foundation
 import Swaco
 
-/// Tells the model when and where it is: the time, the time zone, the locale
+/// Tells the model when it is and where: the time, the time zone, the locale
 /// and the device.
 ///
 /// One of the three shipped extensions, and here for the same reason as the
 /// others: nearly every app needs it, and no product would answer it
 /// differently. What it says is facts about the machine, never a judgement.
-public struct EnvironmentContext: Extension {
-    public let name = "environment"
+public struct TimeContext: Extension {
+    public let name = "time"
     /// Read when the request is made, so a long conversation does not carry a
     /// stale clock. Replaceable, which is what makes it testable.
     private let now: @Sendable () -> Date

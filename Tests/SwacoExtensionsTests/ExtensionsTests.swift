@@ -30,10 +30,10 @@ private func callingBoth() -> ScriptedProvider {
     ])
 }
 
-@Suite struct TellingTheModelWhereItIs {
-    @Test func theEnvironmentGoesInAheadOfTheFirstTurn() async throws {
+@Suite struct TellingTheModelWhenItIs {
+    @Test func timeGoesInAheadOfTheFirstTurn() async throws {
         let seen = Recorder()
-        let environment = EnvironmentContext(
+        let time = TimeContext(
             now: { Date(timeIntervalSince1970: 1_700_000_000) },
             locale: Locale(identifier: "en_GB"),
             timeZone: TimeZone(identifier: "Europe/Paris")!,
@@ -42,7 +42,7 @@ private func callingBoth() -> ScriptedProvider {
         let run = Run(
             agent: Agent(provider: seen.watching(callingBoth()),
                          tools: [Reading(), Filing()],
-                         extensions: [environment]),
+                         extensions: [time]),
             store: InMemoryEventStore()
         )
         var events: [Event] = []
@@ -50,7 +50,7 @@ private func callingBoth() -> ScriptedProvider {
 
         let instructions = await seen.requests.first?.messages.first
         guard case .system(let text) = instructions else {
-            Issue.record("the environment must arrive as instructions, not as a person's words")
+            Issue.record("time must arrive as instructions, not as a person's words")
             return
         }
         #expect(text.contains("Europe/Paris"))
@@ -58,7 +58,7 @@ private func callingBoth() -> ScriptedProvider {
         #expect(text.contains("iPhone"))
 
         // And the rewrite says who did it.
-        #expect(events.contains(.rewritten(by: "environment", subject: .request)))
+        #expect(events.contains(.rewritten(by: "time", subject: .request)))
         // Only once: the second turn is not told again.
         #expect(await seen.requests.count == 2)
         if case .system = await seen.requests[1].messages.first {

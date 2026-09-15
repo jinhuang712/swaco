@@ -279,7 +279,7 @@ relaunch). The app owns the presentation.
 
 Only what nearly every app needs and no product would answer differently.
 
-- [x] Environment context: time, time zone, locale, device, as instructions
+- [x] Time context: time, time zone, locale, device, as instructions
       ahead of the first turn
 - [x] Tool approval: route chosen tool calls through `confirm`. Which calls
       are chosen is the app's rule over the facts swaco declares, a tool's
