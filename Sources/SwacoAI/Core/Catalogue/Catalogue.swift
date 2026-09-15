@@ -23,22 +23,22 @@ public enum Catalogue {
 
     public static let openAI: [Model] = [
         Model(provider: "openai", identifier: "gpt-5.2",
-              capabilities: ModelCapabilities(tools: true, vision: true, reasoning: true,
+              capabilities: ModelCapabilities(tools: true, input: [.text, .image], reasoning: true,
                                               contextSize: 400_000)),
         Model(provider: "openai", identifier: "gpt-5.2-mini",
-              capabilities: ModelCapabilities(tools: true, vision: true, reasoning: true,
+              capabilities: ModelCapabilities(tools: true, input: [.text, .image], reasoning: true,
                                               contextSize: 400_000)),
     ]
 
     public static let anthropic: [Model] = [
         Model(provider: "anthropic", identifier: "claude-fable-5-1",
-              capabilities: ModelCapabilities(tools: true, vision: true, reasoning: true,
+              capabilities: ModelCapabilities(tools: true, input: [.text, .image], reasoning: true,
                                               contextSize: 200_000)),
         Model(provider: "anthropic", identifier: "claude-opus-5",
-              capabilities: ModelCapabilities(tools: true, vision: true, reasoning: true,
+              capabilities: ModelCapabilities(tools: true, input: [.text, .image], reasoning: true,
                                               contextSize: 200_000)),
         Model(provider: "anthropic", identifier: "claude-sonnet-5",
-              capabilities: ModelCapabilities(tools: true, vision: true, reasoning: true,
+              capabilities: ModelCapabilities(tools: true, input: [.text, .image], reasoning: true,
                                               contextSize: 200_000)),
     ]
 
@@ -46,7 +46,7 @@ public enum Catalogue {
     /// than handing calls back, which is why it declares none.
     public static let apple: [Model] = [
         Model(provider: "apple", identifier: "system-language-model",
-              capabilities: ModelCapabilities(tools: false, vision: false, reasoning: false,
+              capabilities: ModelCapabilities(tools: false, reasoning: false,
                                               contextSize: 4_096)),
     ]
 }

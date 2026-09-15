@@ -181,7 +181,7 @@ import SwacoTesting
     /// A model an app writes down itself is no less a model.
     @Test func anAppMayDescribeItsOwn() throws {
         let ours = Model(provider: "our-backend", identifier: "house-model",
-                         capabilities: ModelCapabilities(tools: true, vision: true))
+                         capabilities: ModelCapabilities(tools: true, input: [.text, .image]))
         let data = try JSONEncoder().encode(ours)
         #expect(try JSONDecoder().decode(Model.self, from: data) == ours)
     }

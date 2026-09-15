@@ -12,7 +12,7 @@ import SwacoTesting
     @Test func itDeclaresThatItRunsNoToolsForUs() {
         let model = OnDeviceModel()
         #expect(model.capabilities.tools == false)
-        #expect(model.capabilities.vision == false)
+        #expect(model.capabilities.input == [.text])
     }
 
     /// Availability is a question the app can ask first, whatever the answer

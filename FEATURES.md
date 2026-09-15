@@ -40,8 +40,8 @@ Fixed now, before code. Each word means one thing.
 - [x] Source travels with the content into the model's context, so the
       model and extensions can tell what a person said from what the system
       delivered
-- [x] Canonical message and content types: text, image, tool call, tool
-      result, reasoning, citations.
+- [x] Canonical message and content types: text, image, audio, video, file,
+      tool call, tool result, reasoning, citations.
       Adjacent runs of words become one part, so two messages that say the
       same thing are the same message
 - [x] Canonical streaming event set shared by all providers, in the same
@@ -79,7 +79,7 @@ Fixed now, before code. Each word means one thing.
 - [x] Rendering of inbound events into model-readable content is a
       protocol with one default implementation the app may replace whole
 - [x] `Provider` protocol: one streaming call, declared capabilities
-      (vision, reasoning, context size)
+      (input/output modalities, tools, reasoning, context size)
 - [x] Model described as data (provider, identifier, capabilities)
 - [x] `Agent`: the loop, callable on its own. Context in, event stream out;
       request, stream, execute tool calls, repeat until the model stops.

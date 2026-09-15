@@ -164,7 +164,9 @@ public struct Agent: Sendable {
             let asked = messages.reduce(into: Set<Capability>()) { $0.formUnion($1.needs) }
             return asked.filter { capability in
                 switch capability {
-                case .vision: !provider.capabilities.vision
+                case .vision: !provider.capabilities.input.contains(.image)
+                case .audio: !provider.capabilities.input.contains(.audio)
+                case .video: !provider.capabilities.input.contains(.video)
                 case .reasoning: !provider.capabilities.reasoning
                 case .tools: !provider.capabilities.tools
                 }

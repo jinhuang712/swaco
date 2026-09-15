@@ -120,7 +120,7 @@ struct ResponsesRequest: Encodable {
                     wired.append(.text(type: textType, text))
                 case .image(let source):
                     wired.append(try await image(source, resolving: content))
-                case .text, .reasoning, .citation:
+                case .text, .reasoning, .citation, .audio, .video, .file:
                     continue
                 }
             }

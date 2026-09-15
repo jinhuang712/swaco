@@ -133,13 +133,26 @@ public struct ModelRequest: Sendable {
     }
 }
 
+/// A kind of content a model can take in or give out. Small and closed:
+/// new media means a new case here, once, rather than another redesign.
+public enum Modality: String, Sendable, Hashable, Codable {
+    case text
+    case image
+    case audio
+    case video
+}
+
 /// What a model has declared it can take. Facts, not policy: swaco makes sure
 /// they are visible, and the app decides what to do when they do not line up.
 public struct ModelCapabilities: Sendable, Hashable, Codable {
     /// Whether the model can be given tools and will ask for them.
     public var tools: Bool
-    /// Whether it can be given pictures.
-    public var vision: Bool
+    /// What it can be given. A picture to a model without `.image` is
+    /// recorded as a mismatch, and nothing else happens.
+    public var input: Set<Modality>
+    /// What it can give back. Carried for the app to read; the loop acts on
+    /// inputs, not outputs.
+    public var output: Set<Modality>
     /// Whether it hands back what it thought on the way.
     public var reasoning: Bool
     /// How much the model can be given, in tokens, where the vendor says.
@@ -147,12 +160,14 @@ public struct ModelCapabilities: Sendable, Hashable, Codable {
 
     public init(
         tools: Bool = true,
-        vision: Bool = false,
+        input: Set<Modality> = [.text],
+        output: Set<Modality> = [.text],
         reasoning: Bool = false,
         contextSize: Int? = nil
     ) {
         self.tools = tools
-        self.vision = vision
+        self.input = input
+        self.output = output
         self.reasoning = reasoning
         self.contextSize = contextSize
     }

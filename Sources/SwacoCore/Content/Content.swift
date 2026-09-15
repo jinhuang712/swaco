@@ -48,6 +48,11 @@ public struct Citation: Sendable, Hashable, Codable {
 public enum ContentPart: Sendable, Hashable, Codable {
     case text(String)
     case image(ContentSource)
+    case audio(ContentSource)
+    case video(ContentSource)
+    /// Generic binary content, such as a document. Carried by reference where
+    /// possible; providers that cannot take it skip it, like a citation.
+    case file(ContentSource)
     /// What the model thought on the way, where the vendor gives it to us.
     case reasoning(String)
     case citation(Citation)
@@ -62,8 +67,10 @@ public enum ContentPart: Sendable, Hashable, Codable {
     public var needs: Capability? {
         switch self {
         case .image: .vision
+        case .audio: .audio
+        case .video: .video
         case .reasoning: .reasoning
-        case .text, .citation: nil
+        case .text, .citation, .file: nil
         }
     }
 }

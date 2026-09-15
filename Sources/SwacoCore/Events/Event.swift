@@ -30,9 +30,13 @@ public struct InboundEvent: Sendable, Hashable {
 }
 
 /// Something the content asked for that the model had not declared.
+/// `vision` keeps its name so logs written before audio and video existed
+/// still read.
 public enum Capability: Sendable, Hashable {
     case tools
     case vision
+    case audio
+    case video
     case reasoning
 }
 

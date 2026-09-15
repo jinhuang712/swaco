@@ -201,7 +201,8 @@ extension Arrival: WireNamed {
 
 extension Capability: WireNamed {
     static var wireNames: [(Capability, String)] {
-        [(.tools, "tools"), (.vision, "vision"), (.reasoning, "reasoning")]
+        [(.tools, "tools"), (.vision, "vision"), (.audio, "audio"),
+         (.video, "video"), (.reasoning, "reasoning")]
     }
 }
 

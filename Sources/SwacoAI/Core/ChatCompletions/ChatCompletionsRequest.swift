@@ -139,7 +139,7 @@ struct ChatCompletionsRequest: Encodable {
                         wired.append(.text(text))
                     case .image(let source):
                         wired.append(.image(url: try await Self.url(of: source, resolving: content)))
-                    case .text, .reasoning, .citation:
+                    case .text, .reasoning, .citation, .audio, .video, .file:
                         continue
                     }
                 }

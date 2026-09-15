@@ -14,7 +14,7 @@ public struct MessagesProvider: Provider {
     public init(
         model: String,
         connection: Connection,
-        capabilities: ModelCapabilities = ModelCapabilities(tools: true, vision: true, reasoning: true),
+        capabilities: ModelCapabilities = ModelCapabilities(tools: true, input: [.text, .image], reasoning: true),
         maxTokens: Int = 4096,
         version: String = "2023-06-01",
         session: URLSession = .shared

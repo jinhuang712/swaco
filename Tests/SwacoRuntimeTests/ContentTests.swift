@@ -76,6 +76,23 @@ private let pixel = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
         #expect(events.filter { $0 == .capabilityMissing(.vision) }.count == 1)
     }
 
+    /// A voice note put to a model that only reads text is recorded the same
+    /// way a picture is: as a mismatch, once, and the loop carries on.
+    @Test func audioForATextOnlyModelIsRecorded() async throws {
+        let run = Run(
+            agent: Agent(provider: ScriptedProvider.saying("I cannot hear it."), tools: []),
+            store: InMemoryEventStore()
+        )
+        var events: [Event] = []
+        for try await event in run.start(InboundEvent(source: "share", content: [
+            .audio(.bytes(Data([0x52, 0x49, 0x46, 0x46]), type: "audio/wav")),
+        ])) { events.append(event) }
+
+        #expect(events.contains(.capabilityMissing(.audio)))
+        #expect(events.last == .finished, "the loop does not refuse; the app decides")
+        #expect(events.filter { $0 == .capabilityMissing(.audio) }.count == 1)
+    }
+
     /// Every kind of part survives the log, including the ones this version
     /// would not know what to do with.
     @Test func everyKindOfPartSurvivesTheLog() throws {
@@ -85,6 +102,9 @@ private let pixel = Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
             .image(.reference(ContentReference(identifier: "abc", type: "image/jpeg"))),
             .image(.url(URL(string: "https://example.invalid/cat.png")!, type: "image/png")),
             .reasoning("thinking about it"),
+            .audio(.bytes(Data([0x52, 0x49, 0x46, 0x46]), type: "audio/wav")),
+            .video(.reference(ContentReference(identifier: "def", type: "video/mp4"))),
+            .file(.bytes(Data([0x25, 0x50, 0x44, 0x46]), type: "application/pdf")),
             .citation(Citation(title: "A page", url: URL(string: "https://example.invalid"), range: 0..<4)),
         ]
         let event = Event.arrived(InboundEvent(source: "share", content: parts))
